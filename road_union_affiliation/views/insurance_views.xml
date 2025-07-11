@@ -1,0 +1,40 @@
+<odoo>
+  <record id="view_insurance_form" model="ir.ui.view">
+    <field name="name">affiliation.insurance.form</field>
+    <field name="model">affiliation.insurance</field>
+    <field name="arch" type="xml">
+      <form string="Insurance">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="code"/>
+            <field name="active"/>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_insurance_tree" model="ir.ui.view">
+    <field name="name">affiliation.insurance.tree</field>
+    <field name="model">affiliation.insurance</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="active"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="action_affiliation_insurance" model="ir.actions.act_window">
+    <field name="name">Health Insurances</field>
+    <field name="res_model">affiliation.insurance</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_affiliation_insurance_root" name="Health Insurances"
+            parent="union_affiliation.union"
+            action="action_affiliation_insurance"
+            groups="union_affiliation.group_affiliation_read"/>
+</odoo>

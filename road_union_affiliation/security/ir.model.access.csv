@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+admin_affiliation_insurance,Admin access to insurance,model_affiliation_insurance,union_affiliation.group_affiliation_admin,1,1,1,1
+write_affiliation_insurance,Write access to insurance,model_affiliation_insurance,union_affiliation.group_affiliation_write,1,1,1,0
+read_affiliation_insurance,Read access to insurance,model_affiliation_insurance,union_affiliation.group_affiliation_read,1,0,0,0
+
+admin_affiliation_department,Admin access to department,model_affiliation_department,union_affiliation.group_affiliation_admin,1,1,1,1
+write_affiliation_department,Write access to department,model_affiliation_department,union_affiliation.group_affiliation_write,1,1,1,0
+read_affiliation_department,Read access to department,model_affiliation_department,union_affiliation.group_affiliation_read,1,0,0,0
