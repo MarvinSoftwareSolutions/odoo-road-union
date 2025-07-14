@@ -1,0 +1,127 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* road_union_affiliation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20250415\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-11 20:13+0000\n"
+"PO-Revision-Date: 2025-07-11 20:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__active
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__category
+msgid "Class"
+msgstr "Clase"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__code
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__code
+msgid "Code"
+msgstr "Código"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__create_uid
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__create_date
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: road_union_affiliation
+#: model:ir.model,name:road_union_affiliation.model_affiliation_department
+msgid "Departamento de trabajo del afiliado"
+msgstr ""
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__department_id
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_department_form
+msgid "Department"
+msgstr "Departamento"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__name
+msgid "Department Name"
+msgstr "Nombre del departamento"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__display_name
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__display_name
+msgid "Display Name"
+msgstr "Nombre mostrado"
+
+#. module: road_union_affiliation
+#. odoo-python
+#: code:addons/road_union_affiliation/models/affiliate.py:0
+#: model:ir.model,name:road_union_affiliation.model_affiliation_insurance
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__insurance_id
+#, python-format
+msgid "Health Insurance"
+msgstr "Obra social"
+
+#. module: road_union_affiliation
+#: model:ir.actions.act_window,name:road_union_affiliation.action_affiliation_insurance
+#: model:ir.ui.menu,name:road_union_affiliation.menu_affiliation_insurance_root
+msgid "Health Insurances"
+msgstr "Obras sociales"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__id
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__id
+msgid "ID"
+msgstr "ID"
+
+#. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_insurance_form
+msgid "Insurance"
+msgstr "Obra social"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department____last_update
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance____last_update
+msgid "Last Modified on"
+msgstr "Última modificación el"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__write_uid
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__write_date
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__write_date
+msgid "Last Updated on"
+msgstr "Última actualización el"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: road_union_affiliation
+#: model:ir.actions.act_window,name:road_union_affiliation.action_affiliation_department
+#: model:ir.ui.menu,name:road_union_affiliation.menu_affiliation_department_root
+msgid "Road Departments"
+msgstr "Departamentos de Vialidad"
+
+#. module: road_union_affiliation
+#: model:ir.model,name:road_union_affiliation.model_affiliation_affiliate
+msgid "Union affiliate entity"
+msgstr "Entidad del afiliado/a sindical"

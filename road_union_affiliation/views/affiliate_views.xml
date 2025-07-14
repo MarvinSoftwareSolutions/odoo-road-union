@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <record id="odoo_road_union_affiliate_form_inherit" model="ir.ui.view">
+      <field name="name">affiliation.affiliate.form.inherit.category</field>
+      <field name="model">affiliation.affiliate</field>
+      <field name="inherit_id" ref="union_affiliation.union_affiliation_affiliate_form"/>
+      <field name="arch" type="xml">
+        <!-- Insertar el campo 'category' justo después del campo 'affiliate_type_id' -->
+        <xpath expr="//field[@name='affiliate_type_id']" position="after">
+          <field name="category"/>
+          <field name="insurance_id" options="{'no_create': True, 'no_open': True}"/>
+          <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
