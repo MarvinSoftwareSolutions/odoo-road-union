@@ -14,6 +14,8 @@
         'views/affiliate_views.xml',
         'views/insurance_views.xml',
         'views/department_views.xml',
+        'views/affiliate_old_db_views.xml',
+        'views/affiliate_child_readonly_views.xml',
         'data/insurance_data.xml',
         'security/ir.model.access.csv',
     ],
