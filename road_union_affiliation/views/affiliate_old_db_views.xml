@@ -34,11 +34,26 @@
             </tree>
         </field>
     </record>
+  <record id="affiliate_active_search" model="ir.ui.view">
+      <field name="name">affiliation.affiliate.active.search</field>
+      <field name="model">affiliation.affiliate</field>
+      <field name="arch" type="xml">
+          <search>
+              <field name="affiliate_type_id"/>
+
+              <filter string="Activos"
+                      name="activos"
+                      domain="[('affiliate_type_id.name', '=', 'Activo')]"
+                      help="Mostrar solo registros activos"/>
+          </search>
+      </field>
+  </record>
 
   <record id="action_affiliate_db" model="ir.actions.act_window">
     <field name="name">Affiliate Database View</field>
     <field name="res_model">affiliation.affiliate</field>
     <field name="view_mode">tree,form</field>
+    <field name="context">{'search_default_activos': 1}</field>
   </record>
 
 
