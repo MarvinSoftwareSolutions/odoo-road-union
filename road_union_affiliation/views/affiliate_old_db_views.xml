@@ -1,0 +1,65 @@
+<odoo>
+    <record id="view_affiliate_tree" model="ir.ui.view">
+        <field name="name">affiliation.affiliate.tree</field>
+        <field name="model">affiliation.affiliate</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="gender"/>
+                <field name="department_id"/>
+                <field name="affiliate_type_id"/>
+                <field name="insurance_id"/>
+                <field name="name"/>
+                <field name="uid"/>
+                <field name="street"/>
+                <field name="city"/>
+                <field name="state_id"/>
+                <field name="country_id"/>
+                <field name="phone"/>
+                <field name="personal_id" string="Document Number"/>
+                <field name="parent_role"/>
+                <field name="vat" string="CUIL"/>
+                <field name="birthday_str" string="Birthday"/>
+                <field name="age" string="Age"/>
+                <field name="birth_date" string="Date of Birth"/>
+                <field name="category" string="Class"/>
+                <field name="mobile"/>
+                <field name="affiliation_date"/>
+                <field name="seniority"/>
+                <field name="affiliate_child_ids" invisible="1"/>
+                <button name="action_view_children"
+                        type="object"
+                        icon="fa-users"
+                        string="Ver Hijos"
+                        attrs="{'invisible': [('affiliate_child_ids','=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+  <record id="affiliate_active_search" model="ir.ui.view">
+      <field name="name">affiliation.affiliate.active.search</field>
+      <field name="model">affiliation.affiliate</field>
+      <field name="arch" type="xml">
+          <search>
+              <field name="affiliate_type_id"/>
+
+              <filter string="Activos"
+                      name="activos"
+                      domain="[('affiliate_type_id.name', '=', 'Activo')]"
+                      help="Mostrar solo registros activos"/>
+          </search>
+      </field>
+  </record>
+
+  <record id="action_affiliate_db" model="ir.actions.act_window">
+    <field name="name">Affiliate Database View</field>
+    <field name="res_model">affiliation.affiliate</field>
+    <field name="view_mode">tree,form</field>
+    <field name="context">{'search_default_activos': 1}</field>
+  </record>
+
+
+  <menuitem id="menu_affiliate_db_view" name="Affiliate Database View"
+            parent="union_affiliation.affiliates_section"
+            action="action_affiliate_db"
+            groups="union_affiliation.group_affiliation_read"/>
+
+</odoo>

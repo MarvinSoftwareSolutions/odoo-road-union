@@ -1,0 +1,43 @@
+<odoo>
+    <!-- Tree view de hijos solo lectura -->
+    <record id="view_affiliate_child_tree_readonly" model="ir.ui.view">
+        <field name="name">affiliation.affiliate_child.tree.readonly</field>
+        <field name="model">affiliation.affiliate_child</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="personal_id"/>
+                <field name="birth_date"/>
+                <field name="handicapped"/>
+                <field name="verified"/>
+                <field name="educational_level"/>
+                <field name="observation"/>
+                <field name="affiliate_names"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view de hijos solo lectura -->
+    <record id="view_affiliate_child_form_readonly" model="ir.ui.view">
+        <field name="name">affiliation.affiliate_child.form.readonly</field>
+        <field name="model">affiliation.affiliate_child</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <form create="false" edit="false" delete="false">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="personal_id"/>
+                        <field name="birth_date"/>
+                        <field name="handicapped"/>
+                        <field name="verified"/>
+                        <field name="educational_level"/>
+                        <field name="affiliate_names"/>
+                        <field name="observation"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

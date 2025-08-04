@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0-20250415\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-11 20:13+0000\n"
-"PO-Revision-Date: 2025-07-11 20:13+0000\n"
+"POT-Creation-Date: 2025-07-15 01:30+0000\n"
+"PO-Revision-Date: 2025-07-15 01:30+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -22,7 +22,37 @@ msgid "Active"
 msgstr "Activo"
 
 #. module: road_union_affiliation
+#: model:ir.actions.act_window,name:road_union_affiliation.action_affiliate_db
+#: model:ir.ui.menu,name:road_union_affiliation.menu_affiliate_db_view
+msgid "Affiliate Database View"
+msgstr "Vista de Base de Datos de Afiliados"
+
+#. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "Age"
+msgstr "Edad"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__birthday_str
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "Birthday"
+msgstr "Cumpleaños"
+
+#. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "CUIL"
+msgstr ""
+
+#. module: road_union_affiliation
+#. odoo-python
+#: code:addons/road_union_affiliation/models/affiliate.py:0
+#, python-format
+msgid "Children of %s"
+msgstr "Hijo/a de %s"
+
+#. module: road_union_affiliation
 #: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__category
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
 msgid "Class"
 msgstr "Clase"
 
@@ -43,6 +73,11 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__create_date
 msgid "Created on"
 msgstr "Creado el"
+
+#. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "Date of Birth"
+msgstr "Dia de Nacimiento"
 
 #. module: road_union_affiliation
 #: model:ir.model,name:road_union_affiliation.model_affiliation_department
@@ -67,6 +102,16 @@ msgid "Display Name"
 msgstr "Nombre mostrado"
 
 #. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "Document Number"
+msgstr "Número de Documento"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__age
+msgid "Edad"
+msgstr ""
+
+#. module: road_union_affiliation
 #. odoo-python
 #: code:addons/road_union_affiliation/models/affiliate.py:0
 #: model:ir.model,name:road_union_affiliation.model_affiliation_insurance
@@ -85,7 +130,7 @@ msgstr "Obras sociales"
 #: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__id
 #: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_insurance__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: road_union_affiliation
 #: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_insurance_form
@@ -125,3 +170,8 @@ msgstr "Departamentos de Vialidad"
 #: model:ir.model,name:road_union_affiliation.model_affiliation_affiliate
 msgid "Union affiliate entity"
 msgstr "Entidad del afiliado/a sindical"
+
+#. module: road_union_affiliation
+#: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
+msgid "Ver Hijos"
+msgstr ""
