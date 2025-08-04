@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista tree de pagos del mes actual -->
+    <record id="view_payment_account_current_month_tree" model="ir.ui.view">
+        <field name="name">affiliate.payment_account.tree</field>
+        <field name="model">affiliate.payment_account</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="affiliate_name"/>
+                <field name="date_month"/>
+                
+                <!-- Servicios -->
+                <field name="pharmacy_total" sum="False"/>
+                <field name="optical_total" sum="False"/>
+                <field name="tourism_total" sum="False"/>
+                <field name="aid_total" sum="False"/>
+                <field name="party_total" sum="False"/>
+                <field name="hall_total" sum="False"/>
+                <field name="odontology_total" sum="False"/>
+
+                <!-- Préstamos -->
+                <field name="ecco_loan" sum="False"/>
+                <field name="emi_loan" sum="False"/>
+                <field name="emergency_loan" sum="False"/>
+                <field name="suoem_loan" sum="False"/>
+
+                <!-- Resumen económico -->
+                <field name="initial_balance" sum="False"/>
+                <field name="union_fee" sum="False"/>
+                <field name="payments" sum="False"/>
+                <field name="pension_fund" sum="False"/>
+                <field name="total" sum="False"/>
+                <field name="final_balance" sum="False"/>
+
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_payment_account_tree_grouped" model="ir.ui.view">
+      <field name="name">affiliate.payment_account.tree.grouped</field>
+      <field name="model">affiliate.payment_account</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="affiliate_name"/>
+          <field name="pharmacy_total" sum="0"/>
+          <field name="optical_total" sum="0"/>
+          <field name="tourism_total" sum="0"/>
+          <field name="aid_total" sum="0"/>
+          <field name="party_total" sum="0"/>
+          <field name="hall_total" sum="0"/>
+          <field name="odontology_total" sum="0"/>
+          <field name="ecco_loan" sum="0"/>
+          <field name="emi_loan" sum="0"/>
+          <field name="emergency_loan" sum="0"/>
+          <field name="suoem_loan" sum="0"/>
+          <field name="initial_balance" sum="0"/>
+          <field name="union_fee" sum="0"/>
+          <field name="payments" sum="0"/>
+          <field name="pension_fund" sum="0"/>
+          <field name="total" sum="0"/>
+          <field name="final_balance" sum="0"/>
+        </tree>
+      </field>
+    </record>
+
+
+    <!-- Acción de servidor que llama a método Python -->
+    <record id="action_server_open_current_month_summary" model="ir.actions.server">
+      <field name="name">Abrir Resumen Mes Actual</field>
+      <field name="model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
+      <field name="state">code</field>
+      <field name="code">action = model.action_open_current_month_summary()</field>
+    </record>
+
+    <!-- Menú que llama a esa acción de servidor -->
+    <menuitem id="menu_affiliate_payment_current_month"
+              name="Resumen Mes Actual"
+              parent="union_affiliation.union"
+              action="road_union_economic_management.action_server_open_current_month_summary"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="10"/>
+
+
+    <record id="view_affiliate_payment_account_search" model="ir.ui.view">
+      <field name="name">affiliate.payment_account.search</field>
+      <field name="model">affiliate.payment_account</field>
+      <field name="arch" type="xml">
+        <search string="Search Economic Summary">
+
+          <field name="affiliate_name" string="Affiliate Name"/>
+          <field name="date_month" string="Month"/>
+          
+          <filter string="Draft" name="filter_state_draft" domain="[('state', '=', 'draft')]"/>
+          <filter string="Confirmed" name="filter_state_confirmed" domain="[('state', '=', 'confirmed')]"/>
+
+        </search>
+      </field>
+    </record>
+  </data>
+</odoo>
