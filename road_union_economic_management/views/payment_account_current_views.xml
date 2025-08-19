@@ -11,6 +11,7 @@
             <tree>
                 <field name="affiliate_name"/>
                 <field name="date_month"/>
+                <field name="date_year"/>
                 
                 <!-- Servicios -->
                 <field name="pharmacy_total" sum="False"/>
@@ -67,10 +68,9 @@
       </field>
     </record>
 
-
     <!-- Acción de servidor que llama a método Python -->
     <record id="action_server_open_current_month_summary" model="ir.actions.server">
-      <field name="name">Abrir Resumen Mes Actual</field>
+      <field name="name">Abrir Resúmenes</field>
       <field name="model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
       <field name="state">code</field>
       <field name="code">action = model.action_open_current_month_summary()</field>
@@ -78,27 +78,25 @@
 
     <!-- Menú que llama a esa acción de servidor -->
     <menuitem id="menu_affiliate_payment_current_month"
-              name="Resumen Mes Actual"
+              name="Resúmenes"
               parent="union_affiliation.union"
               action="road_union_economic_management.action_server_open_current_month_summary"
               groups="union_affiliation.group_affiliation_read"
               sequence="10"/>
-
 
     <record id="view_affiliate_payment_account_search" model="ir.ui.view">
       <field name="name">affiliate.payment_account.search</field>
       <field name="model">affiliate.payment_account</field>
       <field name="arch" type="xml">
         <search string="Search Economic Summary">
-
           <field name="affiliate_name" string="Affiliate Name"/>
           <field name="date_month" string="Month"/>
           
           <filter string="Draft" name="filter_state_draft" domain="[('state', '=', 'draft')]"/>
           <filter string="Confirmed" name="filter_state_confirmed" domain="[('state', '=', 'confirmed')]"/>
-
         </search>
       </field>
     </record>
+
   </data>
 </odoo>

@@ -11,8 +11,9 @@
     "license": "AGPL-3",
     'depends': ['base', 'union_affiliation', 'road_union_affiliation'],
     'data': [
-        'security/ir.model.access.csv',
         'views/payment_account_current_views.xml',
+        'security/ir.model.access.csv',
+        'views/affiliate_views.xml',
     ],
     "installable": True,
 }

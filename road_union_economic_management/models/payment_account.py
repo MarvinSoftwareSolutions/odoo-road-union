@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
-from datetime import date
+from datetime import date, datetime
 
 class AffiliatePaymentAccount(models.Model):
     _name = "affiliate.payment_account"
@@ -20,10 +20,34 @@ class AffiliatePaymentAccount(models.Model):
         store=True
     )
 
-    date_month = fields.Date(
-        string="Month",
-        required=True,
-        help="Corresponds to the month of the summary."
+    date_month = fields.Selection(
+        selection=[
+            ('01', 'January'),
+            ('02', 'February'),
+            ('03', 'March'),
+            ('04', 'April'),
+            ('05', 'May'),
+            ('06', 'June'),
+            ('07', 'July'),
+            ('08', 'August'),
+            ('09', 'September'),
+            ('10', 'October'),
+            ('11', 'November'),
+            ('12', 'December'),
+        ],
+        string='Month'
+    )
+
+    @api.model
+    def _get_year_selection(self):
+        current_year = datetime.now().year
+        return [(str(year), str(year)) for year in 
+                reversed(range(current_year - 100, current_year + 1))]
+
+    date_year = fields.Selection(
+        selection=_get_year_selection,
+        string='Year',
+        required=True
     )
 
     # Service Totals
@@ -59,12 +83,11 @@ class AffiliatePaymentAccount(models.Model):
     def _compute_affiliate_name(self):
         for record in self:
             record.affiliate_name = record.affiliate_id.name if record.affiliate_id else ''
-
-
+            
     @api.model
     def action_open_current_month_summary(self):
         """
-        Abre la vista de resumen económico mensual filtrada por el mes actual.
+        Abre la vista de resúmenes económicos mensuales.
         """
         today = date.today()
         # Calcula el primer día del mes actual
@@ -73,7 +96,7 @@ class AffiliatePaymentAccount(models.Model):
         date_to = today + relativedelta(months=1, day=1, days=-1)
 
         return {
-            'name': "Resumen del Mes Actual",
+            'name': "Resúmenes",
             'res_model': 'affiliate.payment_account',
             'view_mode': 'tree,form',
             'views': [
@@ -86,15 +109,16 @@ class AffiliatePaymentAccount(models.Model):
             #     ('date_month', '<=', date_to.strftime('%Y-%m-%d'))
             # ],
             'context': {
-                'group_by': 'date_month',
-                'default_date_month': date_from.strftime('%Y-%m-%d'), # Opcional: para crear nuevos registros en este mes
+                'group_by': ['date_year', 'date_month'],
+                'default_date_year': str(today.year),
+                'default_date_month': date_from.strftime('%m'),# Opcional: para crear nuevos registros en este mes
             },
             'help': """
                 <p class="o_view_nocontent_smiling_face">
                     No hay resúmenes económicos para el mes actual.
                 </p>
             """,
-            'search_view_id': self.env.ref('road_union_economic_management.view_payment_account_tree_grouped').id,
+            'search_view_id': self.env.ref('road_union_economic_management.view_affiliate_payment_account_search').id,
             'type': 'ir.actions.act_window',
             'target': 'current',
         }
