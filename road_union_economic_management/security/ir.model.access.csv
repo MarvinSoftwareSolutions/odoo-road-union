@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_affiliate_payment_account_admin,Admin access to Affiliate Payment Account,model_affiliate_payment_account,union_affiliation.group_affiliation_admin,1,1,1,1
+access_affiliate_payment_account_write,Write access to Affiliate Payment Account,model_affiliate_payment_account,union_affiliation.group_affiliation_write,1,1,1,0
+access_affiliate_payment_account_read,Read access to Affiliate Payment Account,model_affiliate_payment_account,union_affiliation.group_affiliation_read,1,0,0,0

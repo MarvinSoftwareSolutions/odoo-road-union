@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+  
+    <!-- Acción de servidor que llama a método Python -->
+    <record id="action_server_open_current_month_summary" model="ir.actions.server">
+      <field name="name">Abrir Resumen Económico Agrupado</field>
+      <field name="model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
+      <field name="state">object</field>
+      <field name="code">action = model.action_open_current_month_summary()</field>
+    </record>
+
+    <!-- Menú que llama a esa acción de servidor -->
+    <menuitem id="menu_affiliate_payment_current_month"
+              name="Resumen Económico"
+              parent="union_affiliation.union"
+              action="road_union_economic_management.action_server_open_current_month_summary"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="10"/>
+
+  </data>
+</odoo>
