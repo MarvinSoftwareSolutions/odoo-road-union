@@ -47,6 +47,8 @@
       <field name="arch" type="xml">
         <tree>
           <field name="affiliate_name"/>
+          <field name="date_month"/>
+          <field name="date_year"/>
           <field name="pharmacy_total" sum="0"/>
           <field name="optical_total" sum="0"/>
           <field name="tourism_total" sum="0"/>

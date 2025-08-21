@@ -35,13 +35,14 @@ class AffiliatePaymentAccount(models.Model):
             ('11', 'November'),
             ('12', 'December'),
         ],
-        string='Month'
+        string='Month',
+        required=True,
     )
 
     @api.model
     def _get_year_selection(self):
         current_year = datetime.now().year
-        return [(str(year), str(year)) for year in 
+        return [(str(year), str(year)) for year in
                 reversed(range(current_year - 100, current_year + 1))]
 
     date_year = fields.Selection(
@@ -49,6 +50,14 @@ class AffiliatePaymentAccount(models.Model):
         string='Year',
         required=True
     )
+
+    # Aquí es donde se usa la restricción SQL
+    _sql_constraints = [
+        ('unique_affiliate_month_year', # Nombre único de la restricción
+         'unique(affiliate_id, date_month, date_year)', # Tipo de restricción: combinación única de estos 3 campos
+         'Ya existe un resumen para este afiliado para este mes y año. ' # Mensaje de error
+         'Asegúrese de que cada afiliado tenga solo un resumen por mes/año.')
+    ]
 
     # Service Totals
     pharmacy_total = fields.Float(string="Pharmacies", group_operator=False)
@@ -83,7 +92,7 @@ class AffiliatePaymentAccount(models.Model):
     def _compute_affiliate_name(self):
         for record in self:
             record.affiliate_name = record.affiliate_id.name if record.affiliate_id else ''
-            
+
     @api.model
     def action_open_current_month_summary(self):
         """
@@ -104,14 +113,10 @@ class AffiliatePaymentAccount(models.Model):
                 (self.env.ref('road_union_economic_management.view_payment_account_current_month_tree').id, 'tree'),
                 (False, 'form'),
             ],
-            # 'domain': [
-            #     ('date_month', '>=', date_from.strftime('%Y-%m-%d')),
-            #     ('date_month', '<=', date_to.strftime('%Y-%m-%d'))
-            # ],
             'context': {
                 'group_by': ['date_year', 'date_month'],
                 'default_date_year': str(today.year),
-                'default_date_month': date_from.strftime('%m'),# Opcional: para crear nuevos registros en este mes
+                'default_date_month': date_from.strftime('%m'),
             },
             'help': """
                 <p class="o_view_nocontent_smiling_face">
