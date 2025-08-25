@@ -5,7 +5,9 @@
       <field name="model">affiliation.affiliate</field>
       <field name="inherit_id" ref="road_union_affiliation.odoo_road_union_affiliate_form_inherit"/>
       <field name="arch" type="xml">
-        <!-- Insertar el campo 'category' justo después del campo 'affiliate_type_id' -->
+        <xpath expr="//field[@name='affiliate_type_id']" position="after">
+          <field name="id_benefit"/>
+        </xpath>
         <xpath expr="//notebook" position="inside">
             <page string="Payment account" name="payment_account">
                 <field name="payment_account_ids"/>

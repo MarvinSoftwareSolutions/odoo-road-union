@@ -10,3 +10,5 @@ class Affiliate(models.Model):
         inverse_name="affiliate_id",
         string="Economic Movements"
     )
+
+    id_benefit = fields.Integer(string="ID/BENEFIT")
