@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Regla de seguridad adicional para usuarios básicos -->
+    <record id="access_payment_account_filter_wizard_user" model="ir.model.access">
+        <field name="name">payment.account.filter.wizard user access</field>
+        <field name="model_id" ref="model_payment_account_filter_wizard"/>
+        <field name="group_id" ref="base.group_user"/>
+        <field name="perm_read">1</field>
+        <field name="perm_write">1</field>
+        <field name="perm_create">1</field>
+        <field name="perm_unlink">1</field>
+    </record>
+
+    <!-- Vista Form del Wizard -->
+    <record id="view_payment_account_filter_wizard_form" model="ir.ui.view">
+        <field name="name">payment.account.filter.wizard.form</field>
+        <field name="model">payment.account.filter.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="month_year" required="1" widget="selection" 
+                                   options="{'no_create': True, 'no_open': True}"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Estadísticas del Período">
+                            <field name="total_records" readonly="1"/>
+                            <field name="total_confirmed" readonly="1"/>
+                            <field name="total_draft" readonly="1"/>
+                            <field name="total_final_balance" readonly="1" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert" style="margin: 16px 0;">
+                        <p><strong>Información:</strong></p>
+                        <p>Seleccione el mes y año para filtrar los resúmenes económicos mensuales. 
+                           Las estadísticas se actualizarán automáticamente.</p>
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button name="action_show_payment_accounts" 
+                            string="Mostrar Todos" 
+                            type="object" 
+                            class="btn-primary"/>
+                    
+                    <button name="action_show_confirmed_only" 
+                            string="Solo Confirmados" 
+                            type="object" 
+                            class="btn-success"
+                            attrs="{'invisible': [('total_confirmed', '=', 0)]}"/>
+                    
+                    <button name="action_show_draft_only" 
+                            string="Solo Borradores" 
+                            type="object" 
+                            class="btn-warning"
+                            attrs="{'invisible': [('total_draft', '=', 0)]}"/>
+                            
+                    <button string="Cancelar" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                    <button name="action_refresh_periods" 
+                            string="🔄 Actualizar" 
+                            type="object" 
+                            class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción del Wizard -->
+    <record id="action_payment_account_filter_wizard" model="ir.actions.act_window">
+        <field name="name">Filtrar Resúmenes por Mes/Año</field>
+        <field name="res_model">payment.account.filter.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_payment_account_filter_wizard_form"/>
+    </record>
+
+    <!-- Acción de Server para abrir el wizard -->
+    <record id="action_open_payment_filter_wizard" model="ir.actions.server">
+        <field name="name">Filtrar por Mes/Año</field>
+        <field name="model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
+        <field name="binding_model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = env.ref('road_union_economic_management.action_payment_account_filter_wizard').read()[0]
+        </field>
+    </record>
+
+    <!-- Menu item (opcional) -->
+    <menuitem id="menu_payment_account_filter"
+              name="Filtrar Resúmenes"
+              action="action_payment_account_filter_wizard"
+              parent="union_affiliation.union"
+              sequence="15"/>
+
+</odoo>

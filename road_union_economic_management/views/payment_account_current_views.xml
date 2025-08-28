@@ -100,5 +100,107 @@
       </field>
     </record>
 
+
+    <!-- Nueva vista tree específica para el mes actual -->
+
+    <!-- Nueva vista tree específica para el mes actual -->
+    <record id="view_payment_account_current_month_only_tree" model="ir.ui.view">
+        <field name="name">affiliate.payment_account.current.month.tree</field>
+        <field name="model">affiliate.payment_account</field>
+        <field name="priority" eval="5"/>
+        <field name="arch" type="xml">
+            <tree create="true" edit="true" delete="true">
+                <field name="affiliate_name"/>
+                
+                <!-- Servicios -->
+                <field name="pharmacy_total" sum="Total Farmacias"/>
+                <field name="optical_total" sum="Total Óptica"/>
+                <field name="tourism_total" sum="Total Turismo"/>
+                <field name="aid_total" sum="Total Ayuda"/>
+                <field name="party_total" sum="Total Fiestas"/>
+                <field name="hall_total" sum="Total Salón"/>
+                <field name="odontology_total" sum="Total Odontología"/>
+
+                <!-- Préstamos -->
+                <field name="ecco_loan" sum="Total Prést. Ecco"/>
+                <field name="emi_loan" sum="Total Prést. Emi"/>
+                <field name="emergency_loan" sum="Total Prést. Emergencia"/>
+                <field name="suoem_loan" sum="Total Prést. Suoem"/>
+
+                <!-- Resumen económico -->
+                <field name="initial_balance" sum="Total Saldo Inicial"/>
+                <field name="union_fee" sum="Total Cuota Sindical"/>
+                <field name="payments" sum="Total Pagos"/>
+                <field name="pension_fund" sum="Total Fondo Pensión"/>
+                <field name="total" sum="Total General"/>
+                <field name="final_balance" sum="Total Saldo Final"/>
+
+                <field name="state"/>
+                
+                <!-- Campos ocultos para filtros -->
+                <field name="date_month" invisible="1"/>
+                <field name="date_year" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+
+
+    <!-- Acción window específica para el mes actual -->
+    <record id="action_payment_account_current_month_only" model="ir.actions.act_window">
+        <field name="name">Resúmenes - Mes Actual</field>
+        <field name="res_model">affiliate.payment_account</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_payment_account_current_month_only_tree"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay resúmenes económicos para el mes actual.
+            </p>
+            <p>
+                Haga clic en "Crear" para agregar un nuevo resumen económico mensual.
+            </p>
+        </field>
+        <field name="search_view_id" ref="view_affiliate_payment_account_search"/>
+    </record>
+
+    <!-- Acción de servidor para el mes actual -->
+    <record id="action_server_open_current_month_only" model="ir.actions.server">
+        <field name="name">Resúmenes - Mes Actual</field>
+        <field name="model_id" ref="model_affiliate_payment_account"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_open_current_month_only()</field>
+    </record>
+
+    <!-- Vista de búsqueda simple para el mes actual -->
+    <record id="view_payment_account_current_month_search" model="ir.ui.view">
+        <field name="name">affiliate.payment_account.current.month.search</field>
+        <field name="model">affiliate.payment_account</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Resúmenes - Mes Actual">
+                <field name="affiliate_name" string="Nombre del Afiliado"/>
+                <field name="affiliate_id" string="Afiliado"/>
+                
+                <separator/>
+                <filter string="Borrador" name="filter_state_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmado" name="filter_state_confirmed" domain="[('state', '=', 'confirmed')]"/>
+                
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Afiliado" name="group_by_affiliate" domain="[]" context="{'group_by': 'affiliate_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Menú principal para el mes actual -->
+    <menuitem id="menu_payment_account_current_month_only"
+              name="Mes Actual"
+              parent="union_affiliation.union"
+              action="action_server_open_current_month_only"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="5"/>
+
+
   </data>
 </odoo>

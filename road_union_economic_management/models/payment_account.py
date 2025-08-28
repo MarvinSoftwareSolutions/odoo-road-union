@@ -59,6 +59,8 @@ class AffiliatePaymentAccount(models.Model):
          'Asegúrese de que cada afiliado tenga solo un resumen por mes/año.')
     ]
 
+    id_benefit = fields.Float(string="ID/BENEFIT", group_operator=False)
+
     # Service Totals
     pharmacy_total = fields.Float(string="Pharmacies", group_operator=False)
     optical_total = fields.Float(string="Optical", group_operator=False)
@@ -127,3 +129,76 @@ class AffiliatePaymentAccount(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'current',
         }
+# Agregar estos métodos a la clase AffiliatePaymentAccount
+
+    @api.model
+    def action_open_current_month_only(self):
+        """
+        Abre la vista específica para el mes y año actuales únicamente.
+        """
+        today = date.today()
+        current_month = today.strftime('%m')
+        current_year = str(today.year)
+        
+        return {
+            'name': f"Resúmenes - {today.strftime('%B %Y')}",
+            'res_model': 'affiliate.payment_account',
+            'view_mode': 'tree',
+            'view_id': self.env.ref('road_union_economic_management.view_payment_account_current_month_only_tree').id,
+            'domain': [('date_month', '=', current_month), ('date_year', '=', current_year)],
+            'context': {
+                'default_date_month': current_month,
+                'default_date_year': current_year,
+                'search_default_filter_current_month': 1,
+            },
+            'help': f"""
+                <p class="o_view_nocontent_smiling_face">
+                    No hay resúmenes económicos para {today.strftime('%B %Y')}.
+                </p>
+                <p>
+                    Haga clic en "Crear" para agregar un nuevo resumen económico mensual.
+                </p>
+            """,
+            'search_view_id': self.env.ref('road_union_economic_management.view_payment_account_current_month_search').id,
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+        }
+
+    @api.model
+    def get_current_month_stats(self):
+        """
+        Obtiene estadísticas del mes actual.
+        """
+        today = date.today()
+        current_month = today.strftime('%m')
+        current_year = str(today.year)
+        
+        records = self.search([
+            ('date_month', '=', current_month),
+            ('date_year', '=', current_year)
+        ])
+        
+        return {
+            'total_affiliates': len(records),
+            'total_confirmed': len(records.filtered(lambda r: r.state == 'confirmed')),
+            'total_draft': len(records.filtered(lambda r: r.state == 'draft')),
+            'total_final_balance': sum(records.mapped('final_balance')),
+            'month_name': today.strftime('%B'),
+            'year': current_year,
+        }
+
+    def name_get(self):
+        """
+        Personaliza cómo se muestra el registro en relaciones Many2one.
+        """
+        result = []
+        for record in self:
+            month_names = {
+                '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+                '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+                '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+            }
+            month_name = month_names.get(record.date_month, record.date_month)
+            name = f"{record.affiliate_name} - {month_name} {record.date_year}"
+            result.append((record.id, name))
+        return result
