@@ -13,6 +13,7 @@
                 <field name="affiliate_class"/>
                 <field name="affiliate_number"/>
                 <field name="dni"/>
+                <field name="id_benefit"/>
                 <field name="date_month"/>
                 <field name="date_year"/>
                 
@@ -67,6 +68,7 @@
           <field name="affiliate_class"/>
           <field name="affiliate_number"/>
           <field name="dni"/>
+          <field name="id_benefit"/>
           <field name="date_month"/>
           <field name="date_year"/>
           <field name="pharmacy_total" sum="0"/>
@@ -96,23 +98,7 @@
         </tree>
       </field>
     </record>
-
-    <!-- Acción de servidor que llama a método Python -->
-    <record id="action_server_open_current_month_summary" model="ir.actions.server">
-      <field name="name">Abrir Resúmenes</field>
-      <field name="model_id" ref="road_union_economic_management.model_affiliate_payment_account"/>
-      <field name="state">code</field>
-      <field name="code">action = model.action_open_current_month_summary()</field>
-    </record>
-
-    <!-- Menú que llama a esa acción de servidor -->
-    <menuitem id="menu_affiliate_payment_current_month"
-              name="Resúmenes"
-              parent="union_affiliation.union"
-              action="road_union_economic_management.action_server_open_current_month_summary"
-              groups="union_affiliation.group_affiliation_read"
-              sequence="10"/>
-
+    
     <record id="view_affiliate_payment_account_search" model="ir.ui.view">
       <field name="name">affiliate.payment_account.search</field>
       <field name="model">affiliate.payment_account</field>
@@ -141,6 +127,7 @@
                 <field name="affiliate_class"/>
                 <field name="affiliate_number"/>
                 <field name="dni"/>
+                <field name="id_benefit"/>
                 
                 <!-- Servicios -->
                 <field name="pharmacy_total" sum="Total Farmacias"/>

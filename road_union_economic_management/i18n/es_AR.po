@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0-20250710\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-19 18:45+0000\n"
-"PO-Revision-Date: 2025-08-19 18:45+0000\n"
+"POT-Creation-Date: 2025-09-01 19:20+0000\n"
+"PO-Revision-Date: 2025-09-01 19:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,9 +16,19 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: road_union_economic_management
-#: model:ir.actions.server,name:road_union_economic_management.action_server_open_current_month_summary
-msgid "Abrir Resumen Mes Actual"
-msgstr ""
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "<strong>Información:</strong>"
+msgstr "<strong>Información:</strong>"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__aid_total
+msgid "AYUDAS"
+msgstr "AYUDAS"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__04
+msgid "Abril"
+msgstr "Abril"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__affiliate_id
@@ -36,9 +46,24 @@ msgid "Affiliate Name"
 msgstr "Nombre del Afiliado"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__aid_total
-msgid "Aid"
-msgstr "Ayuda"
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_affiliate_payment_account_search
+msgid "Affiliate Number"
+msgstr "Número de Afiliado"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Afiliado"
+msgstr "Afiliado"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__08
+msgid "Agosto"
+msgstr "Agosto"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Agrupar por"
+msgstr "Agrupar por"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__04
@@ -46,9 +71,101 @@ msgid "April"
 msgstr "Abril"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__file_data
+msgid "Archivo"
+msgstr "Archivo"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Archivo Generado"
+msgstr "Archivo Generado"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__state__step2
+msgid "Archivo generado"
+msgstr "Archivo generado"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__08
 msgid "August"
 msgstr "Agosto"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__available_periods
+msgid "Available Periods"
+msgstr "Períodos Disponibles"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__date_year
+msgid "Año"
+msgstr "Año"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__total_final_balance
+msgid "Balance Final Total"
+msgstr "Balance Final Total"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Borrador"
+msgstr "Borrador"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__total_draft
+msgid "Borradores"
+msgstr "Borradores"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Buscar Resúmenes - Mes Actual"
+msgstr "Buscar Resúmenes - Mes Actual"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__pension_fund
+msgid "CAJA JUB"
+msgstr "CAJA JUB"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__union_fee
+msgid "CUOTA SINDICAL"
+msgstr "CUOTA SINDICAL"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Cancelar"
+msgstr "Cancelar"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Cerrar"
+msgstr "Cerrar"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__affiliate_class
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Clase"
+msgstr "Clase"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_affiliate_payment_account_search
+msgid "Class"
+msgstr "Clase"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__state__step1
+msgid "Configuración"
+msgstr "Configuración"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Confirmado"
+msgstr "Confirmado"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__total_confirmed
+msgid "Confirmados"
+msgstr "Confirmados"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__state__confirmed
@@ -58,13 +175,28 @@ msgstr "Confirmado"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__create_uid
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__create_uid
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__create_date
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__create_date
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__create_date
 msgid "Created on"
 msgstr "Creado el"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__dni
+msgid "D.N.I"
+msgstr "D.N.I"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_affiliate_payment_account_search
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "DNI"
+msgstr "DNI"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__12
@@ -72,7 +204,19 @@ msgid "December"
 msgstr "Diciembre"
 
 #. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Descargar"
+msgstr "Descargar"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__12
+msgid "Diciembre"
+msgstr "Diciembre"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__display_name
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__display_name
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__display_name
 msgid "Display Name"
 msgstr "Nombre para mostrar"
 
@@ -84,8 +228,8 @@ msgstr "Borrador"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__ecco_loan
-msgid "Ecco Loan"
-msgstr "Préstamo Ecco"
+msgid "Ecco PASADO COMO PRESTAMO"
+msgstr "Ecco PASADO COMO PRESTAMO"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliation_affiliate__payment_account_ids
@@ -93,14 +237,62 @@ msgid "Economic Movements"
 msgstr "Movimientos Económicos"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__emergency_loan
-msgid "Emergency Loan"
-msgstr "Préstamo de Emergencia"
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid ""
+"El archivo contendrá los datos de todos los afiliados activos \n"
+"                                        del período seleccionado con el formato:\n"
+"                                        <br/>\n"
+"                                        <code>ID_BENEFIT    7281    MONTO    FECHA</code>\n"
+"                                        <br/>\n"
+"                                        La fecha será el día 25 del mes/año seleccionado."
+msgstr ""
+"El archivo contendrá los datos de todos los afiliados activos \n"
+"                                        del período seleccionado con el formato:\n"
+"                                        <br/>\n"
+"                                        <code>ID_BENEFIT    7281    MONTO    FECHA</code>\n"
+"                                        <br/>\n"
+"                                        La fecha será el día 25 del mes/año seleccionado."
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "El archivo ha sido generado correctamente."
+msgstr "El archivo ha sido generado correctamente."
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__emi_loan
-msgid "Emi Loan"
-msgstr "Préstamo Emi"
+msgid "Emi PASADO COMO PRESTAMO"
+msgstr "Emi PASADO COMO PRESTAMO"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__01
+msgid "Enero"
+msgstr "Enero"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Estado"
+msgstr "Estado"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "Estadísticas del Período"
+msgstr "Estadísticas del Período"
+
+#. module: road_union_economic_management
+#: model:ir.actions.act_window,name:road_union_economic_management.action_payment_export_wizard
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Exportar Archivo de Pagos"
+msgstr "Exportar Archivo de Pagos"
+
+#. module: road_union_economic_management
+#: model:ir.ui.menu,name:road_union_economic_management.menu_payment_export_wizard
+msgid "Exportar Pagos"
+msgstr "Exportar Pagos"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__party_total
+msgid "FIESTA"
+msgstr "FIESTA"
 
 #. module: road_union_economic_management
 #: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_tree
@@ -108,24 +300,52 @@ msgid "False"
 msgstr "Falso"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__02
+msgid "Febrero"
+msgstr "Febrero"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__02
 msgid "February"
 msgstr "Febrero"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__final_balance
-msgid "Final Balance"
-msgstr "Saldo Final"
+#: model:ir.ui.menu,name:road_union_economic_management.menu_payment_account_filter
+msgid "Filtrar Resúmenes"
+msgstr "Filtrar Resúmenes"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__hall_total
-msgid "Hall"
-msgstr "Salón"
+#: model:ir.actions.act_window,name:road_union_economic_management.action_payment_account_filter_wizard
+msgid "Filtrar Resúmenes por Mes/Año"
+msgstr "Filtrar Resúmenes por Mes/Año"
+
+#. module: road_union_economic_management
+#: model:ir.actions.server,name:road_union_economic_management.action_open_payment_filter_wizard
+msgid "Filtrar por Mes/Año"
+msgstr "Filtrar por Mes/Año"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Generar Archivo"
+msgstr "Generar Archivo"
+
+#. module: road_union_economic_management
+#: model_terms:ir.actions.act_window,help:road_union_economic_management.action_payment_account_current_month_only
+msgid "Haga clic en \"Crear\" para agregar un nuevo resumen económico mensual."
+msgstr "Haga clic en \"Crear\" para agregar un nuevo resumen económico mensual."
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__id
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__id
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__id_benefit
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliation_affiliate__id_benefit
+msgid "ID/BENEFIT"
+msgstr "ID/BENEFICIO"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__initial_balance
@@ -138,6 +358,11 @@ msgid "January"
 msgstr "Enero"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__07
+msgid "Julio"
+msgstr "Julio"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__07
 msgid "July"
 msgstr "Julio"
@@ -148,23 +373,44 @@ msgid "June"
 msgstr "Junio"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__06
+msgid "Junio"
+msgstr "Junio"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account____last_update
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard____last_update
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard____last_update
 msgid "Last Modified on"
 msgstr "Última modificación"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__write_uid
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__write_uid
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__write_date
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__write_date
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__meta4
+msgid "META 4"
+msgstr "META 4"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__03
 msgid "March"
+msgstr "Marzo"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__03
+msgid "Marzo"
 msgstr "Marzo"
 
 #. module: road_union_economic_management
@@ -173,15 +419,50 @@ msgid "May"
 msgstr "Mayo"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__05
+msgid "Mayo"
+msgstr "Mayo"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__date_month
+msgid "Mes"
+msgstr "Mes"
+
+#. module: road_union_economic_management
+#: model:ir.ui.menu,name:road_union_economic_management.menu_payment_account_current_month_only
+msgid "Mes Actual"
+msgstr "Mes Actual"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__date_month
 #: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_affiliate_payment_account_search
 msgid "Month"
 msgstr "Mes"
 
 #. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "Mostrar Todos"
+msgstr "Mostrar Todos"
+
+#. module: road_union_economic_management
+#: model_terms:ir.actions.act_window,help:road_union_economic_management.action_payment_account_current_month_only
+msgid "No hay resúmenes económicos para el mes actual."
+msgstr "No hay resúmenes económicos para el mes actual."
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "Nombre del Afiliado"
+msgstr "Nombre del Afiliado"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__affiliate_name
 msgid "Nombre del afiliado"
-msgstr "Nombre del Afiliado"
+msgstr "Nombre del afiliado"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__file_name
+msgid "Nombre del archivo"
+msgstr "Nombre del archivo"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__11
@@ -189,49 +470,116 @@ msgid "November"
 msgstr "Noviembre"
 
 #. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__11
+msgid "Noviembre"
+msgstr "Noviembre"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__affiliate_number
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_search
+msgid "N° Afiliado"
+msgstr "N° Afiliado"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__aid_installment
+msgid "N° Cuota Ayudas"
+msgstr "N° Cuota Ayudas"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__pharmacy_installment
+msgid "N° Cuota Farmacias"
+msgstr "N° Cuota Farmacias"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__party_installment
+msgid "N° Cuota Fiesta"
+msgstr "N° Cuota Fiesta"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__loans_installment
+msgid "N° Cuota Préstamos"
+msgstr "N° Cuota Préstamos"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__hall_installment
+msgid "N° Cuota Salón"
+msgstr "N° Cuota Salón"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__tourism_installment
+msgid "N° Cuota Turismo"
+msgstr "N° Cuota Turismo"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__optical_installment
+msgid "N° Cuota Óptica"
+msgstr "N° Cuota Óptica"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__odontology_total
+msgid "OTROS"
+msgstr "OTROS"
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__10
 msgid "October"
 msgstr "Octubre"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__odontology_total
-msgid "Odontology"
-msgstr "Odontología"
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__10
+msgid "Octubre"
+msgstr "Octubre"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__optical_total
-msgid "Optical"
+msgid "Optica"
 msgstr "Óptica"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__party_total
-msgid "Party"
-msgstr "Fiesta"
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__payments
+msgid "Pagos"
+msgstr "Pagos"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__parque_del_sol
+msgid "Parque del Sol"
+msgstr "Parque del Sol"
 
 #. module: road_union_economic_management
 #: model_terms:ir.ui.view,arch_db:road_union_economic_management.odoo_road_union_economic_management_affiliate_form_inherit
 msgid "Payment account"
-msgstr "Cuenta de Pago"
+msgstr "Cuenta de pago"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__payments
-msgid "Payments"
-msgstr "Pagos"
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__month_year
+msgid "Período"
+msgstr "Período"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__pension_fund
-msgid "Pension Fund"
-msgstr "Fondo de Pensión"
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__punilla_total
+msgid "Punilla"
+msgstr "Punilla"
 
 #. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__pharmacy_total
-msgid "Pharmacies"
-msgstr "Farmacias"
+#: model:ir.actions.act_window,name:road_union_economic_management.action_payment_account_current_month_only
+#: model:ir.actions.server,name:road_union_economic_management.action_server_open_current_month_only
+msgid "Resúmenes - Mes Actual"
+msgstr "Resúmenes - Mes Actual"
 
 #. module: road_union_economic_management
-#: model:ir.ui.menu,name:road_union_economic_management.menu_affiliate_payment_current_month
-msgid "Resúmenes"
-msgstr "Resúmenes"
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__final_balance
+msgid "SALDO"
+msgstr "SALDO"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__salguero
+msgid "Salguero"
+msgstr "Salguero"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__hall_total
+msgid "Salon"
+msgstr "Salón"
 
 #. module: road_union_economic_management
 #: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_affiliate_payment_account_search
@@ -239,9 +587,52 @@ msgid "Search Economic Summary"
 msgstr "Buscar Resumen Económico"
 
 #. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid ""
+"Seleccione el mes y año para filtrar los resúmenes económicos mensuales. \n"
+"                           Las estadísticas se actualizarán automáticamente."
+msgstr ""
+"Seleccione el mes y año para filtrar los resúmenes económicos mensuales. \n"
+"                           Las estadísticas se actualizarán automáticamente."
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid ""
+"Seleccione el mes y año para generar el archivo TXT con los datos de pagos "
+"de afiliados activos."
+msgstr ""
+"Seleccione el mes y año para generar el archivo TXT con los datos de pagos "
+"de afiliados activos."
+
+#. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__09
 msgid "September"
 msgstr "Septiembre"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__09
+msgid "Septiembre"
+msgstr "Septiembre"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__solar_caruso
+msgid "Solar Caruso"
+msgstr "Solar Caruso"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "Solo Borradores"
+msgstr "Solo Borradores"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "Solo Confirmados"
+msgstr "Solo Confirmados"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__state
+msgid "State"
+msgstr "Estado"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__state
@@ -250,30 +641,223 @@ msgstr "Estado"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__suoem_loan
-msgid "Suoem Loan"
-msgstr "Préstamo Suoem"
+msgid "Suoem PASADO COMO PRESTAMO"
+msgstr "Suoem PASADO COMO PRESTAMO"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__total
-msgid "Total"
-msgstr ""
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__total_services
+msgid "TOTAL SERVICIOS"
+msgstr "TOTAL SERVICIOS"
+
+#. module: road_union_economic_management
+#. odoo-python
+#: code:addons/road_union_economic_management/models/affiliate.py:0
+#: model:ir.model.constraint,message:road_union_economic_management.constraint_affiliation_affiliate_unique_id_benefit
+#, python-format
+msgid "The ID/BENEFIT must be unique for each affiliate."
+msgstr "El ID/BENEFICIO debe ser único para cada afiliado."
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__pharmacy_total
+msgid "Todas las farmacias"
+msgstr "Todas las farmacias"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Ayuda"
+msgstr "Total Ayuda"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Cuota Sindical"
+msgstr "Total Cuota Sindical"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Farmacias"
+msgstr "Total Farmacias"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Fiestas"
+msgstr "Total Fiestas"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Fondo Pensión"
+msgstr "Total Fondo Pensión"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total General"
+msgstr "Total General"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Meta 4"
+msgstr "Total Meta 4"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Otros"
+msgstr "Total Otros"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Pagos"
+msgstr "Total Pagos"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Parque del Sol"
+msgstr "Total Parque del Sol"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Prést. Ecco"
+msgstr "Total Prést. Ecco"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Prést. Emergencia"
+msgstr "Total Prést. Emergencia"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Prést. Emi"
+msgstr "Total Prést. Emi"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Prést. Suoem"
+msgstr "Total Prést. Suoem"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Punilla"
+msgstr "Total Punilla"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Saldo Final"
+msgstr "Total Saldo Final"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Saldo Inicial"
+msgstr "Total Saldo Inicial"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Salguero"
+msgstr "Total Salguero"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Salón"
+msgstr "Total Salón"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Servicios"
+msgstr "Total Servicios"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Solar Caruso"
+msgstr "Total Solar Caruso"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Tres Provincias"
+msgstr "Total Tres Provincias"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Turismo"
+msgstr "Total Turismo"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_account_filter_wizard__total_records
+msgid "Total de Registros"
+msgstr "Total de Registros"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_payment_export_wizard__total_records
+msgid "Total de registros"
+msgstr "Total de registros"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_current_month_only_tree
+msgid "Total Óptica"
+msgstr "Total Óptica"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__tres_provincias
+msgid "Tres Provincias"
+msgstr "Tres Provincias"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__tourism_total
-msgid "Tourism"
+msgid "Turismo"
 msgstr "Turismo"
-
-#. module: road_union_economic_management
-#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__union_fee
-msgid "Union Fee"
-msgstr "Cuota Sindical"
 
 #. module: road_union_economic_management
 #: model:ir.model,name:road_union_economic_management.model_affiliation_affiliate
 msgid "Union affiliate entity"
-msgstr "Entidad del afiliado/a sindical"
+msgstr "Entidad del afiliado sindical"
+
+#. module: road_union_economic_management
+#: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__emergency_loan
+msgid "Urgencias PASADO COMO PRESTAMO"
+msgstr "Urgencias PASADO COMO PRESTAMO"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid "Volver"
+msgstr "Volver"
+
+#. module: road_union_economic_management
+#: model:ir.model,name:road_union_economic_management.model_payment_export_wizard
+msgid "Wizard para exportar pagos a archivo TXT"
+msgstr "Wizard para exportar pagos a archivo TXT"
+
+#. module: road_union_economic_management
+#: model:ir.model,name:road_union_economic_management.model_payment_account_filter_wizard
+msgid "Wizard para filtrar cuentas de pago por mes y año"
+msgstr "Wizard para filtrar cuentas de pago por mes y año"
+
+#. module: road_union_economic_management
+#: model:ir.model.constraint,message:road_union_economic_management.constraint_affiliate_payment_account_unique_affiliate_month_year
+msgid ""
+"Ya existe un resumen para este afiliado para este mes y año. Asegúrese de "
+"que cada afiliado tenga solo un resumen por mes/año."
+msgstr ""
+"Ya existe un resumen para este afiliado para este mes y año. Asegúrese de "
+"que cada afiliado tenga solo un resumen por mes/año."
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__date_year
 msgid "Year"
 msgstr "Año"
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form
+msgid ""
+"✓ Archivo generado exitosamente\n"
+"                                        <br/>\n"
+"                                        Haga clic en \"Descargar\" para obtener el archivo."
+msgstr ""
+"✓ Archivo generado exitosamente\n"
+"                                        <br/>\n"
+"                                        Haga clic en \"Descargar\" para obtener el archivo."
+
+#. module: road_union_economic_management
+#: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_account_filter_wizard_form
+msgid "🔄 Actualizar"
+msgstr "🔄 Actualizar"

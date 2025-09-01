@@ -163,41 +163,6 @@ class AffiliatePaymentAccount(models.Model):
             record.affiliate_name = record.affiliate_id.name if record.affiliate_id else ''
 
     @api.model
-    def action_open_current_month_summary(self):
-        """
-        Abre la vista de resúmenes económicos mensuales.
-        """
-        today = date.today()
-        # Calcula el primer día del mes actual
-        date_from = today.replace(day=1)
-        # Calcula el último día del mes actual
-        date_to = today + relativedelta(months=1, day=1, days=-1)
-
-        return {
-            'name': "Resúmenes",
-            'res_model': 'affiliate.payment_account',
-            'view_mode': 'tree,form',
-            'views': [
-                (self.env.ref('road_union_economic_management.view_payment_account_tree_grouped').id, 'tree'),
-                (self.env.ref('road_union_economic_management.view_payment_account_current_month_tree').id, 'tree'),
-                (False, 'form'),
-            ],
-            'context': {
-                'group_by': ['date_year', 'date_month'],
-                'default_date_year': str(today.year),
-                'default_date_month': date_from.strftime('%m'),
-            },
-            'help': """
-                <p class="o_view_nocontent_smiling_face">
-                    No hay resúmenes económicos para el mes actual.
-                </p>
-            """,
-            'search_view_id': self.env.ref('road_union_economic_management.view_affiliate_payment_account_search').id,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-        }
-
-    @api.model
     def action_open_current_month_only(self):
         """
         Abre la vista específica para el mes y año actuales únicamente.
