@@ -14,6 +14,8 @@
         'views/payment_account_current_views.xml',
         'security/ir.model.access.csv',
         'views/affiliate_views.xml',
+        'wizards/payment_account_filter.xml',
+        'wizards/meta_4_download.xml',
     ],
     "installable": True,
 }
