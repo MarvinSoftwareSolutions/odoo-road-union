@@ -5,3 +5,6 @@ access_affiliate_payment_account_read,Read access to Affiliate Payment Account,m
 access_payment_account_filter_wizard_admin,Admin access to Payment Account Filter Wizard,model_payment_account_filter_wizard,union_affiliation.group_affiliation_admin,1,1,1,1
 access_payment_account_filter_wizard_write,Write access to Payment Account Filter Wizard,model_payment_account_filter_wizard,union_affiliation.group_affiliation_write,1,1,1,1
 access_payment_account_filter_wizard_read,Read access to Payment Account Filter Wizard,model_payment_account_filter_wizard,union_affiliation.group_affiliation_read,1,1,1,1
+access_payment_export_wizard_admin,Admin access to Payment Export Wizard,model_payment_export_wizard,union_affiliation.group_affiliation_admin,1,1,1,1
+access_payment_export_wizard_write,Write access to Payment Export Wizard,model_payment_export_wizard,union_affiliation.group_affiliation_write,1,1,1,1
+access_payment_export_wizard_read,Read access to Payment Export Wizard,model_payment_export_wizard,union_affiliation.group_affiliation_read,1,1,1,1

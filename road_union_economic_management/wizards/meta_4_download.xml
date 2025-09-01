@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Vista del wizard para exportar pagos -->
+        <record id="view_payment_export_wizard_form" model="ir.ui.view">
+            <field name="name">payment.export.wizard.form</field>
+            <field name="model">payment.export.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <!-- Paso 1: Configuración -->
+                        <div attrs="{'invisible': [('state', '!=', 'step1')]}">
+                            <div class="oe_title">
+                                <h1>Exportar Archivo de Pagos</h1>
+                                <p>Seleccione el mes y año para generar el archivo TXT con los datos de pagos de afiliados activos.</p>
+                            </div>
+                            
+                            <group>
+                                <group>
+                                    <field name="date_month" widget="selection"/>
+                                    <field name="date_year" widget="selection"/>
+                                </group>
+                                <group>
+                                    <p class="text-muted">
+                                        El archivo contendrá los datos de todos los afiliados activos 
+                                        del período seleccionado con el formato:
+                                        <br/>
+                                        <code>ID_BENEFIT    7281    MONTO    FECHA</code>
+                                        <br/>
+                                        La fecha será el día 25 del mes/año seleccionado.
+                                    </p>
+                                </group>
+                            </group>
+                        </div>
+
+                        <!-- Paso 2: Archivo generado -->
+                        <div attrs="{'invisible': [('state', '!=', 'step2')]}">
+                            <div class="oe_title">
+                                <h1>Archivo Generado</h1>
+                                <p>El archivo ha sido generado correctamente.</p>
+                            </div>
+                            
+                            <group>
+                                <group>
+                                    <field name="file_name" readonly="1"/>
+                                    <field name="total_records" readonly="1"/>
+                                </group>
+                                <group>
+                                    <p class="text-success">
+                                        ✓ Archivo generado exitosamente
+                                        <br/>
+                                        Haga clic en "Descargar" para obtener el archivo.
+                                    </p>
+                                </group>
+                            </group>
+                        </div>
+
+                        <!-- Campo oculto para el estado -->
+                        <field name="state" invisible="1"/>
+                        <field name="file_data" invisible="1"/>
+                    </sheet>
+                    
+                    <footer>
+                        <!-- Botones para el paso 1 -->
+                        <div attrs="{'invisible': [('state', '!=', 'step1')]}">
+                            <button name="action_generate_file" 
+                                    string="Generar Archivo" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                        </div>
+                        
+                        <!-- Botones para el paso 2 -->
+                        <div attrs="{'invisible': [('state', '!=', 'step2')]}">
+                            <button name="action_download_file" 
+                                    string="Descargar" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            <button name="action_back" 
+                                    string="Volver" 
+                                    type="object" 
+                                    class="btn-secondary"/>
+                            <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                        </div>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción para abrir el wizard -->
+        <record id="action_payment_export_wizard" model="ir.actions.act_window">
+            <field name="name">Exportar Archivo de Pagos</field>
+            <field name="res_model">payment.export.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_payment_export_wizard_form"/>
+        </record>
+
+        <!-- Agregar opción al menú -->
+        <menuitem id="menu_payment_export_wizard"
+                  name="Exportar Pagos"
+                  parent="union_affiliation.union"
+                  action="action_payment_export_wizard"
+                  groups="union_affiliation.group_affiliation_read"
+                  sequence="15"/>
+
+    </data>
+</odoo>
