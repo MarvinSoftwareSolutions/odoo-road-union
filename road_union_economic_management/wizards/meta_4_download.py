@@ -134,8 +134,6 @@ class PaymentExportWizard(models.TransientModel):
         date_formatted = str(imputation_date).ljust(8)[:8]
         
         return f"{pe_formatted}{id_benefit_formatted}{day_formatted}{concept_formatted}{value_formatted}{action_formatted}{last_name_formatted}{first_name_formatted}{date_formatted}\n"
-    
-
 
     def _clean_text(self, text):
         """Convierte texto a mayúsculas y remueve caracteres especiales (tildes) pero mantiene las ñ"""
