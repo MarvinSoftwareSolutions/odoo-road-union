@@ -14,6 +14,14 @@ class AffiliatePaymentAccount(models.Model):
         ondelete="cascade"
     )
 
+    affiliate_type = fields.Char(
+        string='Tipo de Afiliado',
+        related='affiliate_id.affiliate_type_id.name',
+        readonly=True,
+        store=True  # Opcional: para mejor rendimiento en búsquedas
+    )
+    
+
     affiliate_name = fields.Char(
         string='Nombre del afiliado',
         compute='_compute_affiliate_name',
@@ -34,6 +42,7 @@ class AffiliatePaymentAccount(models.Model):
     dni = fields.Char(
         string="D.N.I",
         related="affiliate_id.personal_id",
+        readonly=True,
     )
     date_month = fields.Selection(
         selection=[
@@ -91,7 +100,7 @@ class AffiliatePaymentAccount(models.Model):
     pharmacy_installment = fields.Char(string="N° Cuota Farmacias")
 
     optical_total = fields.Float(string="Optica", group_operator=False)
-    optical_installment = fields.Char(string="N° Cuota Óptica")
+    odontology_installment = fields.Char(string="N° Cuota Odontología")
     
     punilla_total = fields.Float(string="Punilla", group_operator=False)
 
@@ -106,7 +115,6 @@ class AffiliatePaymentAccount(models.Model):
     emi_loan = fields.Float(string="Emi PASADO COMO PRESTAMO", group_operator=False)
     emergency_loan = fields.Float(string="Urgencias PASADO COMO PRESTAMO", group_operator=False)
     suoem_loan = fields.Float(string="Suoem PASADO COMO PRESTAMO", group_operator=False)
-    loans_installment = fields.Char(string="N° Cuota Préstamos")
 
     # Tourism
     tourism_total = fields.Float(string="Turismo", group_operator=False)
@@ -127,13 +135,6 @@ class AffiliatePaymentAccount(models.Model):
     # Odontology (renombrado de OTROS para consistencia)
     odontology_total = fields.Float(string="OTROS", group_operator=False)
 
-    # Totales y resumen económico
-    total_services = fields.Float(
-        string="TOTAL SERVICIOS", 
-        compute='_compute_total_services',
-        store=True,
-        group_operator=False
-    )
     union_fee = fields.Float(string="CUOTA SINDICAL", group_operator=False)
     total = fields.Float(
         string="TOTAL", 
@@ -162,38 +163,6 @@ class AffiliatePaymentAccount(models.Model):
         for record in self:
             record.affiliate_name = record.affiliate_id.name if record.affiliate_id else ''
 
-    @api.model
-    def action_open_current_month_only(self):
-        """
-        Abre la vista específica para el mes y año actuales únicamente.
-        """
-        today = date.today()
-        current_month = today.strftime('%m')
-        current_year = str(today.year)
-        
-        return {
-            'name': f"Resúmenes - {today.strftime('%B %Y')}",
-            'res_model': 'affiliate.payment_account',
-            'view_mode': 'tree',
-            'view_id': self.env.ref('road_union_economic_management.view_payment_account_current_month_only_tree').id,
-            'domain': [('date_month', '=', current_month), ('date_year', '=', current_year)],
-            'context': {
-                'default_date_month': current_month,
-                'default_date_year': current_year,
-                'search_default_filter_current_month': 1,
-            },
-            'help': f"""
-                <p class="o_view_nocontent_smiling_face">
-                    No hay resúmenes económicos para {today.strftime('%B %Y')}.
-                </p>
-                <p>
-                    Haga clic en "Crear" para agregar un nuevo resumen económico mensual.
-                </p>
-            """,
-            'search_view_id': self.env.ref('road_union_economic_management.view_payment_account_current_month_search').id,
-            'type': 'ir.actions.act_window',
-            'target': 'current',
-        }
 
     @api.model
     def get_current_month_stats(self):

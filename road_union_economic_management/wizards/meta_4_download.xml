@@ -2,7 +2,7 @@
 <odoo>
     <data>
         
-        <!-- Vista del wizard para exportar pagos -->
+        <!-- Vista del wizard para exportar archivos -->
         <record id="view_payment_export_wizard_form" model="ir.ui.view">
             <field name="name">payment.export.wizard.form</field>
             <field name="model">payment.export.wizard</field>
@@ -12,8 +12,8 @@
                         <!-- Paso 1: Configuración -->
                         <div attrs="{'invisible': [('state', '!=', 'step1')]}">
                             <div class="oe_title">
-                                <h1>Exportar Archivo de Pagos</h1>
-                                <p>Seleccione el mes y año para generar el archivo TXT con los datos de pagos de afiliados activos.</p>
+                                <h1>Exportar Archivos Sindicales</h1>
+                                <p>Seleccione el mes y año, y elija qué archivos generar.</p>
                             </div>
                             
                             <group>
@@ -22,65 +22,136 @@
                                     <field name="date_year" widget="selection"/>
                                 </group>
                                 <group>
-                                    <p class="text-muted">
-                                        El archivo contendrá los datos de todos los afiliados activos 
-                                        del período seleccionado con el formato:
-                                        <br/>
-                                        <code>ID_BENEFIT    7281    MONTO    FECHA</code>
-                                        <br/>
-                                        La fecha será el día 25 del mes/año seleccionado.
-                                    </p>
+                                    <div class="text-muted">
+                                        <h4>Tipos de archivo disponibles:</h4>
+                                        <ul>
+                                            <li><strong>Archivo de Pagos (7281):</strong> Datos de pagos de afiliados activos</li>
+                                            <li><strong>Archivo de Altas/Bajas (8522):</strong> Afiliaciones y desafiliaciones del mes</li>
+                                            <li><strong>Archivo de Cuotas Sindicales (828):</strong> Cuotas sindicales de afiliados activos</li>
+                                        </ul>
+                                        <p><em>Puede generar cada archivo por separado o todos juntos.</em></p>
+                                    </div>
                                 </group>
                             </group>
                         </div>
 
-                        <!-- Paso 2: Archivo generado -->
+                        <!-- Paso 2: Archivos generados -->
                         <div attrs="{'invisible': [('state', '!=', 'step2')]}">
                             <div class="oe_title">
-                                <h1>Archivo Generado</h1>
-                                <p>El archivo ha sido generado correctamente.</p>
+                                <h1>Archivos Generados</h1>
+                                <p>Los archivos han sido generados correctamente.</p>
                             </div>
                             
-                            <group>
-                                <group>
-                                    <field name="file_name" readonly="1"/>
-                                    <field name="total_records" readonly="1"/>
-                                </group>
-                                <group>
-                                    <p class="text-success">
-                                        ✓ Archivo generado exitosamente
-                                        <br/>
-                                        Haga clic en "Descargar" para obtener el archivo.
-                                    </p>
-                                </group>
+                            <!-- Resumen de archivos generados -->
+                            <div class="alert alert-success" role="alert">
+                                <h4 class="alert-heading">✓ Archivos generados exitosamente</h4>
+                                <p>Haga clic en "Descargar" junto al archivo que necesita.</p>
+                            </div>
+                            
+                            <!-- Tabla con información de cada archivo -->
+                            <group string="Archivos Disponibles">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Archivo</th>
+                                                    <th>Registros</th>
+                                                    <th>Nombre</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Archivo de Pagos -->
+                                                <tr attrs="{'invisible': [('total_records_payments', '=', 0)]}">
+                                                    <td><strong>Pagos (7281)</strong></td>
+                                                    <td><field name="total_records_payments" readonly="1" nolabel="1"/></td>
+                                                    <td><field name="file_name_payments" readonly="1" nolabel="1"/></td>
+                                                    <td>
+                                                        <button name="action_download_payments" 
+                                                                string="Descargar" 
+                                                                type="object" 
+                                                                class="btn btn-primary btn-sm"
+                                                                attrs="{'invisible': [('file_data_payments', '=', False)]}"/>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Archivo de Altas/Bajas -->
+                                                <tr attrs="{'invisible': [('total_records_affiliations', '=', 0)]}">
+                                                    <td><strong>Altas/Bajas (8522)</strong></td>
+                                                    <td><field name="total_records_affiliations" readonly="1" nolabel="1"/></td>
+                                                    <td><field name="file_name_affiliations" readonly="1" nolabel="1"/></td>
+                                                    <td>
+                                                        <button name="action_download_affiliations" 
+                                                                string="Descargar" 
+                                                                type="object" 
+                                                                class="btn btn-primary btn-sm"
+                                                                attrs="{'invisible': [('file_data_affiliations', '=', False)]}"/>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Archivo de Cuotas -->
+                                                <tr attrs="{'invisible': [('total_records_union_fees', '=', 0)]}">
+                                                    <td><strong>Cuotas Sindicales (828)</strong></td>
+                                                    <td><field name="total_records_union_fees" readonly="1" nolabel="1"/></td>
+                                                    <td><field name="file_name_union_fees" readonly="1" nolabel="1"/></td>
+                                                    <td>
+                                                        <button name="action_download_union_fees" 
+                                                                string="Descargar" 
+                                                                type="object" 
+                                                                class="btn btn-primary btn-sm"
+                                                                attrs="{'invisible': [('file_data_union_fees', '=', False)]}"/>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Mensaje cuando no hay archivos generados -->
+                                                <tr attrs="{'invisible': ['|', '|', ('total_records_payments', '>', 0), ('total_records_affiliations', '>', 0), ('total_records_union_fees', '>', 0)]}">
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        <em>No se generaron archivos para este período</em>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </group>
                         </div>
 
-                        <!-- Campo oculto para el estado -->
+                        <!-- Campos ocultos -->
                         <field name="state" invisible="1"/>
-                        <field name="file_data" invisible="1"/>
+                        <field name="file_data_payments" invisible="1"/>
+                        <field name="file_data_affiliations" invisible="1"/>
+                        <field name="file_data_union_fees" invisible="1"/>
                     </sheet>
                     
                     <footer>
                         <!-- Botones para el paso 1 -->
                         <div attrs="{'invisible': [('state', '!=', 'step1')]}">
-                            <button name="action_generate_file" 
-                                    string="Generar Archivo" 
+                            <button name="action_generate_payments" 
+                                    string="Generar Pagos (7281)" 
                                     type="object" 
                                     class="btn-primary"/>
+                            <button name="action_generate_affiliations" 
+                                    string="Generar Altas/Bajas (8522)" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            <button name="action_generate_union_fees" 
+                                    string="Generar Cuotas (828)" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            <button name="action_generate_all" 
+                                    string="Generar Todos" 
+                                    type="object" 
+                                    class="btn-success"/>
                             <button string="Cancelar" class="btn-secondary" special="cancel"/>
                         </div>
                         
                         <!-- Botones para el paso 2 -->
                         <div attrs="{'invisible': [('state', '!=', 'step2')]}">
-                            <button name="action_download_file" 
-                                    string="Descargar" 
+                            <button name="action_back" 
+                                    string="Generar Otros Archivos" 
                                     type="object" 
                                     class="btn-primary"/>
-                            <button name="action_back" 
-                                    string="Volver" 
-                                    type="object" 
-                                    class="btn-secondary"/>
                             <button string="Cerrar" class="btn-secondary" special="cancel"/>
                         </div>
                     </footer>
@@ -90,7 +161,7 @@
 
         <!-- Acción para abrir el wizard -->
         <record id="action_payment_export_wizard" model="ir.actions.act_window">
-            <field name="name">Exportar Archivo de Pagos</field>
+            <field name="name">Exportar Archivos Sindicales</field>
             <field name="res_model">payment.export.wizard</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
@@ -99,7 +170,7 @@
 
         <!-- Agregar opción al menú -->
         <menuitem id="menu_payment_export_wizard"
-                  name="Exportar Pagos"
+                  name="Exportar Archivos Sindicales"
                   parent="union_affiliation.union"
                   action="action_payment_export_wizard"
                   groups="union_affiliation.group_affiliation_read"
