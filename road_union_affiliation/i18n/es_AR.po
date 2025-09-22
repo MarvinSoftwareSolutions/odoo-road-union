@@ -175,3 +175,8 @@ msgstr "Entidad del afiliado/a sindical"
 #: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
 msgid "Ver Hijos"
 msgstr ""
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_department__delegate_name
+msgid "Delegate Name"
+msgstr "Nombre del Delegado"

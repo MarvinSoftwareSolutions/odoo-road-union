@@ -9,6 +9,7 @@
             <field name="name"/>
             <field name="code"/>
             <field name="active"/>
+            <field name='delegate_name'/>
           </group>
         </sheet>
       </form>
@@ -23,6 +24,7 @@
         <field name="name"/>
         <field name="code"/>
         <field name="active"/>
+        <field name='delegate_name'/>
       </tree>
     </field>
   </record>
