@@ -28,9 +28,21 @@ msgid "Affiliate Database View"
 msgstr "Vista de Base de Datos de Afiliados"
 
 #. module: road_union_affiliation
+#: model:ir.actions.act_window,name:road_union_affiliation.action_affiliation_affiliates_childs
+#: model:ir.ui.menu,name:road_union_affiliation.menu_affiliation_affiliates_childs
+msgid "Affiliate's Childs"
+msgstr "Hijos de Afiliados"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate_child__age
 #: model_terms:ir.ui.view,arch_db:road_union_affiliation.view_affiliate_tree
 msgid "Age"
 msgstr "Edad"
+
+#. module: road_union_affiliation
+#: model:ir.model.fields,help:road_union_affiliation.field_affiliation_affiliate_child__age
+msgid "Age calculated from birth date"
+msgstr "Edad calculada desde la fecha de nacimiento"
 
 #. module: road_union_affiliation
 #: model:ir.model.fields,field_description:road_union_affiliation.field_affiliation_affiliate__birthday_str
