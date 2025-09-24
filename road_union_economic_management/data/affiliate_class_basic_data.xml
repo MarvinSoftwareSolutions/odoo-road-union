@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Básicos por clase de afiliado -->
+        <record id="class_basic_1" model="affiliate.class.basic">
+            <field name="class_number">1</field>
+            <field name="basic_amount">184663.95</field>
+        </record>
+        
+        <record id="class_basic_2" model="affiliate.class.basic">
+            <field name="class_number">2</field>
+            <field name="basic_amount">313744.05</field>
+        </record>
+        
+        <record id="class_basic_3" model="affiliate.class.basic">
+            <field name="class_number">3</field>
+            <field name="basic_amount">313744.05</field>
+        </record>
+        
+        <record id="class_basic_4" model="affiliate.class.basic">
+            <field name="class_number">4</field>
+            <field name="basic_amount">313744.05</field>
+        </record>
+        
+        <record id="class_basic_5" model="affiliate.class.basic">
+            <field name="class_number">5</field>
+            <field name="basic_amount">313744.05</field>
+        </record>
+        
+        <record id="class_basic_6" model="affiliate.class.basic">
+            <field name="class_number">6</field>
+            <field name="basic_amount">313744.05</field>
+        </record>
+        
+        <record id="class_basic_7" model="affiliate.class.basic">
+            <field name="class_number">7</field>
+            <field name="basic_amount">313744.87</field>
+        </record>
+        
+        <record id="class_basic_8" model="affiliate.class.basic">
+            <field name="class_number">8</field>
+            <field name="basic_amount">387978.96</field>
+        </record>
+        
+        <record id="class_basic_9" model="affiliate.class.basic">
+            <field name="class_number">9</field>
+            <field name="basic_amount">431374.99</field>
+        </record>
+        
+        <record id="class_basic_10" model="affiliate.class.basic">
+            <field name="class_number">10</field>
+            <field name="basic_amount">479572.28</field>
+        </record>
+        
+        <record id="class_basic_11" model="affiliate.class.basic">
+            <field name="class_number">11</field>
+            <field name="basic_amount">533309.49</field>
+        </record>
+        
+        <record id="class_basic_12" model="affiliate.class.basic">
+            <field name="class_number">12</field>
+            <field name="basic_amount">592955.94</field>
+        </record>
+        
+        <record id="class_basic_13" model="affiliate.class.basic">
+            <field name="class_number">13</field>
+            <field name="basic_amount">659250.30</field>
+        </record>
+        
+        <record id="class_basic_14" model="affiliate.class.basic">
+            <field name="class_number">14</field>
+            <field name="basic_amount">733115.88</field>
+        </record>
+        
+        <record id="class_basic_15" model="affiliate.class.basic">
+            <field name="class_number">15</field>
+            <field name="basic_amount">815106.08</field>
+        </record>
+        
+        <record id="class_basic_16" model="affiliate.class.basic">
+            <field name="class_number">16</field>
+            <field name="basic_amount">906330.67</field>
+        </record>
+        
+        <record id="class_basic_17" model="affiliate.class.basic">
+            <field name="class_number">17</field>
+            <field name="basic_amount">1007711.18</field>
+        </record>
+        
+        <record id="class_basic_18" model="affiliate.class.basic">
+            <field name="class_number">18</field>
+            <field name="basic_amount">1120356.18</field>
+        </record>
+        
+        <record id="class_basic_19" model="affiliate.class.basic">
+            <field name="class_number">19</field>
+            <field name="basic_amount">1245927.67</field>
+        </record>
+        
+        <record id="class_basic_20" model="affiliate.class.basic">
+            <field name="class_number">20</field>
+            <field name="basic_amount">1384979.62</field>
+        </record>
+    </data>
+</odoo>
