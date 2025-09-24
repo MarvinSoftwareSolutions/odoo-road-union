@@ -78,8 +78,8 @@
                                             <td style="padding: 10px; width: 35%;"><t t-esc="doc.affiliate_number"/></td>
                                         </tr>
                                         <tr>
-                                            <td style="padding: 10px; font-weight: bold;">DNI:</td>
-                                            <td style="padding: 10px;"><t t-esc="doc.dni"/></td>
+                                            <td style="padding: 10px; font-weight: bold;">CUIL:</td>
+                                            <td style="padding: 10px;"><t t-esc="doc.cuil"/></td>
                                             <td style="padding: 10px; font-weight: bold;">Tipo:</td>
                                             <td style="padding: 10px;"><t t-esc="doc.affiliate_type"/></td>
                                         </tr>
@@ -142,11 +142,19 @@
                                                 </td>
                                             </tr>
                                         </t>
-                                        <t t-if="doc.solar_caruso">
+                                        <t t-if="doc.solar">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Solar Caruso</td>
+                                                <td style="padding: 6px 8px;">Solar</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
-                                                    <t t-esc="'${:,.2f}'.format(doc.solar_caruso or 0)"/>
+                                                    <t t-esc="'${:,.2f}'.format(doc.solar or 0)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="doc.caruso">
+                                            <tr>
+                                                <td style="padding: 6px 8px;">Caruso</td>
+                                                <td style="text-align: right; padding: 6px 8px;">
+                                                    <t t-esc="'${:,.2f}'.format(doc.caruso or 0)"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -181,7 +189,7 @@
                                         </tr>
                                         <t t-if="doc.ecco_loan">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Ecco (Pasado como Préstamo)</td>
+                                                <td style="padding: 6px 8px;">ECCO</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.ecco_loan or 0)"/>
                                                 </td>
@@ -189,7 +197,7 @@
                                         </t>
                                         <t t-if="doc.emi_loan">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Emi (Pasado como Préstamo)</td>
+                                                <td style="padding: 6px 8px;">EMI</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.emi_loan or 0)"/>
                                                 </td>
@@ -197,7 +205,7 @@
                                         </t>
                                         <t t-if="doc.emergency_loan">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Urgencias (Pasado como Préstamo)</td>
+                                                <td style="padding: 6px 8px;">URGENCIAS</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.emergency_loan or 0)"/>
                                                 </td>
@@ -205,7 +213,7 @@
                                         </t>
                                         <t t-if="doc.suoem_loan">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Suoem (Pasado como Préstamo)</td>
+                                                <td style="padding: 6px 8px;">SUOEM</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.suoem_loan or 0)"/>
                                                 </td>
@@ -226,7 +234,7 @@
                                         </t>
                                         <t t-if="doc.aid_total">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Ayudas</td>
+                                                <td style="padding: 6px 8px;">AYUDA SOLIDARIA</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.aid_total or 0)"/>
                                                 </td>
@@ -234,7 +242,7 @@
                                         </t>
                                         <t t-if="doc.party_total">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Fiesta</td>
+                                                <td style="padding: 6px 8px;">FIESTA</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.party_total or 0)"/>
                                                 </td>
@@ -250,9 +258,25 @@
                                         </t>
                                         <t t-if="doc.odontology_total">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Otros</td>
+                                                <td style="padding: 6px 8px;">Odontología</td>
                                                 <td style="text-align: right; padding: 6px 8px;">
                                                     <t t-esc="'${:,.2f}'.format(doc.odontology_total or 0)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="doc.otros_1">
+                                            <tr>
+                                                <td style="padding: 6px 8px;">OTROS 1</td>
+                                                <td style="text-align: right; padding: 6px 8px;">
+                                                    <t t-esc="'${:,.2f}'.format(doc.otros_1 or 0)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="doc.otros_2">
+                                            <tr>
+                                                <td style="padding: 6px 8px;">OTROS 2</td>
+                                                <td style="text-align: right; padding: 6px 8px;">
+                                                    <t t-esc="'${:,.2f}'.format(doc.otros_2 or 0)"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -297,7 +321,7 @@
                                         </t>
                                         <t t-if="doc.pension_fund">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Caja Jub</td>
+                                                <td style="padding: 6px 8px;">CAJA DE JUBILACIONES</td>
                                                 <td style="text-align: right; color: red; padding: 6px 8px;">
                                                     <t t-esc="'-${:,.2f}'.format(doc.pension_fund or 0)"/>
                                                 </td>
@@ -305,7 +329,7 @@
                                         </t>
                                         <t t-if="doc.meta4">
                                             <tr>
-                                                <td style="padding: 6px 8px;">Meta 4</td>
+                                                <td style="padding: 6px 8px;">META 4</td>
                                                 <td style="text-align: right; color: red; padding: 6px 8px;">
                                                     <t t-esc="'-${:,.2f}'.format(doc.meta4 or 0)"/>
                                                 </td>
