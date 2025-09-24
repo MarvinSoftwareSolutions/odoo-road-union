@@ -209,7 +209,8 @@ class AffiliatePaymentAccount(models.Model):
     
     def _update_subsequent_months_initial_balance(self):
         """
-        Actualiza el saldo inicial de todos los meses posteriores para este afiliado.
+        Actualiza el saldo inicial y todos los campos dependientes 
+        de todos los meses posteriores para este afiliado.
         """
         if not self.affiliate_id or not self.date_month or not self.date_year:
             return
@@ -218,28 +219,37 @@ class AffiliatePaymentAccount(models.Model):
         current_month = int(self.date_month)
         current_year = int(self.date_year)
         
-        # Buscar registros del mismo año con mes mayor
-        subsequent_records = self.search([
-            ('affiliate_id', '=', self.affiliate_id.id),
-            ('date_year', '=', self.date_year),
-            ('date_month', '>', self.date_month),
-        ])
+        # Crear una fecha de comparación
+        current_date = datetime(current_year, current_month, 1)
         
-        # Buscar registros de años posteriores
-        subsequent_records |= self.search([
+        # Buscar TODOS los registros del afiliado
+        all_records = self.search([
             ('affiliate_id', '=', self.affiliate_id.id),
-            ('date_year', '>', self.date_year),
-        ])
+        ], order='date_year asc, date_month asc')
         
-        # Forzar el recálculo del saldo inicial
-        if subsequent_records:
-            subsequent_records._compute_initial_balance()
+
+        # Filtrar solo los posteriores al actual
+        subsequent_records = all_records.filtered(
+            lambda r: datetime(int(r.date_year), int(r.date_month), 1) > current_date
+        )
+        
+        if not subsequent_records:
+            return
+            
+        # Procesar en orden cronológico (ya están ordenados por la query)
+        for record in subsequent_records:
+            # Recalcular el initial_balance (esto triggereará la cascada de cálculos)
+            record._compute_initial_balance()
+            
+            # Forzar recálculo de campos dependientes
+            record._compute_total_services()
+            record._compute_total()
+            record._compute_final_balance()
 
     @api.depends('affiliate_id', 'date_month', 'date_year')
     def _compute_initial_balance(self):
         """
         Calcula el saldo inicial como el saldo final del mes anterior.
-        Si no existe mes anterior, el saldo inicial es 0.
         """
         for record in self:
             if not record.affiliate_id or not record.date_month or not record.date_year:
@@ -257,7 +267,7 @@ class AffiliatePaymentAccount(models.Model):
                 previous_month = current_month - 1
                 previous_year = current_year
             
-            # Formatear mes anterior con ceros a la izquierda
+            # Formatear mes anterior
             previous_month_str = str(previous_month).zfill(2)
             previous_year_str = str(previous_year)
             
@@ -269,6 +279,8 @@ class AffiliatePaymentAccount(models.Model):
             ], limit=1)
             
             if previous_record:
+                # Asegurar que el registro anterior tenga su final_balance actualizado
+                previous_record._compute_final_balance()
                 record.initial_balance = previous_record.final_balance
             else:
                 record.initial_balance = 0.0
