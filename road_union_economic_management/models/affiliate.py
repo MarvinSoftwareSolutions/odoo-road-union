@@ -10,7 +10,7 @@ class Affiliate(models.Model):
         string="Economic Movements"
     )
 
-    id_benefit = fields.Integer(
+    id_benefit = fields.Char(
         string='ID/BENEFIT',
         required=True,
     )

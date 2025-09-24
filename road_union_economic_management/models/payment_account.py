@@ -39,9 +39,9 @@ class AffiliatePaymentAccount(models.Model):
     )
 
 
-    dni = fields.Char(
-        string="D.N.I",
-        related="affiliate_id.personal_id",
+    cuil = fields.Char(
+        string="CUIL",
+        related="affiliate_id.vat",
         readonly=True,
     )
     date_month = fields.Selection(
@@ -83,10 +83,12 @@ class AffiliatePaymentAccount(models.Model):
          'Asegúrese de que cada afiliado tenga solo un resumen por mes/año.')
     ]
 
-    id_benefit = fields.Integer(
+    # CAMBIO: ID/BENEFIT ahora puede contener letras y símbolos
+    id_benefit = fields.Char(
         string="ID/BENEFIT",
         related="affiliate_id.id_benefit",
     )
+    
     # Economic Summary
     initial_balance = fields.Float(
         string="Initial Balance", 
@@ -104,24 +106,26 @@ class AffiliatePaymentAccount(models.Model):
     
     punilla_total = fields.Float(string="Punilla", group_operator=False)
 
-    # Servicios específicos
-    solar_caruso = fields.Float(string="Solar Caruso", group_operator=False)
+    # CAMBIO: Solar y Caruso como campos separados
+    solar = fields.Float(string="Solar", group_operator=False)
+    caruso = fields.Float(string="Caruso", group_operator=False)
+    
     parque_del_sol = fields.Float(string="Parque del Sol", group_operator=False)
     salguero = fields.Float(string="Salguero", group_operator=False)
     tres_provincias = fields.Float(string="Tres Provincias", group_operator=False)
 
-    # Loans
-    ecco_loan = fields.Float(string="Ecco PASADO COMO PRESTAMO", group_operator=False)
-    emi_loan = fields.Float(string="Emi PASADO COMO PRESTAMO", group_operator=False)
-    emergency_loan = fields.Float(string="Urgencias PASADO COMO PRESTAMO", group_operator=False)
-    suoem_loan = fields.Float(string="Suoem PASADO COMO PRESTAMO", group_operator=False)
+    # CAMBIO: Préstamos con strings renombrados
+    ecco_loan = fields.Float(string="ECCO", group_operator=False)
+    emi_loan = fields.Float(string="EMI", group_operator=False)
+    emergency_loan = fields.Float(string="URGENCIAS", group_operator=False)
+    suoem_loan = fields.Float(string="SUOEM", group_operator=False)
 
     # Tourism
     tourism_total = fields.Float(string="Turismo", group_operator=False)
     tourism_installment = fields.Char(string="N° Cuota Turismo")
 
-    # Aid
-    aid_total = fields.Float(string="AYUDAS", group_operator=False)
+    # Aid - CAMBIO: Renombrado a AYUDA SOLIDARIA
+    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator=False)
     aid_installment = fields.Char(string="N° Cuota Ayudas")
 
     # Party
@@ -133,9 +137,72 @@ class AffiliatePaymentAccount(models.Model):
     hall_installment = fields.Char(string="N° Cuota Salón")
 
     # Odontology (renombrado de OTROS para consistencia)
-    odontology_total = fields.Float(string="OTROS", group_operator=False)
+    odontology_total = fields.Float(string="Odontología", group_operator=False)
 
-    union_fee = fields.Float(string="CUOTA SINDICAL", group_operator=False)
+    # CAMBIO: Agregar campos OTROS 1 y OTROS 2 como gastos adicionales
+    otros_1 = fields.Float(string="OTROS 1", group_operator=False)
+    otros_2 = fields.Float(string="OTROS 2", group_operator=False)
+
+    union_fee = fields.Float(
+        string="CUOTA SINDICAL",
+        compute='_compute_union_fee',
+        store=True,
+        group_operator=False,
+        help="Calculado automáticamente según clase y tipo de afiliado"
+    )
+
+    @api.depends('affiliate_id.category', 'affiliate_id.affiliate_type_id.name')
+    def _compute_union_fee(self):
+        """
+        Calcula la cuota sindical según las reglas:
+        - Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
+        - Jubilados: 7% del básico de su clase
+        """
+        for record in self:
+                
+            # Si no hay afiliado o clase, cuota = 0
+            if not record.affiliate_id or not record.affiliate_id.category:
+                record.union_fee = 0.0
+                continue
+                
+            affiliate_class = record.affiliate_id.category
+            affiliate_type = record.affiliate_id.affiliate_type_id.name if record.affiliate_id.affiliate_type_id else ''
+            
+            # Buscar el básico de la clase del afiliado
+            class_basic = self.env['affiliate.class.basic'].search([
+                ('class_number', '=', affiliate_class),
+                ('active', '=', True)
+            ], limit=1)
+            
+            if not class_basic:
+                record.union_fee = 0.0
+                continue
+                
+            # Determinar si es jubilado (ajustar según tus tipos exactos)
+            is_retired = any(keyword in affiliate_type.lower() for keyword in ['jubilado', 'pensionado', 'retirado'])
+            
+            if is_retired:
+                # Jubilados: 7% del básico de su clase
+                record.union_fee = class_basic.basic_amount * 0.07
+            else:
+                # Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
+                own_class_fee = class_basic.basic_amount * 0.015
+                
+                # Buscar básico de clase 15
+                class_15_basic = self.env['affiliate.class.basic'].search([
+                    ('class_number', '=', 15),
+                    ('active', '=', True)
+                ], limit=1)
+                
+                if class_15_basic:
+                    class_15_fee = class_15_basic.basic_amount * 0.015
+                    record.union_fee = own_class_fee + class_15_fee
+                else:
+                    # Si no existe clase 15, solo usar el de su clase
+                    record.union_fee = own_class_fee
+                    
+
+
     total = fields.Float(
         string="TOTAL", 
         compute='_compute_total',
@@ -143,7 +210,10 @@ class AffiliatePaymentAccount(models.Model):
         group_operator=False
     )
     payments = fields.Float(string="Pagos", group_operator=False)
-    pension_fund = fields.Float(string="CAJA JUB", group_operator=False)
+    
+    # CAMBIO: Fondo de Pensión renombrado
+    pension_fund = fields.Float(string="CAJA DE JUBILACIONES", group_operator=False)
+    
     meta4 = fields.Float(string="META 4", group_operator=False)
     final_balance = fields.Float(
         string="SALDO", 
@@ -195,26 +265,11 @@ class AffiliatePaymentAccount(models.Model):
         record = super().create(vals)
         record._update_subsequent_months_initial_balance()
         return record
-
-    def write(self, vals):
-        """
-        Override write para recalcular saldos cuando se modifica el saldo final.
-        """
-        result = super().write(vals)
-        # Si se modificó algo que afecte el saldo final, actualizar meses posteriores
-        if any(field in vals for field in ['final_balance', 'total', 'payments', 'pension_fund', 'meta4', 
-                                          'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 
-                                          'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 
-                                          'emi_loan', 'emergency_loan', 'suoem_loan', 'tourism_total', 
-                                          'aid_total', 'party_total', 'hall_total', 'odontology_total', 
-                                          'union_fee']):
-            for record in self:
-                record._update_subsequent_months_initial_balance()
-        return result
-
+    
     def _update_subsequent_months_initial_balance(self):
         """
-        Actualiza el saldo inicial de todos los meses posteriores para este afiliado.
+        Actualiza el saldo inicial y todos los campos dependientes 
+        de todos los meses posteriores para este afiliado.
         """
         if not self.affiliate_id or not self.date_month or not self.date_year:
             return
@@ -223,44 +278,37 @@ class AffiliatePaymentAccount(models.Model):
         current_month = int(self.date_month)
         current_year = int(self.date_year)
         
-        # Buscar registros del mismo año con mes mayor
-        subsequent_records = self.search([
-            ('affiliate_id', '=', self.affiliate_id.id),
-            ('date_year', '=', self.date_year),
-            ('date_month', '>', self.date_month),
-        ])
+        # Crear una fecha de comparación
+        current_date = datetime(current_year, current_month, 1)
         
-        # Buscar registros de años posteriores
-        subsequent_records |= self.search([
+        # Buscar TODOS los registros del afiliado
+        all_records = self.search([
             ('affiliate_id', '=', self.affiliate_id.id),
-            ('date_year', '>', self.date_year),
-        ])
+        ], order='date_year asc, date_month asc')
         
-        # Forzar el recálculo del saldo inicial
-        if subsequent_records:
-            subsequent_records._compute_initial_balance()
 
-    def name_get(self):
-        """
-        Personaliza cómo se muestra el registro en relaciones Many2one.
-        """
-        result = []
-        for record in self:
-            month_names = {
-                '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
-                '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
-                '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
-            }
-            month_name = month_names.get(record.date_month, record.date_month)
-            name = f"{record.affiliate_name} - {month_name} {record.date_year}"
-            result.append((record.id, name))
-        return result
+        # Filtrar solo los posteriores al actual
+        subsequent_records = all_records.filtered(
+            lambda r: datetime(int(r.date_year), int(r.date_month), 1) > current_date
+        )
+        
+        if not subsequent_records:
+            return
+            
+        # Procesar en orden cronológico (ya están ordenados por la query)
+        for record in subsequent_records:
+            # Recalcular el initial_balance (esto triggereará la cascada de cálculos)
+            record._compute_initial_balance()
+            
+            # Forzar recálculo de campos dependientes
+            record._compute_total_services()
+            record._compute_total()
+            record._compute_final_balance()
 
     @api.depends('affiliate_id', 'date_month', 'date_year')
     def _compute_initial_balance(self):
         """
         Calcula el saldo inicial como el saldo final del mes anterior.
-        Si no existe mes anterior, el saldo inicial es 0.
         """
         for record in self:
             if not record.affiliate_id or not record.date_month or not record.date_year:
@@ -278,7 +326,7 @@ class AffiliatePaymentAccount(models.Model):
                 previous_month = current_month - 1
                 previous_year = current_year
             
-            # Formatear mes anterior con ceros a la izquierda
+            # Formatear mes anterior
             previous_month_str = str(previous_month).zfill(2)
             previous_year_str = str(previous_year)
             
@@ -290,14 +338,61 @@ class AffiliatePaymentAccount(models.Model):
             ], limit=1)
             
             if previous_record:
+                # Asegurar que el registro anterior tenga su final_balance actualizado
+                previous_record._compute_final_balance()
                 record.initial_balance = previous_record.final_balance
             else:
                 record.initial_balance = 0.0
 
-    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 'parque_del_sol', 
+    def write(self, vals):
+        """
+        Override write mejorado para propagar cambios correctamente.
+        """
+        # CAMBIO: Actualizar campos que afectan el balance final (solar y caruso separados, más otros_1 y otros_2)
+        balance_affecting_fields = [
+            'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso',
+            'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 
+            'emi_loan', 'emergency_loan', 'suoem_loan', 'tourism_total', 
+            'aid_total', 'party_total', 'hall_total', 'odontology_total', 
+            'otros_1', 'otros_2', 'union_fee', 'payments', 'pension_fund', 'meta4'
+        ]
+        
+        result = super().write(vals)
+        
+        # Si se modificó algo que afecte el saldo final
+        if any(field in vals for field in balance_affecting_fields):
+            for record in self:
+                # Recalcular campos del registro actual
+                record._compute_total_services()
+                record._compute_total()
+                record._compute_final_balance()
+                
+                # Propagar a meses posteriores
+                record._update_subsequent_months_initial_balance()
+        
+        return result
+
+    def name_get(self):
+        """
+        Personaliza cómo se muestra el registro en relaciones Many2one.
+        """
+        result = []
+        for record in self:
+            month_names = {
+                '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
+                '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
+                '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
+            }
+            month_name = month_names.get(record.date_month, record.date_month)
+            name = f"{record.affiliate_name} - {month_name} {record.date_year}"
+            result.append((record.id, name))
+        return result
+
+    # CAMBIO: Actualizar el método _compute_total_services para incluir solar, caruso, otros_1 y otros_2
+    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso', 'parque_del_sol', 
                  'salguero', 'tres_provincias', 'ecco_loan', 'emi_loan', 
                  'emergency_loan', 'suoem_loan', 'tourism_total', 'aid_total', 
-                 'party_total', 'hall_total', 'odontology_total')
+                 'party_total', 'hall_total', 'odontology_total', 'otros_1', 'otros_2')
     def _compute_total_services(self):
         """
         Calcula el total de servicios incluyendo el saldo inicial.
@@ -306,13 +401,13 @@ class AffiliatePaymentAccount(models.Model):
             record.total_services = (
                 record.initial_balance +
                 record.pharmacy_total + record.optical_total + record.punilla_total +
-                record.solar_caruso + record.parque_del_sol + 
+                record.solar + record.caruso + record.parque_del_sol + 
                 record.salguero + record.tres_provincias +
                 record.ecco_loan + record.emi_loan + 
                 record.emergency_loan + record.suoem_loan +
                 record.tourism_total + record.aid_total + 
                 record.party_total + record.hall_total + 
-                record.odontology_total
+                record.odontology_total + record.otros_1 + record.otros_2
             )
 
     @api.depends('total_services', 'union_fee')
@@ -343,3 +438,40 @@ class AffiliatePaymentAccount(models.Model):
         store=True,
         group_operator=False
     )
+
+
+# Nuevo modelo para la tabla de básicos por clase
+class AffiliateClassBasic(models.Model):
+    _name = "affiliate.class.basic"
+    _description = "Basic Amount by Affiliate Class"
+    _order = "class_number"
+
+    class_number = fields.Integer(
+        string="Clase",
+        required=True,
+        help="Número de clase del afiliado"
+    )
+    
+    basic_amount = fields.Float(
+        string="Básico",
+        required=True,
+        digits='Product Price',
+        help="Monto básico para esta clase"
+    )
+    
+    active = fields.Boolean(
+        string="Activo",
+        default=True
+    )
+    
+    _sql_constraints = [
+        ('unique_class', 'unique(class_number)', 
+         'Ya existe un básico definido para esta clase.')
+    ]
+    
+    def name_get(self):
+        result = []
+        for record in self:
+            name = f"Clase {record.class_number} - ${record.basic_amount:,.2f}"
+            result.append((record.id, name))
+        return result

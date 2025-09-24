@@ -11,12 +11,14 @@
     "license": "AGPL-3",
     'depends': ['base', 'base_automation', 'union_affiliation', 'road_union_affiliation'],
     'data': [
+        'views/affiliate_class_basic_views.xml',
         'views/payment_account_current_views.xml',
         'security/ir.model.access.csv',
         'views/affiliate_views.xml',
         'wizards/payment_account_filter.xml',
         'wizards/meta_4_download.xml',
         'views/reports.xml',
+        'data/affiliate_class_basic_data.xml',
     ],
     "installable": True,
 }

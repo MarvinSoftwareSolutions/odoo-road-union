@@ -9,34 +9,51 @@
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
             <tree>
+                <!-- Información del Afiliado -->
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
                 <field name="affiliate_class"/>
                 <field name="affiliate_number"/>
-                <field name="dni"/>
+                <field name="cuil"/>
                 <field name="id_benefit"/>
                 <field name="date_month"/>
                 <field name="date_year"/>
                 
-                <!-- Servicios -->
-                <field name="pharmacy_total" sum="False"/>
+                <!-- Saldo Inicial -->
+                <field name="initial_balance" sum="False"/>
+                
+                <!-- Servicios con sus cuotas -->
                 <field name="pharmacy_installment"/>
+                <field name="pharmacy_total" sum="False"/>
+                
                 <field name="optical_total" sum="False"/>
+                
                 <field name="punilla_total" sum="False"/>
-                <field name="solar_caruso" sum="False"/>
+                
+                <field name="solar" sum="False"/>
+                <field name="caruso" sum="False"/>
+                
                 <field name="parque_del_sol" sum="False"/>
                 <field name="salguero" sum="False"/>
                 <field name="tres_provincias" sum="False"/>
-                <field name="tourism_total" sum="False"/>
+                
                 <field name="tourism_installment"/>
-                <field name="aid_total" sum="False"/>
+                <field name="tourism_total" sum="False"/>
+                
                 <field name="aid_installment"/>
-                <field name="party_total" sum="False"/>
+                <field name="aid_total" sum="False"/>
+                
                 <field name="party_installment"/>
-                <field name="hall_total" sum="False"/>
+                <field name="party_total" sum="False"/>
+                
                 <field name="hall_installment"/>
-                <field name="odontology_total" sum="False"/>
+                <field name="hall_total" sum="False"/>
+                
                 <field name="odontology_installment"/>
+                <field name="odontology_total" sum="False"/>
+                
+                <field name="otros_1" sum="False"/>
+                <field name="otros_2" sum="False"/>
 
                 <!-- Préstamos -->
                 <field name="ecco_loan" sum="False"/>
@@ -44,13 +61,13 @@
                 <field name="emergency_loan" sum="False"/>
                 <field name="suoem_loan" sum="False"/>
 
-                <!-- Resumen económico -->
+                <!-- Resumen económico - Columna de totales -->
                 <field name="total_services" sum="False"/>
                 <field name="union_fee" sum="False"/>
                 <field name="total" sum="False"/>
-                <field name="payments" sum="False"/>
-                <field name="pension_fund" sum="False"/>
                 <field name="meta4" sum="False"/>
+                <field name="pension_fund" sum="False"/>
+                <field name="payments" sum="False"/>
                 <field name="final_balance" sum="False"/>
 
                 <field name="state"/>
@@ -63,18 +80,25 @@
       <field name="model">affiliate.payment_account</field>
       <field name="arch" type="xml">
         <tree>
+          <!-- Información del Afiliado -->
           <field name="affiliate_name"/>
           <field name="affiliate_class"/>
           <field name="affiliate_type"/>
           <field name="affiliate_number"/>
-          <field name="dni"/>
+          <field name="cuil"/>
           <field name="id_benefit"/>
           <field name="date_month"/>
           <field name="date_year"/>
+          
+          <!-- Saldo Inicial -->
+          <field name="initial_balance" sum="0"/>
+          
+          <!-- Servicios -->
           <field name="pharmacy_total" sum="0"/>
           <field name="optical_total" sum="0"/>
           <field name="punilla_total" sum="0"/>
-          <field name="solar_caruso" sum="0"/>
+          <field name="solar" sum="0"/>
+          <field name="caruso" sum="0"/>
           <field name="parque_del_sol" sum="0"/>
           <field name="salguero" sum="0"/>
           <field name="tres_provincias" sum="0"/>
@@ -83,11 +107,16 @@
           <field name="party_total" sum="0"/>
           <field name="hall_total" sum="0"/>
           <field name="odontology_total" sum="0"/>
+          <field name="otros_1" sum="0"/>
+          <field name="otros_2" sum="0"/>
+          
+          <!-- Préstamos -->
           <field name="ecco_loan" sum="0"/>
           <field name="emi_loan" sum="0"/>
           <field name="emergency_loan" sum="0"/>
           <field name="suoem_loan" sum="0"/>
-          <field name="initial_balance" sum="0"/>
+          
+          <!-- Resumen económico -->
           <field name="total_services" sum="0"/>
           <field name="union_fee" sum="0"/>
           <field name="total" sum="0"/>
@@ -107,7 +136,7 @@
           <field name="affiliate_name" string="Affiliate Name"/>
           <field name="affiliate_class" string="Class"/>
           <field name="affiliate_number" string="Affiliate Number"/>
-          <field name="dni" string="DNI"/>
+          <field name="cuil" string="CUIL"/>
           <field name="date_month" string="Month"/>
           <field name="date_year" string="Year"/>
 
@@ -126,58 +155,76 @@
       </field>
     </record>
 
-    <!-- Nueva vista tree específica para el mes actual -->
+    <!-- Vista tree principal optimizada para mejor visualización -->
     <record id="view_payment_account_current_month_only_tree" model="ir.ui.view">
         <field name="name">affiliate.payment_account.current.month.tree</field>
         <field name="model">affiliate.payment_account</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
-            <tree create="true" edit="true" delete="true">
+            <tree create="true" edit="true" delete="true" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'">
+                <!-- SECCIÓN: Información del Afiliado -->
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
                 <field name="affiliate_class"/>
                 <field name="affiliate_number"/>
-                <field name="dni"/>
+                <field name="cuil"/>
                 <field name="id_benefit"/>
 
+                <!-- SECCIÓN: Saldo Inicial -->
                 <field name="initial_balance" sum="Total Saldo Inicial"/>
                 
-                <!-- Servicios -->
+                <!-- SECCIÓN: Servicios (Cuota + Monto) -->
+                <field name="pharmacy_installment" string="Cuota Farm."/>
                 <field name="pharmacy_total" sum="Total Farmacias"/>
-                <field name="pharmacy_installment"/>
+                
                 <field name="optical_total" sum="Total Óptica"/>
+                
                 <field name="punilla_total" sum="Total Punilla"/>
-                <field name="solar_caruso" sum="Total Solar Caruso"/>
+                
+                <field name="solar" sum="Total Solar"/>
+                <field name="caruso" sum="Total Caruso"/>
+                
                 <field name="parque_del_sol" sum="Total Parque del Sol"/>
                 <field name="salguero" sum="Total Salguero"/>
                 <field name="tres_provincias" sum="Total Tres Provincias"/>
+                
+                <field name="tourism_installment" string="Cuota Tur."/>
                 <field name="tourism_total" sum="Total Turismo"/>
-                <field name="tourism_installment"/>
-                <field name="aid_total" sum="Total Ayuda"/>
-                <field name="aid_installment"/>
+                
+                <field name="aid_installment" string="Cuota Ayuda"/>
+                <field name="aid_total" sum="Total Ayuda Solidaria"/>
+                
+                <field name="party_installment" string="Cuota Fiesta"/>
                 <field name="party_total" sum="Total Fiestas"/>
-                <field name="party_installment"/>
+                
+                <field name="hall_installment" string="Cuota Salón"/>
                 <field name="hall_total" sum="Total Salón"/>
-                <field name="hall_installment"/>
+                
+                <field name="odontology_installment" string="Cuota Odont."/>
                 <field name="odontology_total" sum="Total Odontología"/>
-                <field name="odontology_installment"/>
+                
+                <field name="otros_1" sum="Total Otros 1"/>
+                <field name="otros_2" sum="Total Otros 2"/>
 
-                <!-- Préstamos -->
-                <field name="ecco_loan" sum="Total Prést. Ecco"/>
-                <field name="emi_loan" sum="Total Prést. Emi"/>
-                <field name="emergency_loan" sum="Total Prést. Emergencia"/>
-                <field name="suoem_loan" sum="Total Prést. Suoem"/>
+                <!-- SECCIÓN: Préstamos -->
+                <field name="ecco_loan" sum="Total ECCO"/>
+                <field name="emi_loan" sum="Total EMI"/>
+                <field name="emergency_loan" sum="Total Urgencias"/>
+                <field name="suoem_loan" sum="Total SUOEM"/>
 
-                <!-- Resumen económico -->
-                <field name="total_services" sum="Total Servicios"/>
+                <!-- SECCIÓN: Cuota Sindical -->
                 <field name="union_fee" sum="Total Cuota Sindical"/>
-                <field name="total" sum="Total General"/>
-                <field name="payments" sum="Total Pagos"/>
-                <field name="pension_fund" sum="Total Fondo Pensión"/>
-                <field name="meta4" sum="Total Meta 4"/>
-                <field name="final_balance" sum="Total Saldo Final"/>
 
-                <field name="state"/>
+                <!-- SECCIÓN: Columna de Totales (ordenada según requerimiento) -->
+                <field name="total_services" sum="SUBTOTAL" string="1° SUBTOTAL"/>
+                <field name="total" sum="TOTAL GENERAL" string="2° TOTAL"/>
+                <field name="meta4" sum="Total Meta 4" string="3° META 4"/>
+                <field name="pension_fund" sum="Total Caja Jubilaciones" string="4° CAJA DE JUBILACIONES"/>
+                <field name="payments" sum="Total Pagos" string="5° PAGOS"/>
+                <field name="final_balance" sum="SALDO FINAL" string="6° SALDO FINAL"/>
+
+                <!-- SECCIÓN: Estado -->
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'"/>
                 
                 <!-- Campos ocultos para filtros -->
                 <field name="date_month" invisible="1"/>
@@ -186,11 +233,105 @@
         </field>
     </record>
 
+    <!-- Vista Form mejorada -->
+    <record id="view_affiliate_payment_account_form" model="ir.ui.view">
+        <field name="name">affiliate.payment_account.form</field>
+        <field name="model">affiliate.payment_account</field>
+        <field name="arch" type="xml">
+            <form string="Resumen Económico Mensual">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="affiliate_name" readonly="1"/>
+                        </h1>
+                        <h3>
+                            <field name="date_month" required="1"/> / <field name="date_year" required="1"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Información del Afiliado">
+                            <field name="affiliate_id" required="1" options="{'no_create': True}"/>
+                            <field name="affiliate_type" readonly="1"/>
+                            <field name="affiliate_class" readonly="1"/>
+                            <field name="affiliate_number" readonly="1"/>
+                            <field name="cuil" readonly="1"/>
+                            <field name="id_benefit" readonly="1"/>
+                            <field name="state"/>
+                        </group>
+                        <group string="Saldo">
+                            <field name="initial_balance" readonly="1" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group string="Servicios">
+                        <group string="Farmacias y Óptica">
+                            <field name="pharmacy_installment"/>
+                            <field name="pharmacy_total" widget="monetary"/>
+                            <field name="optical_total" widget="monetary"/>
+                        </group>
+                        <group string="Turismo y Recreación">
+                            <field name="tourism_installment"/>
+                            <field name="tourism_total" widget="monetary"/>
+                            <field name="punilla_total" widget="monetary"/>
+                            <field name="party_installment"/>
+                            <field name="party_total" widget="monetary"/>
+                            <field name="hall_installment"/>
+                            <field name="hall_total" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Proveedores y Otros Servicios">
+                        <group string="Proveedores Específicos">
+                            <field name="solar" widget="monetary"/>
+                            <field name="caruso" widget="monetary"/>
+                            <field name="parque_del_sol" widget="monetary"/>
+                            <field name="salguero" widget="monetary"/>
+                            <field name="tres_provincias" widget="monetary"/>
+                        </group>
+                        <group string="Otros Servicios">
+                            <field name="aid_installment"/>
+                            <field name="aid_total" widget="monetary"/>
+                            <field name="odontology_installment"/>
+                            <field name="odontology_total" widget="monetary" string="Odontología"/>
+                            <field name="otros_1" widget="monetary"/>
+                            <field name="otros_2" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <group string="Préstamos">
+                        <group string="Préstamos Activos">
+                            <field name="ecco_loan" widget="monetary"/>
+                            <field name="emi_loan" widget="monetary"/>
+                            <field name="emergency_loan" widget="monetary"/>
+                            <field name="suoem_loan" widget="monetary"/>
+                        </group>
+                        <group></group>
+                    </group>
+                    
+                    <group string="Resumen Financiero">
+                        <group string="Totales Calculados">
+                            <field name="total_services" readonly="1" widget="monetary" string="SUBTOTAL"/>
+                            <field name="union_fee" widget="monetary"/>
+                            <field name="total" readonly="1" widget="monetary" string="TOTAL"/>
+                        </group>
+                        <group string="Descuentos y Saldo Final">
+                            <field name="meta4" widget="monetary" string="META 4"/>
+                            <field name="pension_fund" widget="monetary" string="CAJA DE JUBILACIONES"/>
+                            <field name="payments" widget="monetary" string="PAGOS"/>
+                            <field name="final_balance" readonly="1" widget="monetary" string="SALDO FINAL"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
     <record id="action_payment_account_all" model="ir.actions.act_window">
         <field name="name">Resúmenes Económicos</field>
         <field name="res_model">affiliate.payment_account</field>
         <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_payment_account_current_month_only_tree"/>
         <field name="search_view_id" ref="view_affiliate_payment_account_search"/>
         <field name="context">
           {
@@ -200,8 +341,6 @@
         </field>
     </record>
 
-
-
     <!-- Menú que llama directamente a la acción -->
     <menuitem id="menu_payment_account_all"
               name="Mes Actual"
@@ -209,7 +348,6 @@
               action="action_payment_account_all"
               groups="union_affiliation.group_affiliation_read"
               sequence="6"/>
-
 
   </data>
 </odoo>

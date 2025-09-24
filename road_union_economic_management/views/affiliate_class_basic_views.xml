@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de lista -->
+    <record id="view_affiliate_class_basic_tree" model="ir.ui.view">
+        <field name="name">affiliate.class.basic.tree</field>
+        <field name="model">affiliate.class.basic</field>
+        <field name="arch" type="xml">
+            <tree string="Básicos por Clase">
+                <field name="class_number"/>
+                <field name="basic_amount" widget="monetary"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de formulario -->
+    <record id="view_affiliate_class_basic_form" model="ir.ui.view">
+        <field name="name">affiliate.class.basic.form</field>
+        <field name="model">affiliate.class.basic</field>
+        <field name="arch" type="xml">
+            <form string="Básico por Clase">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="class_number"/>
+                            <field name="basic_amount" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción de ventana -->
+    <record id="action_affiliate_class_basic" model="ir.actions.act_window">
+        <field name="name">Básicos por Clase</field>
+        <field name="res_model">affiliate.class.basic</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configurar los montos básicos por clase de afiliado
+            </p>
+            <p>
+                Estos valores se usan para calcular automáticamente la cuota sindical.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú -->
+    <menuitem id="menu_affiliate_class_basic"
+              name="Básicos por Clase"
+              parent="union_affiliation.affiliates_section"
+              action="action_affiliate_class_basic"
+              sequence="10"/>
+</odoo>
