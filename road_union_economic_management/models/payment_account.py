@@ -135,7 +135,66 @@ class AffiliatePaymentAccount(models.Model):
     # Odontology (renombrado de OTROS para consistencia)
     odontology_total = fields.Float(string="OTROS", group_operator=False)
 
-    union_fee = fields.Float(string="CUOTA SINDICAL", group_operator=False)
+    union_fee = fields.Float(
+        string="CUOTA SINDICAL",
+        compute='_compute_union_fee',
+        store=True,
+        group_operator=False,
+        help="Calculado automáticamente según clase y tipo de afiliado"
+    )
+
+    @api.depends('affiliate_id.category', 'affiliate_id.affiliate_type_id.name')
+    def _compute_union_fee(self):
+        """
+        Calcula la cuota sindical según las reglas:
+        - Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
+        - Jubilados: 7% del básico de su clase
+        """
+        for record in self:
+                
+            # Si no hay afiliado o clase, cuota = 0
+            if not record.affiliate_id or not record.affiliate_id.category:
+                record.union_fee = 0.0
+                continue
+                
+            affiliate_class = record.affiliate_id.category
+            affiliate_type = record.affiliate_id.affiliate_type_id.name if record.affiliate_id.affiliate_type_id else ''
+            
+            # Buscar el básico de la clase del afiliado
+            class_basic = self.env['affiliate.class.basic'].search([
+                ('class_number', '=', affiliate_class),
+                ('active', '=', True)
+            ], limit=1)
+            
+            if not class_basic:
+                record.union_fee = 0.0
+                continue
+                
+            # Determinar si es jubilado (ajustar según tus tipos exactos)
+            is_retired = any(keyword in affiliate_type.lower() for keyword in ['jubilado', 'pensionado', 'retirado'])
+            
+            if is_retired:
+                # Jubilados: 7% del básico de su clase
+                record.union_fee = class_basic.basic_amount * 0.07
+            else:
+                # Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
+                own_class_fee = class_basic.basic_amount * 0.015
+                
+                # Buscar básico de clase 15
+                class_15_basic = self.env['affiliate.class.basic'].search([
+                    ('class_number', '=', 15),
+                    ('active', '=', True)
+                ], limit=1)
+                
+                if class_15_basic:
+                    class_15_fee = class_15_basic.basic_amount * 0.015
+                    record.union_fee = own_class_fee + class_15_fee
+                else:
+                    # Si no existe clase 15, solo usar el de su clase
+                    record.union_fee = own_class_fee
+                    
+
+
     total = fields.Float(
         string="TOTAL", 
         compute='_compute_total',
@@ -343,3 +402,40 @@ class AffiliatePaymentAccount(models.Model):
         store=True,
         group_operator=False
     )
+
+
+# Nuevo modelo para la tabla de básicos por clase
+class AffiliateClassBasic(models.Model):
+    _name = "affiliate.class.basic"
+    _description = "Basic Amount by Affiliate Class"
+    _order = "class_number"
+
+    class_number = fields.Integer(
+        string="Clase",
+        required=True,
+        help="Número de clase del afiliado"
+    )
+    
+    basic_amount = fields.Float(
+        string="Básico",
+        required=True,
+        digits='Product Price',
+        help="Monto básico para esta clase"
+    )
+    
+    active = fields.Boolean(
+        string="Activo",
+        default=True
+    )
+    
+    _sql_constraints = [
+        ('unique_class', 'unique(class_number)', 
+         'Ya existe un básico definido para esta clase.')
+    ]
+    
+    def name_get(self):
+        result = []
+        for record in self:
+            name = f"Clase {record.class_number} - ${record.basic_amount:,.2f}"
+            result.append((record.id, name))
+        return result
