@@ -228,8 +228,8 @@ msgstr "Borrador"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__ecco_loan
-msgid "Ecco PASADO COMO PRESTAMO"
-msgstr "Ecco PASADO COMO PRESTAMO"
+msgid "Ecco"
+msgstr "Ecco"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliation_affiliate__payment_account_ids
@@ -260,8 +260,8 @@ msgstr "El archivo ha sido generado correctamente."
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__emi_loan
-msgid "Emi PASADO COMO PRESTAMO"
-msgstr "Emi PASADO COMO PRESTAMO"
+msgid "Emi"
+msgstr "Emi"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__payment_export_wizard__date_month__01
@@ -641,8 +641,8 @@ msgstr "Estado"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__suoem_loan
-msgid "Suoem PASADO COMO PRESTAMO"
-msgstr "Suoem PASADO COMO PRESTAMO"
+msgid "Suoem"
+msgstr "Suoem"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__total
@@ -814,8 +814,8 @@ msgstr "Entidad del afiliado sindical"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__emergency_loan
-msgid "Urgencias PASADO COMO PRESTAMO"
-msgstr "Urgencias PASADO COMO PRESTAMO"
+msgid "Urgencias"
+msgstr "Urgencias"
 
 #. module: road_union_economic_management
 #: model_terms:ir.ui.view,arch_db:road_union_economic_management.view_payment_export_wizard_form

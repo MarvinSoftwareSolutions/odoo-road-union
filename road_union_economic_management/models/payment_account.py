@@ -39,9 +39,9 @@ class AffiliatePaymentAccount(models.Model):
     )
 
 
-    dni = fields.Char(
-        string="D.N.I",
-        related="affiliate_id.personal_id",
+    cuil = fields.Char(
+        string="CUIL",
+        related="affiliate_id.vat",
         readonly=True,
     )
     date_month = fields.Selection(
@@ -83,10 +83,12 @@ class AffiliatePaymentAccount(models.Model):
          'Asegúrese de que cada afiliado tenga solo un resumen por mes/año.')
     ]
 
-    id_benefit = fields.Integer(
+    # CAMBIO: ID/BENEFIT ahora puede contener letras y símbolos
+    id_benefit = fields.Char(
         string="ID/BENEFIT",
         related="affiliate_id.id_benefit",
     )
+    
     # Economic Summary
     initial_balance = fields.Float(
         string="Initial Balance", 
@@ -104,24 +106,26 @@ class AffiliatePaymentAccount(models.Model):
     
     punilla_total = fields.Float(string="Punilla", group_operator=False)
 
-    # Servicios específicos
-    solar_caruso = fields.Float(string="Solar Caruso", group_operator=False)
+    # CAMBIO: Solar y Caruso como campos separados
+    solar = fields.Float(string="Solar", group_operator=False)
+    caruso = fields.Float(string="Caruso", group_operator=False)
+    
     parque_del_sol = fields.Float(string="Parque del Sol", group_operator=False)
     salguero = fields.Float(string="Salguero", group_operator=False)
     tres_provincias = fields.Float(string="Tres Provincias", group_operator=False)
 
-    # Loans
-    ecco_loan = fields.Float(string="Ecco PASADO COMO PRESTAMO", group_operator=False)
-    emi_loan = fields.Float(string="Emi PASADO COMO PRESTAMO", group_operator=False)
-    emergency_loan = fields.Float(string="Urgencias PASADO COMO PRESTAMO", group_operator=False)
-    suoem_loan = fields.Float(string="Suoem PASADO COMO PRESTAMO", group_operator=False)
+    # CAMBIO: Préstamos con strings renombrados
+    ecco_loan = fields.Float(string="ECCO", group_operator=False)
+    emi_loan = fields.Float(string="EMI", group_operator=False)
+    emergency_loan = fields.Float(string="URGENCIAS", group_operator=False)
+    suoem_loan = fields.Float(string="SUOEM", group_operator=False)
 
     # Tourism
     tourism_total = fields.Float(string="Turismo", group_operator=False)
     tourism_installment = fields.Char(string="N° Cuota Turismo")
 
-    # Aid
-    aid_total = fields.Float(string="AYUDAS", group_operator=False)
+    # Aid - CAMBIO: Renombrado a AYUDA SOLIDARIA
+    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator=False)
     aid_installment = fields.Char(string="N° Cuota Ayudas")
 
     # Party
@@ -133,7 +137,11 @@ class AffiliatePaymentAccount(models.Model):
     hall_installment = fields.Char(string="N° Cuota Salón")
 
     # Odontology (renombrado de OTROS para consistencia)
-    odontology_total = fields.Float(string="OTROS", group_operator=False)
+    odontology_total = fields.Float(string="Odontología", group_operator=False)
+
+    # CAMBIO: Agregar campos OTROS 1 y OTROS 2 como gastos adicionales
+    otros_1 = fields.Float(string="OTROS 1", group_operator=False)
+    otros_2 = fields.Float(string="OTROS 2", group_operator=False)
 
     union_fee = fields.Float(string="CUOTA SINDICAL", group_operator=False)
     total = fields.Float(
@@ -143,7 +151,10 @@ class AffiliatePaymentAccount(models.Model):
         group_operator=False
     )
     payments = fields.Float(string="Pagos", group_operator=False)
-    pension_fund = fields.Float(string="CAJA JUB", group_operator=False)
+    
+    # CAMBIO: Fondo de Pensión renombrado
+    pension_fund = fields.Float(string="CAJA DE JUBILACIONES", group_operator=False)
+    
     meta4 = fields.Float(string="META 4", group_operator=False)
     final_balance = fields.Float(
         string="SALDO", 
@@ -216,6 +227,7 @@ class AffiliatePaymentAccount(models.Model):
             ('affiliate_id', '=', self.affiliate_id.id),
         ], order='date_year asc, date_month asc')
         
+
         # Filtrar solo los posteriores al actual
         subsequent_records = all_records.filtered(
             lambda r: datetime(int(r.date_year), int(r.date_month), 1) > current_date
@@ -277,13 +289,13 @@ class AffiliatePaymentAccount(models.Model):
         """
         Override write mejorado para propagar cambios correctamente.
         """
-        # Campos que afectan el balance final
+        # CAMBIO: Actualizar campos que afectan el balance final (solar y caruso separados, más otros_1 y otros_2)
         balance_affecting_fields = [
-            'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 
+            'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso',
             'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 
             'emi_loan', 'emergency_loan', 'suoem_loan', 'tourism_total', 
             'aid_total', 'party_total', 'hall_total', 'odontology_total', 
-            'union_fee', 'payments', 'pension_fund', 'meta4'
+            'otros_1', 'otros_2', 'union_fee', 'payments', 'pension_fund', 'meta4'
         ]
         
         result = super().write(vals)
@@ -317,10 +329,11 @@ class AffiliatePaymentAccount(models.Model):
             result.append((record.id, name))
         return result
 
-    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 'parque_del_sol', 
+    # CAMBIO: Actualizar el método _compute_total_services para incluir solar, caruso, otros_1 y otros_2
+    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso', 'parque_del_sol', 
                  'salguero', 'tres_provincias', 'ecco_loan', 'emi_loan', 
                  'emergency_loan', 'suoem_loan', 'tourism_total', 'aid_total', 
-                 'party_total', 'hall_total', 'odontology_total')
+                 'party_total', 'hall_total', 'odontology_total', 'otros_1', 'otros_2')
     def _compute_total_services(self):
         """
         Calcula el total de servicios incluyendo el saldo inicial.
@@ -329,13 +342,13 @@ class AffiliatePaymentAccount(models.Model):
             record.total_services = (
                 record.initial_balance +
                 record.pharmacy_total + record.optical_total + record.punilla_total +
-                record.solar_caruso + record.parque_del_sol + 
+                record.solar + record.caruso + record.parque_del_sol + 
                 record.salguero + record.tres_provincias +
                 record.ecco_loan + record.emi_loan + 
                 record.emergency_loan + record.suoem_loan +
                 record.tourism_total + record.aid_total + 
                 record.party_total + record.hall_total + 
-                record.odontology_total
+                record.odontology_total + record.otros_1 + record.otros_2
             )
 
     @api.depends('total_services', 'union_fee')
