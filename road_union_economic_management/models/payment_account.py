@@ -206,23 +206,7 @@ class AffiliatePaymentAccount(models.Model):
         record = super().create(vals)
         record._update_subsequent_months_initial_balance()
         return record
-
-    def write(self, vals):
-        """
-        Override write para recalcular saldos cuando se modifica el saldo final.
-        """
-        result = super().write(vals)
-        # Si se modificó algo que afecte el saldo final, actualizar meses posteriores
-        if any(field in vals for field in ['final_balance', 'total', 'payments', 'pension_fund', 'meta4', 
-                                          'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 
-                                          'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 
-                                          'emi_loan', 'emergency_loan', 'suoem_loan', 'tourism_total', 
-                                          'aid_total', 'party_total', 'hall_total', 'odontology_total', 
-                                          'union_fee']):
-            for record in self:
-                record._update_subsequent_months_initial_balance()
-        return result
-
+    
     def _update_subsequent_months_initial_balance(self):
         """
         Actualiza el saldo inicial de todos los meses posteriores para este afiliado.
@@ -250,22 +234,6 @@ class AffiliatePaymentAccount(models.Model):
         # Forzar el recálculo del saldo inicial
         if subsequent_records:
             subsequent_records._compute_initial_balance()
-
-    def name_get(self):
-        """
-        Personaliza cómo se muestra el registro en relaciones Many2one.
-        """
-        result = []
-        for record in self:
-            month_names = {
-                '01': 'Enero', '02': 'Febrero', '03': 'Marzo', '04': 'Abril',
-                '05': 'Mayo', '06': 'Junio', '07': 'Julio', '08': 'Agosto',
-                '09': 'Septiembre', '10': 'Octubre', '11': 'Noviembre', '12': 'Diciembre'
-            }
-            month_name = month_names.get(record.date_month, record.date_month)
-            name = f"{record.affiliate_name} - {month_name} {record.date_year}"
-            result.append((record.id, name))
-        return result
 
     @api.depends('affiliate_id', 'date_month', 'date_year')
     def _compute_initial_balance(self):
@@ -305,9 +273,6 @@ class AffiliatePaymentAccount(models.Model):
             else:
                 record.initial_balance = 0.0
 
-<<<<<<< Updated upstream
-    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar_caruso', 'parque_del_sol', 
-=======
     def write(self, vals):
         """
         Override write mejorado para propagar cambios correctamente.
@@ -354,7 +319,6 @@ class AffiliatePaymentAccount(models.Model):
 
     # CAMBIO: Actualizar el método _compute_total_services para incluir solar, caruso, otros_1 y otros_2
     @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso', 'parque_del_sol', 
->>>>>>> Stashed changes
                  'salguero', 'tres_provincias', 'ecco_loan', 'emi_loan', 
                  'emergency_loan', 'suoem_loan', 'tourism_total', 'aid_total', 
                  'party_total', 'hall_total', 'odontology_total', 'otros_1', 'otros_2')
