@@ -18,6 +18,7 @@
         'wizards/payment_account_filter.xml',
         'wizards/meta_4_download.xml',
         'views/reports.xml',
+        'views/provider_payments_views.xml',
         'data/affiliate_class_basic_data.xml',
     ],
     "installable": True,

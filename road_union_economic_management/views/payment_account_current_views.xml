@@ -216,12 +216,12 @@
                 <field name="union_fee" sum="Total Cuota Sindical"/>
 
                 <!-- SECCIÓN: Columna de Totales (ordenada según requerimiento) -->
-                <field name="total_services" sum="SUBTOTAL" string="1° SUBTOTAL"/>
-                <field name="total" sum="TOTAL GENERAL" string="2° TOTAL"/>
-                <field name="meta4" sum="Total Meta 4" string="3° META 4"/>
-                <field name="pension_fund" sum="Total Caja Jubilaciones" string="4° CAJA DE JUBILACIONES"/>
-                <field name="payments" sum="Total Pagos" string="5° PAGOS"/>
-                <field name="final_balance" sum="SALDO FINAL" string="6° SALDO FINAL"/>
+                <field name="total_services" sum="SUBTOTAL" string="SUBTOTAL"/>
+                <field name="total" sum="TOTAL GENERAL" string="TOTAL"/>
+                <field name="meta4" sum="Total Meta 4" string="META 4"/>
+                <field name="pension_fund" sum="Total Caja Jubilaciones" string="CAJA DE JUBILACIONES"/>
+                <field name="payments" sum="Total Pagos" string="PAGOS"/>
+                <field name="final_balance" sum="SALDO FINAL" string="SALDO FINAL"/>
 
                 <!-- SECCIÓN: Estado -->
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'"/>
