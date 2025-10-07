@@ -1,1 +1,1 @@
-from . import affiliate, payment_account, provider_payments
+from . import affiliate, payment_account, provider_payments, pharmacies

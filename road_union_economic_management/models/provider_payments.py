@@ -32,6 +32,48 @@ class ProveedorSindicato(models.Model):
                     'El porcentaje de comisión debe estar entre 0 y 100'
                 )
 
+    def _invalidar_cache_vistas_gastos(self):
+        """Invalida el caché de vistas cuando cambian las farmacias"""
+        # Limpiar caché de vistas
+        self.env['sindicato.gasto.farmacia.linea'].clear_caches()
+        
+        # También limpiar caché del registro en ir.ui.view
+        self.env['ir.ui.view'].clear_caches()
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Sobrescribir create para invalidar caché cuando se crea una farmacia"""
+        records = super().create(vals_list)
+        
+        # Verificar si alguno de los registros creados es una farmacia activa
+        if any(r.tipo == 'farmacia' and r.activo for r in records):
+            self._invalidar_cache_vistas_gastos()
+        
+        return records
+    
+    def write(self, vals):
+        """Sobrescribir write para invalidar caché cuando se modifica una farmacia"""
+        result = super().write(vals)
+        
+        # Si se modificó el estado activo o el tipo, invalidar caché
+        if 'activo' in vals or 'tipo' in vals:
+            if any(r.tipo == 'farmacia' for r in self):
+                self._invalidar_cache_vistas_gastos()
+        
+        return result
+    
+    def unlink(self):
+        """Sobrescribir unlink para invalidar caché cuando se elimina una farmacia"""
+        # Verificar antes de eliminar si hay farmacias
+        tiene_farmacias = any(r.tipo == 'farmacia' and r.activo for r in self)
+        
+        result = super().unlink()
+        
+        if tiene_farmacias:
+            self._invalidar_cache_vistas_gastos()
+        
+        return result
+
 
 class LiquidacionMensual(models.Model):
     _name = 'sindicato.liquidacion.mensual'
