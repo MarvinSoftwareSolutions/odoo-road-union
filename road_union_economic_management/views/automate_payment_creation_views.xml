@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- CRON JOB: Se ejecuta automáticamente el día 1 de cada mes -->
+        <record id="cron_create_monthly_payment_accounts" model="ir.cron">
+            <field name="name">Crear Registros Mensuales de Payment Account</field>
+            <field name="model_id" ref="model_affiliate_payment_account"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_create_monthly_records()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <!-- Se ejecuta el día 1 de cada mes a las 00:00 -->
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).replace(day=1, hour=0, minute=0, second=0)"/>
+        </record>
+
+        <!-- Vista de búsqueda mejorada -->
+        <record id="view_affiliate_payment_account_search" model="ir.ui.view">
+            <field name="name">affiliate.payment_account.search</field>
+            <field name="model">affiliate.payment_account</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="affiliate_id"/>
+                    <field name="affiliate_name"/>
+                    <field name="date_month"/>
+                    <field name="date_year"/>
+                    <field name="state"/>
+                    
+                    <filter string="Borrador" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="Confirmado" name="confirmed" domain="[('state','=','confirmed')]"/>
+                    
+                    <separator/>
+                    <filter string="Mes Actual" name="current_month" 
+                            domain="[('date_month','=',context_today().strftime('%%m')),
+                                    ('date_year','=',str(context_today().year))]"/>
+                    
+                    <group expand="0" string="Agrupar por">
+                        <filter string="Mes" name="group_month" context="{'group_by':'date_month'}"/>
+                        <filter string="Año" name="group_year" context="{'group_by':'date_year'}"/>
+                        <filter string="Afiliado" name="group_affiliate" context="{'group_by':'affiliate_id'}"/>
+                        <filter string="Estado" name="group_state" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    </data>
+</odoo>

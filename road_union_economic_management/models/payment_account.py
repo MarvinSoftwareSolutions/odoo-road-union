@@ -1,6 +1,10 @@
 from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
 from datetime import date, datetime
+from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class AffiliatePaymentAccount(models.Model):
     _name = "affiliate.payment_account"
@@ -369,6 +373,121 @@ class AffiliatePaymentAccount(models.Model):
                 
                 # Propagar a meses posteriores
                 record._update_subsequent_months_initial_balance()
+        
+        return result
+    
+
+    @api.model
+    def create_monthly_records_for_all_affiliates(self, month=None, year=None):
+        """
+        Crea registros mensuales para TODOS los afiliados activos.
+        Si no se especifica mes/año, usa el mes actual.
+        
+        :param month: Mes en formato '01'-'12'
+        :param year: Año en formato '2025'
+        :return: Diccionario con estadísticas de creación
+        """
+        if not month or not year:
+            today = datetime.now()
+            month = today.strftime('%m')
+            year = str(today.year)
+        
+        # Buscar todos los afiliados activos
+        affiliates = self.env['affiliation.affiliate'].search([
+            ('active', '=', True)
+        ])
+        
+        created_count = 0
+        skipped_count = 0
+        errors = []
+        
+        for affiliate in affiliates:
+            try:
+                # Verificar si ya existe un registro para este mes
+                existing = self.search([
+                    ('affiliate_id', '=', affiliate.id),
+                    ('date_month', '=', month),
+                    ('date_year', '=', year)
+                ], limit=1)
+                
+                if existing:
+                    skipped_count += 1
+                    continue
+                
+                # Crear el registro
+                self.create({
+                    'affiliate_id': affiliate.id,
+                    'date_month': month,
+                    'date_year': year,
+                    'state': 'draft',
+                })
+                created_count += 1
+                
+            except Exception as e:
+                errors.append(f"Error con afiliado {affiliate.name}: {str(e)}")
+                _logger.error(f"Error creating payment account for {affiliate.name}: {e}")
+        
+        result = {
+            'created': created_count,
+            'skipped': skipped_count,
+            'total_affiliates': len(affiliates),
+            'errors': errors,
+            'month': month,
+            'year': year,
+        }
+        
+        _logger.info(f"Monthly records creation: {result}")
+        return result
+
+    @api.model
+    def create_record_for_new_affiliate(self, affiliate_id):
+        """
+        Crea un registro para un nuevo afiliado en el mes actual.
+        
+        :param affiliate_id: ID del afiliado
+        :return: Registro creado o False
+        """
+        today = datetime.now()
+        month = today.strftime('%m')
+        year = str(today.year)
+        
+        # Verificar si ya existe
+        existing = self.search([
+            ('affiliate_id', '=', affiliate_id),
+            ('date_month', '=', month),
+            ('date_year', '=', year)
+        ], limit=1)
+        
+        if existing:
+            return existing
+        
+        # Crear el registro
+        return self.create({
+            'affiliate_id': affiliate_id,
+            'date_month': month,
+            'date_year': year,
+            'state': 'draft',
+        })
+
+    @api.model
+    def cron_create_monthly_records(self):
+        """
+        Tarea programada que se ejecuta automáticamente cada mes.
+        Crea registros para todos los afiliados del mes actual.
+        """
+        _logger.info("Iniciando creación automática de registros mensuales...")
+        result = self.create_monthly_records_for_all_affiliates()
+        
+        # Opcional: Enviar notificación al administrador
+        if result['created'] > 0:
+            message = f"""
+            Se crearon automáticamente {result['created']} registros mensuales.
+            Mes: {result['month']}/{result['year']}
+            Afiliados procesados: {result['total_affiliates']}
+            Ya existentes (omitidos): {result['skipped']}
+            """
+            # Aquí puedes agregar lógica para enviar un email o notificación
+            _logger.info(message)
         
         return result
 
