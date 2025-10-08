@@ -1,5 +1,9 @@
 from odoo import models, fields, api, _
 from datetime import date
+from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Affiliate(models.Model):
@@ -40,4 +44,36 @@ class Affiliate(models.Model):
             # Los campos de gasto se inicializarán automáticamente a 0.0 (Float)
         })
         
+        # Crear el registro del mes actual
+        try:
+            self.env['affiliate.payment_account'].create_record_for_new_affiliate(
+                new_affiliate.id
+            )
+            _logger.info(f"Payment account creado automáticamente para {new_affiliate.name}")
+        except Exception as e:
+            _logger.warning(f"No se pudo crear payment account para {new_affiliate.name}: {e}")
+            # No bloqueamos la creación del afiliado si falla esto
+        
         return new_affiliate
+
+    def action_create_current_month_payment(self):
+        """
+        Acción manual para crear el registro del mes actual
+        si no existe (botón en la vista del afiliado).
+        """
+        for affiliate in self:
+            record = self.env['affiliate.payment_account'].create_record_for_new_affiliate(
+                affiliate.id
+            )
+            if record:
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Registro Creado'),
+                        'message': f'Se creó el registro mensual para {affiliate.name}',
+                        'type': 'success',
+                        'sticky': False,
+                    }
+                }
+

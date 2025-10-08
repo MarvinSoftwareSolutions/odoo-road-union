@@ -20,6 +20,7 @@
         'views/reports.xml',
         'views/provider_payments_views.xml',
         'views/pharmacies_views.xml',
+        'views/automate_payment_creation_views.xml',
         'data/affiliate_class_basic_data.xml',
     ],
     "installable": True,
