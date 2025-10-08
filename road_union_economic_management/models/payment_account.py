@@ -439,8 +439,6 @@ class AffiliatePaymentAccount(models.Model):
         group_operator=False
     )
 
-
-# Nuevo modelo para la tabla de básicos por clase
 class AffiliateClassBasic(models.Model):
     _name = "affiliate.class.basic"
     _description = "Basic Amount by Affiliate Class"
@@ -475,3 +473,67 @@ class AffiliateClassBasic(models.Model):
             name = f"Clase {record.class_number} - ${record.basic_amount:,.2f}"
             result.append((record.id, name))
         return result
+
+    def write(self, vals):
+        """
+        Override write para recalcular union_fee solo en mes actual y posteriores
+        cuando se modifica el básico.
+        """
+        result = super(AffiliateClassBasic, self).write(vals)
+        
+        # Solo recalcular si se modificó el basic_amount
+        if 'basic_amount' in vals:
+            self._update_union_fees_from_current_month()
+        
+        return result
+
+    def _update_union_fees_from_current_month(self):
+        """
+        Recalcula union_fee para todos los payment_account del mes actual
+        y meses futuros que usen esta clase o clase 15 (para activos).
+        """
+        for class_basic in self:
+            # Obtener mes y año actual
+            today = datetime.now()
+            current_month = today.strftime('%m')
+            current_year = str(today.year)
+            
+            # Buscar todos los payment_account afectados por este básico
+            PaymentAccount = self.env['affiliate.payment_account']
+            
+            # Caso 1: Afiliados que tienen esta clase directamente
+            affected_affiliates = self.env['affiliation.affiliate'].search([
+                ('category', '=', class_basic.class_number)
+            ])
+            
+            # Caso 2: Si es clase 15, afecta a TODOS los activos
+            if class_basic.class_number == 15:
+                all_affiliates = self.env['affiliation.affiliate'].search([])
+                # Filtrar solo activos
+                active_affiliates = all_affiliates.filtered(
+                    lambda a: a.affiliate_type_id and 
+                    not any(keyword in a.affiliate_type_id.name.lower() 
+                           for keyword in ['jubilado', 'pensionado', 'retirado'])
+                )
+                affected_affiliates |= active_affiliates
+            
+            # Buscar todos los payment_accounts de estos afiliados desde mes actual en adelante
+            all_records = PaymentAccount.search([
+                ('affiliate_id', 'in', affected_affiliates.ids),
+            ])
+            
+            # Filtrar solo registros del mes actual y futuros
+            current_date = datetime(int(current_year), int(current_month), 1)
+            
+            records_to_update = all_records.filtered(
+                lambda r: datetime(int(r.date_year), int(r.date_month), 1) >= current_date
+            )
+            
+            # Forzar recálculo del union_fee
+            for record in records_to_update:
+                record._compute_union_fee()
+                # También recalcular los totales dependientes
+                record._compute_total()
+                record._compute_final_balance()
+                # Y propagar a meses posteriores si es necesario
+                record._update_subsequent_months_initial_balance()
