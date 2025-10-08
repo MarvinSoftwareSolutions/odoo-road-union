@@ -8,7 +8,7 @@
         <field name="model">affiliate.payment_account</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="bottom">
                 <!-- Información del Afiliado -->
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
@@ -161,7 +161,7 @@
         <field name="model">affiliate.payment_account</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
-            <tree create="true" edit="true" delete="true" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'">
+            <tree create="0" editable="bottom" delete="true" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'">
                 <!-- SECCIÓN: Información del Afiliado -->
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
@@ -326,7 +326,12 @@
             </form>
         </field>
     </record>
-
+    <record id="action_payment_account_create" model="ir.actions.act_window">
+        <field name="name">Crear Cuenta de Pago</field>
+        <field name="res_model">affiliate.payment_account</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field> <!-- o "current" para pantalla completa -->
+    </record>
     <record id="action_payment_account_all" model="ir.actions.act_window">
         <field name="name">Resúmenes Económicos</field>
         <field name="res_model">affiliate.payment_account</field>
@@ -341,13 +346,45 @@
         </field>
     </record>
 
+    <record id="action_edit_payment_account_form" model="ir.actions.server">
+        <field name="name">Editar en Formulario</field>
+        <field name="model_id" ref="model_affiliate_payment_account"/>
+        <field name="binding_model_id" ref="model_affiliate_payment_account"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+    if records:
+        action = {
+            'type': 'ir.actions.act_window',
+            'name': 'Editar Cuenta de Pago',
+            'res_model': 'affiliate.payment_account',
+            'res_id': records[0].id,
+            'view_mode': 'form',
+            'target': 'current',
+            'views': [(False, 'form')],
+        }
+        </field>
+    </record>
+
     <!-- Menú que llama directamente a la acción -->
-    <menuitem id="menu_payment_account_all"
-              name="Mes Actual"
+
+    <menuitem id="menu_payment_account_root"
+              name="Cuentas de Pago"
               parent="union_affiliation.union"
-              action="action_payment_account_all"
               groups="union_affiliation.group_affiliation_read"
               sequence="6"/>
 
+    <menuitem id="menu_payment_account_all"
+              name="Mes Actual"
+              parent="menu_payment_account_root"
+              action="action_payment_account_all"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="6"/>
+    <menuitem 
+        id="menu_payment_account_create" 
+        name="Crear Cuenta de Pago" 
+        parent="menu_payment_account_root" 
+        action="action_payment_account_create" 
+        sequence="8"/>
   </data>
 </odoo>
