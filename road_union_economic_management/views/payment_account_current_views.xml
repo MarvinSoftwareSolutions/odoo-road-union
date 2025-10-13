@@ -174,7 +174,7 @@
                 <field name="cuil"/>
                 <field name="id_benefit"/>
                 <field name="date_month"/>
-                <field name="date_year"/>
+                <field name="date_year" options="{'format': 0}"/>
 
                 <!-- SECCIÓN: Saldo Inicial -->
                 <field name="initial_balance" sum="Total Saldo Inicial"/>

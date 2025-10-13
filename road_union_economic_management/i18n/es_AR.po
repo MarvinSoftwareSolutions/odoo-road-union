@@ -517,8 +517,8 @@ msgstr "N° Cuota Óptica"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields,field_description:road_union_economic_management.field_affiliate_payment_account__odontology_total
-msgid "OTROS"
-msgstr "OTROS"
+msgid "Odontology Total"
+msgstr "Total Odontología"
 
 #. module: road_union_economic_management
 #: model:ir.model.fields.selection,name:road_union_economic_management.selection__affiliate_payment_account__date_month__10
