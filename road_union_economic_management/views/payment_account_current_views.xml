@@ -163,12 +163,18 @@
         <field name="arch" type="xml">
             <tree editable="bottom" delete="true" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'">
                 <!-- SECCIÓN: Información del Afiliado -->
+
+                <field name="id"/>
+                <field name="affiliate_id"/>
+
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
                 <field name="affiliate_class"/>
                 <field name="affiliate_number"/>
                 <field name="cuil"/>
                 <field name="id_benefit"/>
+                <field name="date_month"/>
+                <field name="date_year"/>
 
                 <!-- SECCIÓN: Saldo Inicial -->
                 <field name="initial_balance" sum="Total Saldo Inicial"/>

@@ -37,7 +37,7 @@ class AffiliatePaymentAccount(models.Model):
         string="Clase",
         related="affiliate_id.category",
         )
-    affiliate_number = fields.Char(
+    affiliate_number = fields.Integer(
         string="N° Afiliado",
         related="affiliate_id.uid",
     )
