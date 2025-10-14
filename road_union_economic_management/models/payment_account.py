@@ -185,26 +185,26 @@ class AffiliatePaymentAccount(models.Model):
             # Determinar si es jubilado (ajustar según tus tipos exactos)
             is_retired = any(keyword in affiliate_type.lower() for keyword in ['jubilado', 'pensionado', 'retirado'])
             
+            # Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
+            own_class_fee = class_basic.basic_amount * 0.015
+            
+            # Buscar básico de clase 15
+            class_15_basic = self.env['affiliate.class.basic'].search([
+                ('class_number', '=', 15),
+                ('active', '=', True)
+            ], limit=1)
+            
+            if class_15_basic:
+                class_15_fee = class_15_basic.basic_amount * 0.015
+                record.union_fee = own_class_fee + class_15_fee
+            else:
+                # Si no existe clase 15, solo usar el de su clase
+                record.union_fee = own_class_fee
+                    
+            
             if is_retired:
                 # Jubilados: 7% del básico de su clase
-                record.union_fee = class_basic.basic_amount * 0.07
-            else:
-                # Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
-                own_class_fee = class_basic.basic_amount * 0.015
-                
-                # Buscar básico de clase 15
-                class_15_basic = self.env['affiliate.class.basic'].search([
-                    ('class_number', '=', 15),
-                    ('active', '=', True)
-                ], limit=1)
-                
-                if class_15_basic:
-                    class_15_fee = class_15_basic.basic_amount * 0.015
-                    record.union_fee = own_class_fee + class_15_fee
-                else:
-                    # Si no existe clase 15, solo usar el de su clase
-                    record.union_fee = own_class_fee
-                    
+                record.union_fee = record.union_fee * 0.75
 
 
     total = fields.Float(

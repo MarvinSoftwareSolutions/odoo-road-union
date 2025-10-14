@@ -41,7 +41,7 @@ class PaymentExportWizard(models.TransientModel):
         default=lambda self: str(datetime.now().year)
     )
 
-    # Archivos individuales
+    # Archivos individuales - ACTIVOS
     file_data_payments = fields.Binary(string='Archivo Pagos', readonly=True)
     file_name_payments = fields.Char(string='Nombre archivo pagos', readonly=True)
     
@@ -51,6 +51,13 @@ class PaymentExportWizard(models.TransientModel):
     file_data_union_fees = fields.Binary(string='Archivo Cuotas', readonly=True)
     file_name_union_fees = fields.Char(string='Nombre archivo cuotas', readonly=True)
     
+    # Archivos para JUBILADOS
+    file_data_payments_retirees = fields.Binary(string='Archivo Pagos Jubilados', readonly=True)
+    file_name_payments_retirees = fields.Char(string='Nombre archivo pagos jubilados', readonly=True)
+    
+    file_data_union_fees_retirees = fields.Binary(string='Archivo Cuotas Jubilados', readonly=True)
+    file_name_union_fees_retirees = fields.Char(string='Nombre archivo cuotas jubilados', readonly=True)
+    
     state = fields.Selection([
         ('step1', 'Configuración'),
         ('step2', 'Archivos generados')
@@ -59,16 +66,16 @@ class PaymentExportWizard(models.TransientModel):
     total_records_payments = fields.Integer(string='Registros de pagos', readonly=True)
     total_records_affiliations = fields.Integer(string='Registros de altas/bajas', readonly=True)
     total_records_union_fees = fields.Integer(string='Registros de cuotas sindicales', readonly=True)
+    total_records_payments_retirees = fields.Integer(string='Registros de pagos jubilados', readonly=True)
+    total_records_union_fees_retirees = fields.Integer(string='Registros de cuotas jubilados', readonly=True)
     
     def _get_date_range(self):
         """Obtiene el rango de fechas del mes/año seleccionado"""
         year = int(self.date_year)
         month = int(self.date_month)
         
-        # Primer día del mes
         start_date = date(year, month, 1)
         
-        # Último día del mes
         if month == 12:
             end_date = date(year + 1, 1, 1) - timedelta(days=1)
         else:
@@ -79,50 +86,43 @@ class PaymentExportWizard(models.TransientModel):
     def _format_day_without_leading_zero(self, date_field):
         """Formatea el día removiendo el 0 inicial si existe"""
         day = date_field.strftime('%d')
-        return str(int(day))  # Esto remueve el 0 inicial automáticamente
+        return str(int(day))
     
-    def _generate_payments_file(self):
-        """Genera el archivo de pagos (7281)"""
+    def _generate_payments_file(self, affiliate_type='Activo', concept_code='7281'):
+        """Genera el archivo de pagos (7281 para activos, otro código para jubilados)"""
         payment_accounts = self.env['affiliate.payment_account'].search([
             ('date_month', '=', self.date_month),
             ('date_year', '=', self.date_year),
-            ('affiliate_id.affiliate_type_id.name', '=', 'Activo'),
+            ('affiliate_id.affiliate_type_id.name', '=', affiliate_type),
         ])
         
         file_content = ""
         processed_records = 0
         
-        # Crear fecha en formato YYYYMMDD (día 25 del mes seleccionado)
         date_str = f"{self.date_year}{self.date_month}25"
         
         for payment in payment_accounts:
             if not payment.affiliate_id.id_benefit:
                 continue
                 
-            # Calcular: Total Servicios - Pagos
             amount = payment.total_services - payment.payments
             
-            # Formatear el monto
             if amount == int(amount):
                 amount_str = str(int(amount))
             else:
                 amount_str = f"{amount:.2f}".replace('.', ',')
             
-            # Crear línea: ID_BENEFIT    7281  AMOUNT    DATE
-            line = f"{payment.affiliate_id.id_benefit}    7281  {amount_str}                                             {date_str}\n"
+            line = f"{payment.affiliate_id.id_benefit}    {concept_code}  {amount_str}                                             {date_str}\n"
             file_content += line
             processed_records += 1
         
         year_short = self.date_year[-2:]
-        file_name = f"7281{self.date_month}{year_short}.txt"
+        file_name = f"{concept_code}{self.date_month}{year_short}.txt"
         
         return file_content, file_name, processed_records
     
     def _format_fixed_width_line(self, pe, id_benefit, day, concept, value, action, last_name, first_name, imputation_date):
         """Formatea una línea con anchos fijos"""
-        # Anchos definidos:
-        # PE: 2, ID_BENEFIT: 9, DIA: 4, CONCEPTO: 6, VALOR: 14, ACCION: 2, APELLIDO: 40, NOMBRE: 40, FECHA: 8
-        
         pe_formatted = str(pe).ljust(2)[:2]
         id_benefit_formatted = str(id_benefit).ljust(9)[:9]
         day_formatted = str(day).ljust(4)[:4]
@@ -140,22 +140,16 @@ class PaymentExportWizard(models.TransientModel):
         if not text:
             return ''
         
-        # Convertir a mayúsculas
         text = str(text).upper()
-        
-        # Remover tildes y caracteres especiales pero preservar Ñ
-        # Normalizar usando NFD (descomponer caracteres con tildes)
         text = unicodedata.normalize('NFD', text)
         
-        # Filtrar solo caracteres ASCII más la Ñ (esto remueve las tildes pero mantiene la Ñ)
         cleaned_chars = []
         for char in text:
-            if unicodedata.category(char) != 'Mn':  # No es una marca diacrítica
+            if unicodedata.category(char) != 'Mn':
                 cleaned_chars.append(char)
         
         text = ''.join(cleaned_chars)
         
-        # Reemplazos específicos para otros caracteres especiales (sin incluir Ñ)
         replacements = {
             'Ü': 'U',
             'Ç': 'C'
@@ -173,10 +167,8 @@ class PaymentExportWizard(models.TransientModel):
         file_content = ""
         processed_records = 0
         
-        # Fecha de imputación en formato YYYYMMDD (día 25 del mes seleccionado)
         imputation_date = f"{self.date_year}{self.date_month}25"
         
-        # Buscar afiliaciones en el mes (solo afiliados activos)
         affiliations = self.env['affiliation.affiliate'].search([
             ('affiliation_date', '>=', start_date),
             ('affiliation_date', '<=', end_date),
@@ -188,10 +180,8 @@ class PaymentExportWizard(models.TransientModel):
             if not affiliate.id_benefit:
                 continue
                 
-            # Obtener el día sin 0 inicial
             day = self._format_day_without_leading_zero(affiliate.affiliation_date)
             
-            # Crear línea para alta (acción 00)
             line = self._format_fixed_width_line(
                 'PE', affiliate.id_benefit, day, '8522', '', '00',
                 affiliate.first_name, affiliate.last_name, imputation_date
@@ -199,7 +189,6 @@ class PaymentExportWizard(models.TransientModel):
             file_content += line
             processed_records += 1
         
-        # Buscar desafiliaciones en el mes (incluir todos los que se desafiliaron, independiente del estado actual)
         disaffiliations = self.env['affiliation.affiliate'].search([
             ('disaffiliation_date', '>=', start_date),
             ('disaffiliation_date', '<=', end_date),
@@ -210,10 +199,8 @@ class PaymentExportWizard(models.TransientModel):
             if not affiliate.id_benefit:
                 continue
                 
-            # Obtener el día sin 0 inicial
             day = self._format_day_without_leading_zero(affiliate.disaffiliation_date)
             
-            # Crear línea para baja (acción 99)
             line = self._format_fixed_width_line(
                 'PE', affiliate.id_benefit, day, '8522', '', '99',
                 affiliate.first_name, affiliate.last_name, imputation_date
@@ -226,19 +213,17 @@ class PaymentExportWizard(models.TransientModel):
         
         return file_content, file_name, processed_records
     
-    def _generate_union_fees_file(self):
-        """Genera el archivo de cuotas sindicales (828)"""
+    def _generate_union_fees_file(self, affiliate_type='Activo', concept_code='828'):
+        """Genera el archivo de cuotas sindicales (828 para activos, otro código para jubilados)"""
         payment_accounts = self.env['affiliate.payment_account'].search([
             ('date_month', '=', self.date_month),
             ('date_year', '=', self.date_year),
-            ('affiliate_id.affiliate_type_id.name', '=', 'Activo'),
-            # Incluir registros con union_fee = 0 también
+            ('affiliate_id.affiliate_type_id.name', '=', affiliate_type),
         ])
         
         file_content = ""
         processed_records = 0
         
-        # Fecha de imputación en formato YYYYMMDD (día 25 del mes seleccionado)
         imputation_date = f"{self.date_year}{self.date_month}25"
         
         for payment in payment_accounts:
@@ -246,31 +231,28 @@ class PaymentExportWizard(models.TransientModel):
             if not affiliate.id_benefit or not affiliate.affiliation_date:
                 continue
             
-            # Obtener el día sin 0 inicial
             day = self._format_day_without_leading_zero(affiliate.affiliation_date)
             
-            # Formatear el valor de la cuota sindical
-            union_fee = payment.union_fee or 0  # Incluir 0 también
+            union_fee = payment.union_fee or 0
             if union_fee == int(union_fee):
                 fee_str = str(int(union_fee))
             else:
                 fee_str = f"{union_fee:.2f}".replace('.', ',')
             
-            # Crear línea con formato fijo
             line = self._format_fixed_width_line(
-                'PE', affiliate.id_benefit, day, '828', fee_str, '00',
+                'PE', affiliate.id_benefit, day, concept_code, fee_str, '00',
                 affiliate.first_name, affiliate.last_name, imputation_date
             )
             file_content += line
             processed_records += 1
         
         year_short = self.date_year[-2:]
-        file_name = f"828{self.date_month}{year_short}.txt"
+        file_name = f"{concept_code}{self.date_month}{year_short}.txt"
         
         return file_content, file_name, processed_records
     
     def action_generate_payments(self):
-        """Genera solo el archivo de pagos"""
+        """Genera solo el archivo de pagos (activos)"""
         payments_content, payments_name, payments_count = self._generate_payments_file()
         
         if payments_count == 0:
@@ -283,8 +265,28 @@ class PaymentExportWizard(models.TransientModel):
             'file_name_payments': payments_name,
             'state': 'step2',
             'total_records_payments': payments_count,
-            'total_records_affiliations': 0,
-            'total_records_union_fees': 0
+        })
+        
+        return self._return_to_wizard()
+    
+    def action_generate_payments_retirees(self):
+        """Genera solo el archivo de pagos (jubilados)"""
+        # NOTA: Ajusta el código de concepto según tus necesidades (por defecto uso 7281)
+        payments_content, payments_name, payments_count = self._generate_payments_file(
+            affiliate_type='Jubilado', 
+            concept_code='7281'  # Cambia esto si necesitas otro código
+        )
+        
+        if payments_count == 0:
+            raise UserError(f'No se encontraron registros de pagos de jubilados para el período {self.date_month}/{self.date_year}.')
+        
+        payments_data = base64.b64encode(payments_content.encode('utf-8'))
+        
+        self.write({
+            'file_data_payments_retirees': payments_data,
+            'file_name_payments_retirees': payments_name,
+            'state': 'step2',
+            'total_records_payments_retirees': payments_count,
         })
         
         return self._return_to_wizard()
@@ -302,15 +304,13 @@ class PaymentExportWizard(models.TransientModel):
             'file_data_affiliations': affiliations_data,
             'file_name_affiliations': affiliations_name,
             'state': 'step2',
-            'total_records_payments': 0,
             'total_records_affiliations': affiliations_count,
-            'total_records_union_fees': 0
         })
         
         return self._return_to_wizard()
     
     def action_generate_union_fees(self):
-        """Genera solo el archivo de cuotas sindicales"""
+        """Genera solo el archivo de cuotas sindicales (activos)"""
         union_fees_content, union_fees_name, union_fees_count = self._generate_union_fees_file()
         
         if union_fees_count == 0:
@@ -322,28 +322,61 @@ class PaymentExportWizard(models.TransientModel):
             'file_data_union_fees': union_fees_data,
             'file_name_union_fees': union_fees_name,
             'state': 'step2',
-            'total_records_payments': 0,
-            'total_records_affiliations': 0,
-            'total_records_union_fees': union_fees_count
+            'total_records_union_fees': union_fees_count,
+        })
+        
+        return self._return_to_wizard()
+    
+    def action_generate_union_fees_retirees(self):
+        """Genera solo el archivo de cuotas sindicales (jubilados)"""
+        # NOTA: Ajusta el código de concepto según tus necesidades (por defecto uso 828)
+        union_fees_content, union_fees_name, union_fees_count = self._generate_union_fees_file(
+            affiliate_type='Jubilado',
+            concept_code='828'  # Cambia esto si necesitas otro código
+        )
+        
+        if union_fees_count == 0:
+            raise UserError(f'No se encontraron registros de cuotas sindicales de jubilados para el período {self.date_month}/{self.date_year}.')
+        
+        union_fees_data = base64.b64encode(union_fees_content.encode('utf-8'))
+        
+        self.write({
+            'file_data_union_fees_retirees': union_fees_data,
+            'file_name_union_fees_retirees': union_fees_name,
+            'state': 'step2',
+            'total_records_union_fees_retirees': union_fees_count,
         })
         
         return self._return_to_wizard()
     
     def action_generate_all(self):
-        """Genera los tres archivos"""
-        # Generar cada archivo
+        """Genera todos los archivos (activos y jubilados)"""
+        # Generar archivos de activos
         payments_content, payments_name, payments_count = self._generate_payments_file()
         affiliations_content, affiliations_name, affiliations_count = self._generate_affiliations_file()
         union_fees_content, union_fees_name, union_fees_count = self._generate_union_fees_file()
         
+        # Generar archivos de jubilados
+        payments_ret_content, payments_ret_name, payments_ret_count = self._generate_payments_file(
+            affiliate_type='Jubilado', concept_code='7281'
+        )
+        union_fees_ret_content, union_fees_ret_name, union_fees_ret_count = self._generate_union_fees_file(
+            affiliate_type='Jubilado', concept_code='828'
+        )
+        
         # Verificar que al menos un archivo tenga contenido
-        if payments_count == 0 and affiliations_count == 0 and union_fees_count == 0:
+        total_records = (payments_count + affiliations_count + union_fees_count + 
+                        payments_ret_count + union_fees_ret_count)
+        
+        if total_records == 0:
             raise UserError(f'No se encontraron registros para generar archivos del período {self.date_month}/{self.date_year}.')
         
-        # Codificar archivos individuales
+        # Codificar archivos
         payments_data = base64.b64encode(payments_content.encode('utf-8')) if payments_count > 0 else False
         affiliations_data = base64.b64encode(affiliations_content.encode('utf-8')) if affiliations_count > 0 else False
         union_fees_data = base64.b64encode(union_fees_content.encode('utf-8')) if union_fees_count > 0 else False
+        payments_ret_data = base64.b64encode(payments_ret_content.encode('utf-8')) if payments_ret_count > 0 else False
+        union_fees_ret_data = base64.b64encode(union_fees_ret_content.encode('utf-8')) if union_fees_ret_count > 0 else False
         
         # Actualizar wizard
         self.write({
@@ -353,10 +386,16 @@ class PaymentExportWizard(models.TransientModel):
             'file_name_affiliations': affiliations_name if affiliations_count > 0 else False,
             'file_data_union_fees': union_fees_data,
             'file_name_union_fees': union_fees_name if union_fees_count > 0 else False,
+            'file_data_payments_retirees': payments_ret_data,
+            'file_name_payments_retirees': payments_ret_name if payments_ret_count > 0 else False,
+            'file_data_union_fees_retirees': union_fees_ret_data,
+            'file_name_union_fees_retirees': union_fees_ret_name if union_fees_ret_count > 0 else False,
             'state': 'step2',
             'total_records_payments': payments_count,
             'total_records_affiliations': affiliations_count,
-            'total_records_union_fees': union_fees_count
+            'total_records_union_fees': union_fees_count,
+            'total_records_payments_retirees': payments_ret_count,
+            'total_records_union_fees_retirees': union_fees_ret_count,
         })
         
         return self._return_to_wizard()
@@ -383,6 +422,17 @@ class PaymentExportWizard(models.TransientModel):
             'target': 'self',
         }
     
+    def action_download_payments_retirees(self):
+        """Descarga el archivo de pagos (jubilados)"""
+        if not self.file_data_payments_retirees:
+            raise UserError('No hay archivo de pagos de jubilados para descargar.')
+            
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content?model={self._name}&id={self.id}&field=file_data_payments_retirees&download=true&filename={self.file_name_payments_retirees}',
+            'target': 'self',
+        }
+    
     def action_download_affiliations(self):
         """Descarga el archivo de altas/bajas"""
         if not self.file_data_affiliations:
@@ -405,6 +455,17 @@ class PaymentExportWizard(models.TransientModel):
             'target': 'self',
         }
     
+    def action_download_union_fees_retirees(self):
+        """Descarga el archivo de cuotas sindicales (jubilados)"""
+        if not self.file_data_union_fees_retirees:
+            raise UserError('No hay archivo de cuotas sindicales de jubilados para descargar.')
+            
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content?model={self._name}&id={self.id}&field=file_data_union_fees_retirees&download=true&filename={self.file_name_union_fees_retirees}',
+            'target': 'self',
+        }
+    
     def action_back(self):
         """Volver al paso anterior"""
         self.write({
@@ -415,9 +476,15 @@ class PaymentExportWizard(models.TransientModel):
             'file_name_affiliations': False,
             'file_data_union_fees': False,
             'file_name_union_fees': False,
+            'file_data_payments_retirees': False,
+            'file_name_payments_retirees': False,
+            'file_data_union_fees_retirees': False,
+            'file_name_union_fees_retirees': False,
             'total_records_payments': 0,
             'total_records_affiliations': 0,
-            'total_records_union_fees': 0
+            'total_records_union_fees': 0,
+            'total_records_payments_retirees': 0,
+            'total_records_union_fees_retirees': 0,
         })
         
         return {
