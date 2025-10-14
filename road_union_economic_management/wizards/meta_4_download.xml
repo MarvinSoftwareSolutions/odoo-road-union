@@ -24,10 +24,16 @@
                                 <group>
                                     <div class="text-muted">
                                         <h4>Tipos de archivo disponibles:</h4>
+                                        <h5>Afiliados Activos:</h5>
                                         <ul>
-                                            <li><strong>Archivo de Pagos (7281):</strong> Datos de pagos de afiliados activos</li>
-                                            <li><strong>Archivo de Altas/Bajas (8522):</strong> Afiliaciones y desafiliaciones del mes</li>
-                                            <li><strong>Archivo de Cuotas Sindicales (828):</strong> Cuotas sindicales de afiliados activos</li>
+                                            <li><strong>Pagos (7281):</strong> Datos de pagos de afiliados activos</li>
+                                            <li><strong>Altas/Bajas (8522):</strong> Afiliaciones y desafiliaciones del mes</li>
+                                            <li><strong>Cuotas Sindicales (828):</strong> Cuotas sindicales de afiliados activos</li>
+                                        </ul>
+                                        <h5>Afiliados Jubilados:</h5>
+                                        <ul>
+                                            <li><strong>Pagos Jubilados (7281):</strong> Datos de pagos de afiliados jubilados</li>
+                                            <li><strong>Cuotas Jubilados (828):</strong> Cuotas sindicales de afiliados jubilados</li>
                                         </ul>
                                         <p><em>Puede generar cada archivo por separado o todos juntos.</em></p>
                                     </div>
@@ -49,7 +55,7 @@
                             </div>
                             
                             <!-- Tabla con información de cada archivo -->
-                            <group string="Archivos Disponibles">
+                            <group string="Archivos de Afiliados Activos">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <table class="table table-sm">
@@ -104,10 +110,64 @@
                                                     </td>
                                                 </tr>
                                                 
-                                                <!-- Mensaje cuando no hay archivos generados -->
+                                                <!-- Mensaje cuando no hay archivos de activos -->
                                                 <tr attrs="{'invisible': ['|', '|', ('total_records_payments', '>', 0), ('total_records_affiliations', '>', 0), ('total_records_union_fees', '>', 0)]}">
                                                     <td colspan="4" class="text-center text-muted">
-                                                        <em>No se generaron archivos para este período</em>
+                                                        <em>No se generaron archivos de activos para este período</em>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </group>
+                            
+                            <!-- Tabla de archivos de jubilados -->
+                            <group string="Archivos de Afiliados Jubilados">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Archivo</th>
+                                                    <th>Registros</th>
+                                                    <th>Nombre</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Archivo de Pagos Jubilados -->
+                                                <tr attrs="{'invisible': [('total_records_payments_retirees', '=', 0)]}">
+                                                    <td><strong>Pagos Jubilados (7281)</strong></td>
+                                                    <td><field name="total_records_payments_retirees" readonly="1" nolabel="1"/></td>
+                                                    <td><field name="file_name_payments_retirees" readonly="1" nolabel="1"/></td>
+                                                    <td>
+                                                        <button name="action_download_payments_retirees" 
+                                                                string="Descargar" 
+                                                                type="object" 
+                                                                class="btn btn-primary btn-sm"
+                                                                attrs="{'invisible': [('file_data_payments_retirees', '=', False)]}"/>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Archivo de Cuotas Jubilados -->
+                                                <tr attrs="{'invisible': [('total_records_union_fees_retirees', '=', 0)]}">
+                                                    <td><strong>Cuotas Jubilados (828)</strong></td>
+                                                    <td><field name="total_records_union_fees_retirees" readonly="1" nolabel="1"/></td>
+                                                    <td><field name="file_name_union_fees_retirees" readonly="1" nolabel="1"/></td>
+                                                    <td>
+                                                        <button name="action_download_union_fees_retirees" 
+                                                                string="Descargar" 
+                                                                type="object" 
+                                                                class="btn btn-primary btn-sm"
+                                                                attrs="{'invisible': [('file_data_union_fees_retirees', '=', False)]}"/>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Mensaje cuando no hay archivos de jubilados -->
+                                                <tr attrs="{'invisible': ['|', ('total_records_payments_retirees', '>', 0), ('total_records_union_fees_retirees', '>', 0)]}">
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        <em>No se generaron archivos de jubilados para este período</em>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -122,11 +182,14 @@
                         <field name="file_data_payments" invisible="1"/>
                         <field name="file_data_affiliations" invisible="1"/>
                         <field name="file_data_union_fees" invisible="1"/>
+                        <field name="file_data_payments_retirees" invisible="1"/>
+                        <field name="file_data_union_fees_retirees" invisible="1"/>
                     </sheet>
                     
                     <footer>
                         <!-- Botones para el paso 1 -->
                         <div attrs="{'invisible': [('state', '!=', 'step1')]}">
+                            <h5>Archivos de Activos:</h5>
                             <button name="action_generate_payments" 
                                     string="Generar Pagos (7281)" 
                                     type="object" 
@@ -139,8 +202,19 @@
                                     string="Generar Cuotas (828)" 
                                     type="object" 
                                     class="btn-primary"/>
+                            <br/><br/>
+                            <h5>Archivos de Jubilados:</h5>
+                            <button name="action_generate_payments_retirees" 
+                                    string="Generar Pagos Jubilados (7281)" 
+                                    type="object" 
+                                    class="btn-info"/>
+                            <button name="action_generate_union_fees_retirees" 
+                                    string="Generar Cuotas Jubilados (828)" 
+                                    type="object" 
+                                    class="btn-info"/>
+                            <br/><br/>
                             <button name="action_generate_all" 
-                                    string="Generar Todos" 
+                                    string="Generar Todos los Archivos" 
                                     type="object" 
                                     class="btn-success"/>
                             <button string="Cancelar" class="btn-secondary" special="cancel"/>
