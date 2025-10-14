@@ -9,6 +9,9 @@
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
             <tree editable="bottom" import="true">
+                <!-- Campo helper oculto -->
+                <field name="has_previous_month" invisible="1"/>
+                
                 <!-- Información del Afiliado -->
                 <field name="affiliate_type"/>
                 <field name="affiliate_name"/>
@@ -19,8 +22,12 @@
                 <field name="date_month"/>
                 <field name="date_year"/>
                 
-                <!-- Saldo Inicial -->
-                <field name="initial_balance" sum="False"/>
+                <!-- Saldo Inicial con readonly condicional -->
+                <field name="initial_balance" 
+                       sum="False"
+                       attrs="{'readonly': [('has_previous_month', '=', True)]}"
+                       decoration-warning="has_previous_month == False"
+                       decoration-info="has_previous_month == True"/>
                 
                 <!-- Servicios con sus cuotas -->
                 <field name="pharmacy_installment"/>
@@ -162,8 +169,10 @@
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
             <tree editable="bottom" delete="true" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'">
+                <!-- Campo helper oculto PRIMERO -->
+                <field name="has_previous_month" invisible="1"/>
+                
                 <!-- SECCIÓN: Información del Afiliado -->
-
                 <field name="id"/>
                 <field name="affiliate_id"/>
 
@@ -176,8 +185,12 @@
                 <field name="date_month"/>
                 <field name="date_year" options="{'format': 0}"/>
 
-                <!-- SECCIÓN: Saldo Inicial -->
-                <field name="initial_balance" sum="Total Saldo Inicial"/>
+                <!-- SECCIÓN: Saldo Inicial con readonly condicional y colores -->
+                <field name="initial_balance" 
+                       sum="Total Saldo Inicial"
+                       attrs="{'readonly': [('has_previous_month', '=', True)]}"
+                       decoration-warning="has_previous_month == False"
+                       decoration-info="has_previous_month == True"/>
                 
                 <!-- SECCIÓN: Servicios (Cuota + Monto) -->
                 <field name="pharmacy_installment" string="Cuota Farm."/>
@@ -232,14 +245,12 @@
                 <!-- SECCIÓN: Estado -->
                 <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'confirmed'"/>
                 
-                <!-- Campos ocultos para filtros -->
-                <field name="date_month" invisible="1"/>
-                <field name="date_year" invisible="1"/>
+                <!-- Campos ocultos para filtros (date_month y date_year ya están arriba visibles) -->
             </tree>
         </field>
     </record>
 
-    <!-- Vista Form mejorada -->
+    <!-- Vista Form mejorada con readonly condicional -->
     <record id="view_affiliate_payment_account_form" model="ir.ui.view">
         <field name="name">affiliate.payment_account.form</field>
         <field name="model">affiliate.payment_account</field>
@@ -265,8 +276,35 @@
                             <field name="id_benefit" readonly="1"/>
                             <field name="state"/>
                         </group>
-                        <group string="Saldo">
-                            <field name="initial_balance" readonly="1" widget="monetary"/>
+                        <group string="Saldo Inicial">
+                            <!-- Campo helper oculto -->
+                            <field name="has_previous_month" invisible="1"/>
+                            
+                            <!-- Campo con readonly condicional -->
+                            <field name="initial_balance" 
+                                   widget="monetary"
+                                   attrs="{'readonly': [('has_previous_month', '=', True)]}"/>
+                            
+                            <!-- Mensaje cuando HAY mes previo (calculado automáticamente) -->
+                            <div class="alert alert-info" 
+                                 attrs="{'invisible': [('has_previous_month', '=', False)]}"
+                                 role="alert">
+                                <p>
+                                    <i class="fa fa-calculator"/> 
+                                    <strong>Calculado automáticamente</strong> desde el saldo final del mes anterior.
+                                </p>
+                            </div>
+                            
+                            <!-- Mensaje cuando NO hay mes previo (editable) -->
+                            <div class="alert alert-warning" 
+                                 attrs="{'invisible': [('has_previous_month', '=', True)]}"
+                                 role="alert">
+                                <p>
+                                    <i class="fa fa-edit"/> 
+                                    <strong>Campo editable:</strong> Este es el primer mes registrado para este afiliado. 
+                                    Ingrese el saldo inicial manualmente.
+                                </p>
+                            </div>
                         </group>
                     </group>
 
@@ -318,7 +356,7 @@
                     <group string="Resumen Financiero">
                         <group string="Totales Calculados">
                             <field name="total_services" readonly="1" widget="monetary" string="SUBTOTAL"/>
-                            <field name="union_fee" widget="monetary"/>
+                            <field name="union_fee" readonly="1" widget="monetary"/>
                             <field name="total" readonly="1" widget="monetary" string="TOTAL"/>
                         </group>
                         <group string="Descuentos y Saldo Final">
