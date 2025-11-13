@@ -5,9 +5,11 @@
         <field name="name">affiliate.class.basic.tree</field>
         <field name="model">affiliate.class.basic</field>
         <field name="arch" type="xml">
-            <tree string="Básicos por Clase">
+            <tree string="Básicos por Clase" editable="bottom">
                 <field name="class_number"/>
-                <field name="basic_amount" widget="monetary"/>
+                <field name="class_index"/>
+                <field name="basic_amount" widget="monetary" 
+                       attrs="{'readonly': [('class_number', '!=', 1)]}"/>
                 <field name="active"/>
             </tree>
         </field>
@@ -23,12 +25,25 @@
                     <group>
                         <group>
                             <field name="class_number"/>
-                            <field name="basic_amount" widget="monetary"/>
+                            <field name="class_index"/>
+                            <field name="basic_amount" widget="monetary" 
+                                   attrs="{'readonly': [('class_number', '!=', 1)]}"/>
                         </group>
                         <group>
                             <field name="active"/>
                         </group>
                     </group>
+                    <notebook attrs="{'invisible': [('class_number', '!=', 1)]}">
+                        <page string="Información">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <p><strong>Clase Base</strong></p>
+                                    <p>Este es el monto base que se usa para calcular todas las demás clases.</p>
+                                    <p>Al modificar este valor, todas las demás clases se actualizarán automáticamente multiplicando este monto por su índice correspondiente.</p>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
@@ -45,6 +60,11 @@
             </p>
             <p>
                 Estos valores se usan para calcular automáticamente la cuota sindical.
+            </p>
+            <p>
+                <strong>Nota:</strong> Solo se puede editar el monto de la Clase 1. 
+                Los demás montos se calcularán automáticamente multiplicando 
+                el valor de la Clase 1 por el índice correspondiente.
             </p>
         </field>
     </record>

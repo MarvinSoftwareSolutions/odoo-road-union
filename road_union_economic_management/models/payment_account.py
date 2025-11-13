@@ -547,18 +547,34 @@ class AffiliateClassBasic(models.Model):
     _name = "affiliate.class.basic"
     _description = "Basic Amount by Affiliate Class"
     _order = "class_number"
-
+    
     class_number = fields.Integer(
         string="Clase",
         required=True,
         help="Número de clase del afiliado"
     )
     
+    class_index = fields.Float(
+        string="Índice",
+        required=True,
+        help="Índice de básico en función de clase 1"
+    )
+    
     basic_amount = fields.Float(
         string="Básico",
         required=True,
         digits='Product Price',
+        compute='_compute_basic_amount',
+        store=True,
+        readonly=False,
         help="Monto básico para esta clase"
+    )
+    
+    # Campo auxiliar solo para la clase 1
+    basic_amount_class1 = fields.Float(
+        string="Básico Clase 1",
+        digits='Product Price',
+        help="Monto básico de referencia (solo para clase 1)"
     )
     
     active = fields.Boolean(
@@ -571,24 +587,102 @@ class AffiliateClassBasic(models.Model):
          'Ya existe un básico definido para esta clase.')
     ]
     
+    @api.depends('class_index', 'basic_amount_class1')
+    def _compute_basic_amount(self):
+        """
+        Calcula el basic_amount multiplicando el basic_amount de clase 1
+        por el class_index correspondiente.
+        """
+        for record in self:
+            if record.class_number == 1:
+                # Para clase 1, basic_amount es igual a basic_amount_class1
+                record.basic_amount = record.basic_amount_class1
+            else:
+                # Para otras clases, buscar el basic_amount de clase 1
+                class1_record = self.search([('class_number', '=', 1)], limit=1)
+                if class1_record:
+                    record.basic_amount = class1_record.basic_amount * record.class_index
+                else:
+                    record.basic_amount = 0.0
+    
     def name_get(self):
         result = []
         for record in self:
             name = f"Clase {record.class_number} - ${record.basic_amount:,.2f}"
             result.append((record.id, name))
         return result
-
+    
     def write(self, vals):
         """
-        Override write para recalcular union_fee cuando se modifica el básico.
+        Override write para:
+        1. Actualizar basic_amount_class1 si se modifica basic_amount en clase 1
+        2. Recalcular union_fee cuando se modifica el básico
+        3. Propagar cambios a todas las clases cuando se modifica clase 1
         """
         result = super(AffiliateClassBasic, self).write(vals)
         
+        # Si se modificó basic_amount en la clase 1, actualizar todas las demás clases
         if 'basic_amount' in vals:
+            for record in self:
+                if record.class_number == 1:
+                    # Actualizar el campo auxiliar
+                    if 'basic_amount_class1' not in vals:
+                        super(AffiliateClassBasic, record).write({
+                            'basic_amount_class1': vals['basic_amount']
+                        })
+                    
+                    # Recalcular todas las demás clases
+                    other_classes = self.search([('class_number', '!=', 1)])
+                    other_classes._compute_basic_amount()
+            
+            # Actualizar las cuotas sindicales
+            self._update_union_fees_from_current_month()
+        
+        # Si se modificó basic_amount_class1, recalcular todas las clases
+        if 'basic_amount_class1' in vals:
+            all_classes = self.search([])
+            all_classes._compute_basic_amount()
             self._update_union_fees_from_current_month()
         
         return result
-
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        """
+        Override create para sincronizar basic_amount_class1 al crear clase 1
+        """
+        records = super(AffiliateClassBasic, self).create(vals_list)
+        
+        for record in records:
+            if record.class_number == 1 and 'basic_amount' in vals_list[0]:
+                super(AffiliateClassBasic, record).write({
+                    'basic_amount_class1': record.basic_amount
+                })
+        
+        return records
+    
+    def action_recalculate_all(self):
+        """
+        Acción de botón para recalcular todas las clases manualmente.
+        """
+        self.ensure_one()
+        if self.class_number == 1:
+            # Recalcular todas las clases
+            all_classes = self.search([])
+            all_classes._compute_basic_amount()
+            # Actualizar cuotas sindicales
+            self._update_union_fees_from_current_month()
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Recálculo completado',
+                    'message': 'Se han recalculado todas las clases y cuotas sindicales.',
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+    
     def _update_union_fees_from_current_month(self):
         """
         Recalcula union_fee para todos los payment_account del mes actual
@@ -610,7 +704,7 @@ class AffiliateClassBasic(models.Model):
                 active_affiliates = all_affiliates.filtered(
                     lambda a: a.affiliate_type_id and 
                     not any(keyword in a.affiliate_type_id.name.lower() 
-                           for keyword in ['jubilado', 'pensionado', 'retirado'])
+                            for keyword in ['jubilado', 'pensionado', 'retirado'])
                 )
                 affected_affiliates |= active_affiliates
             
@@ -619,7 +713,6 @@ class AffiliateClassBasic(models.Model):
             ])
             
             current_date = datetime(int(current_year), int(current_month), 1)
-            
             records_to_update = all_records.filtered(
                 lambda r: datetime(int(r.date_year), int(r.date_month), 1) >= current_date
             )
