@@ -135,33 +135,38 @@
       </field>
     </record>
     
+
+    <!-- Vista de búsqueda corregida -->
     <record id="view_affiliate_payment_account_search" model="ir.ui.view">
-      <field name="name">affiliate.payment_account.search</field>
-      <field name="model">affiliate.payment_account</field>
-      <field name="arch" type="xml">
-        <search string="Search Economic Summary">
-          <field name="affiliate_name" string="Affiliate Name"/>
-          <field name="affiliate_class" string="Class"/>
-          <field name="affiliate_number" string="Affiliate Number"/>
-          <field name="cuil" string="CUIL"/>
-          <field name="date_month" string="Month"/>
-          <field name="date_year" string="Year"/>
+        <field name="name">affiliate.payment_account.search</field>
+        <field name="model">affiliate.payment_account</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Resumen Económico">
+                <!-- Campos de búsqueda -->
+                <field name="affiliate_id" string="Afiliado" 
+                       filter_domain="['|', '|', ('affiliate_id.name', 'ilike', self), ('affiliate_id.vat', 'ilike', self), ('affiliate_id.id_benefit', 'ilike', self)]"/>
+                <field name="affiliate_class" string="Clase"/>
+                <field name="affiliate_number" string="Número de Afiliado"/>
+                <field name="cuil" string="CUIL"/>
+                <field name="date_month" string="Mes"/>
+                <field name="date_year" string="Año"/>
+                <field name="state" string="Estado"/>
 
-          <!-- Filtro automático para el mes actual -->
-          <separator/>
-
-          <filter string="Draft" name="filter_state_draft" domain="[('state', '=', 'draft')]"/>
-          <filter string="Confirmed" name="filter_state_confirmed" domain="[('state', '=', 'confirmed')]"/>
-
-          <group expand="0" string="Agrupar por">
-            <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
-            <filter string="Afiliado" name="group_by_affiliate" domain="[]" context="{'group_by': 'affiliate_id'}"/>
-            <filter string="Clase" name="group_by_class" domain="[]" context="{'group_by': 'affiliate_class'}"/>
-          </group>
-        </search>
-      </field>
+                <!-- Filtros -->
+                <separator/>
+                <filter string="Borrador" name="filter_state_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmado" name="filter_state_confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <!-- Agrupaciones -->
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Afiliado" name="group_by_affiliate" domain="[]" context="{'group_by': 'affiliate_id'}"/>
+                    <filter string="Clase" name="group_by_class" domain="[]" context="{'group_by': 'affiliate_class'}"/>
+                    <filter string="Mes" name="group_by_month" domain="[]" context="{'group_by': 'date_month'}"/>
+                    <filter string="Año" name="group_by_year" domain="[]" context="{'group_by': 'date_year'}"/>
+                </group>
+            </search>
+        </field>
     </record>
-
     <!-- Vista tree principal optimizada para mejor visualización -->
     <record id="view_payment_account_current_month_only_tree" model="ir.ui.view">
         <field name="name">affiliate.payment_account.current.month.tree</field>
