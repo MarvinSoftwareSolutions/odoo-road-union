@@ -30,11 +30,6 @@
                     <filter string="Borrador" name="draft" domain="[('state','=','draft')]"/>
                     <filter string="Confirmado" name="confirmed" domain="[('state','=','confirmed')]"/>
                     
-                    <separator/>
-                    <filter string="Mes Actual" name="current_month" 
-                            domain="[('date_month','=',context_today().strftime('%%m')),
-                                    ('date_year','=',str(context_today().year))]"/>
-                    
                     <group expand="0" string="Agrupar por">
                         <filter string="Mes" name="group_month" context="{'group_by':'date_month'}"/>
                         <filter string="Año" name="group_year" context="{'group_by':'date_year'}"/>
