@@ -139,7 +139,7 @@ class AffiliatePaymentAccount(models.Model):
         compute='_compute_initial_balance',
         inverse='_inverse_initial_balance',
         store=True,
-        group_operator=False,
+        group_operator='sum',
         help="Saldo inicial del mes. Se calcula automáticamente del mes anterior si existe, "
              "o puede ingresarse manualmente si es el primer mes del afiliado."
     )
@@ -198,48 +198,48 @@ class AffiliatePaymentAccount(models.Model):
                 record._compute_initial_balance()
 
     # Service Totals
-    pharmacy_total = fields.Float(string="Todas las farmacias", group_operator=False)
+    pharmacy_total = fields.Float(string="Todas las farmacias", group_operator='sum')
     pharmacy_installment = fields.Char(string="N° Cuota Farmacias")
 
-    optical_total = fields.Float(string="Optica", group_operator=False)
+    optical_total = fields.Float(string="Optica", group_operator='sum')
     odontology_installment = fields.Char(string="N° Cuota Odontología")
     
-    punilla_total = fields.Float(string="Punilla", group_operator=False)
+    punilla_total = fields.Float(string="Punilla", group_operator='sum')
 
-    solar = fields.Float(string="Solar", group_operator=False)
-    caruso = fields.Float(string="Caruso", group_operator=False)
-    
-    parque_del_sol = fields.Float(string="Parque del Sol", group_operator=False)
-    salguero = fields.Float(string="Salguero", group_operator=False)
-    tres_provincias = fields.Float(string="Tres Provincias", group_operator=False)
+    solar = fields.Float(string="Solar", group_operator='sum')
+    caruso = fields.Float(string="Caruso", group_operator='sum')
 
-    ecco_loan = fields.Float(string="ECCO", group_operator=False)
-    emi_loan = fields.Float(string="EMI", group_operator=False)
-    emergency_loan = fields.Float(string="URGENCIAS", group_operator=False)
-    suoem_loan = fields.Float(string="SUOEM", group_operator=False)
+    parque_del_sol = fields.Float(string="Parque del Sol", group_operator='sum')
+    salguero = fields.Float(string="Salguero", group_operator='sum')
+    tres_provincias = fields.Float(string="Tres Provincias", group_operator='sum')
 
-    tourism_total = fields.Float(string="Turismo", group_operator=False)
+    ecco_loan = fields.Float(string="ECCO", group_operator='sum')
+    emi_loan = fields.Float(string="EMI", group_operator='sum')
+    emergency_loan = fields.Float(string="URGENCIAS", group_operator='sum')
+    suoem_loan = fields.Float(string="SUOEM", group_operator='sum')
+
+    tourism_total = fields.Float(string="Turismo", group_operator='sum')
     tourism_installment = fields.Char(string="N° Cuota Turismo")
 
-    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator=False)
+    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator='sum')
     aid_installment = fields.Char(string="N° Cuota Ayudas")
 
-    party_total = fields.Float(string="FIESTA", group_operator=False)
+    party_total = fields.Float(string="FIESTA", group_operator='sum')
     party_installment = fields.Char(string="N° Cuota Fiesta")
 
-    hall_total = fields.Float(string="Salon", group_operator=False)
+    hall_total = fields.Float(string="Salon", group_operator='sum')
     hall_installment = fields.Char(string="N° Cuota Salón")
 
-    odontology_total = fields.Float(string="Odontología", group_operator=False)
+    odontology_total = fields.Float(string="Odontología", group_operator='sum')
 
-    otros_1 = fields.Float(string="OTROS 1", group_operator=False)
-    otros_2 = fields.Float(string="OTROS 2", group_operator=False)
+    otros_1 = fields.Float(string="OTROS 1", group_operator='sum')
+    otros_2 = fields.Float(string="OTROS 2", group_operator='sum')
 
     union_fee = fields.Float(
         string="CUOTA SINDICAL",
         compute='_compute_union_fee',
         store=True,
-        group_operator=False,
+        group_operator='sum',
         help="Calculado automáticamente según clase y tipo de afiliado"
     )
 
@@ -288,28 +288,28 @@ class AffiliatePaymentAccount(models.Model):
                 record.union_fee = record.union_fee * 0.75
 
     total_services = fields.Float(
-        string="TOTAL SERVICIOS", 
+        string="TOTAL SERVICIOS",
         compute='_compute_total_services',
         store=True,
-        group_operator=False
+        group_operator='sum'
     )
 
     total = fields.Float(
-        string="TOTAL", 
+        string="TOTAL",
         compute='_compute_total',
         store=True,
-        group_operator=False
+        group_operator='sum'
     )
-    
-    payments = fields.Float(string="Pagos", group_operator=False)
-    pension_fund = fields.Float(string="CAJA DE JUBILACIONES", group_operator=False)
-    meta4 = fields.Float(string="META 4", group_operator=False)
-    
+
+    payments = fields.Float(string="Pagos", group_operator='sum')
+    pension_fund = fields.Float(string="CAJA DE JUBILACIONES", group_operator='sum')
+    meta4 = fields.Float(string="META 4", group_operator='sum')
+
     final_balance = fields.Float(
-        string="SALDO", 
+        string="SALDO",
         compute='_compute_final_balance',
         store=True,
-        group_operator=False
+        group_operator='sum'
     )
 
     state = fields.Selection([

@@ -9,9 +9,14 @@
     'category': 'Union',
     'version': '1.0',
     "license": "AGPL-3",
-    'depends': ['base', 'base_automation', 
-                'union_affiliation', 'road_union_affiliation', 
+    'depends': ['base', 'base_automation',
+                'union_affiliation', 'road_union_affiliation',
                 'web_widget_x2many_2d_matrix'],
+    'assets': {
+        'web.assets_backend': [
+            'road_union_economic_management/static/src/js/list_server_aggregates.js',
+        ],
+    },
     'data': [
         'views/affiliate_class_basic_views.xml',
         'views/payment_account_current_views.xml',
