@@ -10,6 +10,11 @@
     'version': '1.0',
     "license": "AGPL-3",
     'depends': ['base', 'union_affiliation'],
+    'assets': {
+        'web.assets_backend': [
+            'road_union_affiliation/static/src/scss/list_sticky.scss',
+        ],
+    },
     'data': [
         'views/affiliate_views.xml',
         'views/insurance_views.xml',
