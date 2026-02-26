@@ -60,7 +60,8 @@
         <field name="model">affiliate.pharmacy.expenses</field>
         <field name="arch" type="xml">
             <tree string="Gastos Mensuales Farmacia"
-                  default_order="year desc, month desc">
+                  default_order="year desc, month desc"
+                  class="o_sticky_list">
                 <field name="affiliate_last_name"/>
                 <field name="affiliate_first_name"/>
                 <field name="year"/>
