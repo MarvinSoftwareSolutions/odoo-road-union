@@ -3,12 +3,12 @@
         <field name="name">affiliation.affiliate.tree</field>
         <field name="model">affiliation.affiliate</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree class="o_sticky_list">
+                <field name="name" string="Apellido y Nombre"/>
                 <field name="gender"/>
                 <field name="department_id"/>
                 <field name="affiliate_type_id"/>
                 <field name="insurance_id"/>
-                <field name="name"/>
                 <field name="uid"/>
                 <field name="street"/>
                 <field name="city"/>

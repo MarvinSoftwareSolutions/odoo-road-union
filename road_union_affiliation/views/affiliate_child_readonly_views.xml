@@ -5,7 +5,7 @@
         <field name="model">affiliation.affiliate_child</field>
         <field name="priority" eval="100"/>
         <field name="arch" type="xml">
-            <tree>
+            <tree class="o_sticky_list">
                 <field name="name"/>
                 <field name="age"/>
                 <field name="personal_id"/>
