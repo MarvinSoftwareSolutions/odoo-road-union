@@ -34,10 +34,11 @@ class ProveedorSindicato(models.Model):
 
     def _invalidar_cache_vistas_gastos(self):
         """Invalida el caché de vistas cuando cambian las farmacias"""
-        # Limpiar caché de vistas
-        self.env['sindicato.gasto.farmacia.linea'].clear_caches()
+        # Verificar si el modelo existe antes de limpiar su caché
+        if 'sindicato.gasto.farmacia.linea' in self.env:
+            self.env['sindicato.gasto.farmacia.linea'].clear_caches()
         
-        # También limpiar caché del registro en ir.ui.view
+        # Limpiar caché del registro en ir.ui.view
         self.env['ir.ui.view'].clear_caches()
     
     @api.model_create_multi

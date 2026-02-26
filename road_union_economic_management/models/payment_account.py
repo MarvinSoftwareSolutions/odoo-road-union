@@ -36,10 +36,17 @@ class AffiliatePaymentAccount(models.Model):
         string="Clase",
         related="affiliate_id.category",
     )
+
     affiliate_number = fields.Integer(
         string="N° Afiliado",
-        related="affiliate_id.uid",
+        compute="_compute_affiliate_uid",
+        store=True,
     )
+
+    @api.depends('affiliate_id')
+    def _compute_affiliate_uid(self):
+        for record in self:
+            record.affiliate_number = record.affiliate_id.uid if record.affiliate_id else 0
 
     cuil = fields.Char(
         string="CUIL",

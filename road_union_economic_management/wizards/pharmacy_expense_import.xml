@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Vista del wizard de importación -->
+        <record id="view_pharmacy_expense_import_wizard_form" model="ir.ui.view">
+            <field name="name">pharmacy.expense.import.wizard.form</field>
+            <field name="model">pharmacy.expense.import.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <!-- Step 1: Carga -->
+                        <div attrs="{'invisible': [('state', '!=', 'step1')]}">
+                            <div class="oe_title">
+                                <h1>Importar Gastos de Farmacia</h1>
+                                <p>Seleccione la farmacia, el período y suba el archivo Excel.</p>
+                            </div>
+
+                            <group>
+                                <group>
+                                    <field name="farmacia_id" required="1" options="{'no_create': True}"/>
+                                    <field name="date_month" widget="selection"/>
+                                    <field name="date_year" widget="selection"/>
+                                </group>
+                                <group>
+                                    <field name="file_data" filename="file_name" required="1"/>
+                                    <field name="file_name" invisible="1"/>
+                                </group>
+                            </group>
+                        </div>
+
+                        <!-- Step 2: Preview -->
+                        <div attrs="{'invisible': [('state', '!=', 'step2')]}">
+                            <div class="oe_title">
+                                <h1>Preview de Importación</h1>
+                            </div>
+
+                            <!-- Warning for overwrites -->
+                            <div class="alert alert-warning" role="alert"
+                                 attrs="{'invisible': [('has_overwrites', '=', False)]}">
+                                <strong>Atención:</strong> Algunos registros ya tienen datos y serán sobreescritos.
+                                Los registros marcados en la columna "Sobreescribe" se reemplazarán.
+                            </div>
+
+                            <group col="5">
+                                <field name="total_afiliados"/>
+                                <field name="total_tickets"/>
+                                <field name="total_receta"/>
+                                <field name="total_venta_libre"/>
+                                <field name="total_general"/>
+                            </group>
+
+                            <field name="preview_line_ids" readonly="1">
+                                <tree>
+                                    <field name="uid"/>
+                                    <field name="affiliate_id"/>
+                                    <field name="nombre_archivo"/>
+                                    <field name="cantidad_tickets"/>
+                                    <field name="total_receta" sum="Total"/>
+                                    <field name="total_venta_libre" sum="Total"/>
+                                    <field name="total" sum="Total"/>
+                                    <field name="sobreescribe" widget="boolean"/>
+                                </tree>
+                            </field>
+                        </div>
+
+                        <!-- Step 3: Resultado -->
+                        <div attrs="{'invisible': [('state', '!=', 'step3')]}">
+                            <div class="oe_title">
+                                <h1>Resultado de la Importación</h1>
+                            </div>
+
+                            <div class="alert alert-success" role="alert">
+                                <field name="result_message" nolabel="1"/>
+                            </div>
+                        </div>
+
+                        <field name="state" invisible="1"/>
+                        <field name="has_overwrites" invisible="1"/>
+                    </sheet>
+
+                    <footer>
+                        <!-- Step 1 buttons -->
+                        <button name="action_parse_file" string="Procesar Archivo"
+                                type="object" class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'step1')]}"/>
+
+                        <!-- Step 2 buttons -->
+                        <button name="action_confirm_import" string="Confirmar Importación"
+                                type="object" class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'step2')]}"/>
+                        <button name="action_back" string="Volver"
+                                type="object" class="btn-secondary"
+                                attrs="{'invisible': [('state', '!=', 'step2')]}"/>
+
+                        <!-- Step 3 buttons -->
+                        <button string="Cerrar" class="btn-primary" special="cancel"
+                                attrs="{'invisible': [('state', '!=', 'step3')]}"/>
+
+                        <!-- Cancel always available except step 3 -->
+                        <button string="Cancelar" class="btn-secondary" special="cancel"
+                                attrs="{'invisible': [('state', '=', 'step3')]}"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción para abrir el wizard -->
+        <record id="action_pharmacy_expense_import_wizard" model="ir.actions.act_window">
+            <field name="name">Importar Gastos de Farmacia</field>
+            <field name="res_model">pharmacy.expense.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menú para el wizard -->
+        <menuitem
+            id="menu_pharmacy_expense_import"
+            name="Importar Gastos de Farmacia"
+            parent="menu_affiliate_root"
+            action="action_pharmacy_expense_import_wizard"
+            sequence="15"/>
+
+    </data>
+</odoo>

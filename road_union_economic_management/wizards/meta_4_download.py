@@ -184,7 +184,7 @@ class PaymentExportWizard(models.TransientModel):
             
             line = self._format_fixed_width_line(
                 'PE', affiliate.id_benefit, day, '8522', '', '00',
-                affiliate.first_name, affiliate.last_name, imputation_date
+                affiliate.last_name, affiliate.first_name, imputation_date
             )
             file_content += line
             processed_records += 1
@@ -203,7 +203,7 @@ class PaymentExportWizard(models.TransientModel):
             
             line = self._format_fixed_width_line(
                 'PE', affiliate.id_benefit, day, '8522', '', '99',
-                affiliate.first_name, affiliate.last_name, imputation_date
+                affiliate.last_name, affiliate.first_name, imputation_date
             )
             file_content += line
             processed_records += 1
@@ -241,7 +241,7 @@ class PaymentExportWizard(models.TransientModel):
             
             line = self._format_fixed_width_line(
                 'PE', affiliate.id_benefit, day, concept_code, fee_str, '00',
-                affiliate.first_name, affiliate.last_name, imputation_date
+                affiliate.last_name, affiliate.first_name, imputation_date
             )
             file_content += line
             processed_records += 1

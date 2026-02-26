@@ -9,7 +9,9 @@
     'category': 'Union',
     'version': '1.0',
     "license": "AGPL-3",
-    'depends': ['base', 'base_automation', 'union_affiliation', 'road_union_affiliation'],
+    'depends': ['base', 'base_automation', 
+                'union_affiliation', 'road_union_affiliation', 
+                'web_widget_x2many_2d_matrix'],
     'data': [
         'views/affiliate_class_basic_views.xml',
         'views/payment_account_current_views.xml',
@@ -20,8 +22,10 @@
         'views/reports.xml',
         'views/provider_payments_views.xml',
         'views/pharmacies_views.xml',
+        'wizards/pharmacy_expense_import.xml',
         'views/automate_payment_creation_views.xml',
         'data/affiliate_class_basic_data.xml',
+        'data/pharmacies_data.xml',
     ],
     "installable": True,
 }
