@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Forzar el nombre del menú en español -->
+    <record id="union_affiliation.union" model="ir.ui.menu">
+        <field name="name">Administración</field>
+    </record>
+</odoo>

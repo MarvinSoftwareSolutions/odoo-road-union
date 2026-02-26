@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- ==================== FARMACIAS PREDEFINIDAS ==================== -->
+        
+        <record id="farmacia_estrella" model="sindicato.proveedor">
+            <field name="nombre">Estrella</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <record id="farmacia_nueva_cordoba" model="sindicato.proveedor">
+            <field name="nombre">Nueva Cba</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <record id="farmacia_general_paz" model="sindicato.proveedor">
+            <field name="nombre">General Paz</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <record id="farmacia_medicarlo" model="sindicato.proveedor">
+            <field name="nombre">Medicarlo</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <record id="farmacia_farmavida" model="sindicato.proveedor">
+            <field name="nombre">Farmavida</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <record id="farmacia_del_indio" model="sindicato.proveedor">
+            <field name="nombre">Del Indio</field>
+            <field name="tipo">farmacia</field>
+            <field name="porcentaje_comision">10.0</field>
+            <field name="activo" eval="True"/>
+        </record>
+
+        <!-- ==================== OTROS PROVEEDORES (ejemplos) ==================== -->
+        
+        <!-- Puedes agregar más proveedores aquí si los necesitas -->
+        
+        <!-- <record id="proveedor_ejemplo" model="sindicato.proveedor">
+            <field name="nombre">Proveedor Ejemplo</field>
+            <field name="tipo">otro</field>
+            <field name="porcentaje_comision">5.0</field>
+            <field name="activo" eval="True"/>
+        </record> -->
+
+    </data>
+</odoo>

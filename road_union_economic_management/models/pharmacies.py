@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api
 
 # Mapeo simple de meses
 MONTH_MAP = {
@@ -36,7 +36,7 @@ NEXT_MONTH_MAP = {
     '09': ('10', 0),
     '10': ('11', 0),
     '11': ('12', 0),
-    '12': ('01', 1),  # Diciembre (12) -> Enero (1) del año siguiente (+1)
+    '12': ('01', 1),
 }
 
 
@@ -61,23 +61,27 @@ class AffiliatePharmacyExpenses(models.Model):
     ], string="Mes", required=True)
     year = fields.Integer(string="Año", required=True)
 
-    gasto_farmacia1 = fields.Float(string="Estrella")
-    gasto_farmacia1_vl = fields.Float(string="Estrella V.L.")
-    gasto_farmacia2 = fields.Float(string="Nueva Cba")
-    gasto_farmacia2_vl = fields.Float(string="Nueva Cba V.L.")
-    gasto_farmacia3 = fields.Float(string="General Paz")
-    gasto_farmacia3_vl = fields.Float(string="General Paz V.L.")
-    gasto_farmacia4 = fields.Float(string="Medicarlo")
-    gasto_farmacia4_vl = fields.Float(string="Medicarlo V.L.")
-    gasto_farmacia5 = fields.Float(string="Farmavida")
-    gasto_farmacia5_vl = fields.Float(string="Farmavida V.L.")
-    gasto_farmacia6 = fields.Float(string="Del Indio")
-    gasto_farmacia6_vl = fields.Float(string="Del Indio V.L.")
+    # ========== NUEVO: Líneas dinámicas de gastos ==========
+    linea_gastos_ids = fields.One2many(
+        'affiliate.pharmacy.expense.line',
+        'expense_id',
+        string='Gastos por Farmacia'
+    )
 
-    suma_mes = fields.Float(string="Suma Mes", compute="_compute_total", store=True)
+    # ========== Campos computados desde las líneas ==========
+    suma_mes = fields.Float(
+        string="Suma Mes", 
+        compute="_compute_totales_from_lines", 
+        store=True
+    )
     
-    vta_libre = fields.Float(string="VTA LIBRE", compute="_compute_vta_libre", store=True)
+    vta_libre = fields.Float(
+        string="VTA LIBRE", 
+        compute="_compute_totales_from_lines", 
+        store=True
+    )
     
+    # ========== Campos calculados (igual que antes) ==========
     descuento_realizado = fields.Float(
         string="Descuento Realizado", 
         compute="_compute_descuento_realizado", 
@@ -103,35 +107,12 @@ class AffiliatePharmacyExpenses(models.Model):
         help="Suma del Saldo Acumulado del mes anterior + Suma Mes del mes actual para el mismo afiliado."
     )
 
-    @api.depends(
-        "gasto_farmacia1", "gasto_farmacia2", "gasto_farmacia3", 
-        "gasto_farmacia4", "gasto_farmacia5", "gasto_farmacia6",
-    )
-    def _compute_total(self):
+    # ========== NUEVO: Cálculo de totales desde líneas ==========
+    @api.depends('linea_gastos_ids.gasto_plan', 'linea_gastos_ids.gasto_venta_libre')
+    def _compute_totales_from_lines(self):
         for rec in self:
-            rec.suma_mes = (
-                rec.gasto_farmacia1 + 
-                rec.gasto_farmacia2 + 
-                rec.gasto_farmacia3 +
-                rec.gasto_farmacia4 + 
-                rec.gasto_farmacia5 + 
-                rec.gasto_farmacia6 
-            )
-
-    @api.depends(
-        "gasto_farmacia1_vl", "gasto_farmacia2_vl", "gasto_farmacia3_vl",
-        "gasto_farmacia4_vl", "gasto_farmacia5_vl", "gasto_farmacia6_vl",
-    )
-    def _compute_vta_libre(self):
-        for rec in self:
-            rec.vta_libre = (
-                rec.gasto_farmacia1_vl +
-                rec.gasto_farmacia2_vl +
-                rec.gasto_farmacia3_vl +
-                rec.gasto_farmacia4_vl +
-                rec.gasto_farmacia5_vl +
-                rec.gasto_farmacia6_vl
-            )
+            rec.suma_mes = sum(rec.linea_gastos_ids.mapped('gasto_plan'))
+            rec.vta_libre = sum(rec.linea_gastos_ids.mapped('gasto_venta_libre'))
 
     @api.depends('suma_mes', 'saldo_acumulado')
     def _compute_descuento_realizado(self):
@@ -188,24 +169,51 @@ class AffiliatePharmacyExpenses(models.Model):
 
             rec.saldo_acumulado = saldo_mes_anterior + rec.suma_mes
 
+    # ========== NUEVO: Generar líneas automáticamente ==========
     @api.model_create_multi
     def create(self, vals_list):
-        """Sobrescribimos create para recalcular meses posteriores"""
-        records = super(AffiliatePharmacyExpenses, self).create(vals_list)
+        records = super().create(vals_list)
         for record in records:
+            record._generate_pharmacy_lines()
             record._recalculate_future_months()
         return records
 
     def write(self, vals):
-        """Sobrescribimos write para recalcular meses posteriores"""
-        res = super(AffiliatePharmacyExpenses, self).write(vals)
+        res = super().write(vals)
         # Solo recalculamos si cambiaron campos que afectan los totales
-        if any(field in vals for field in ['gasto_farmacia1', 'gasto_farmacia2', 'gasto_farmacia3',
-                                            'gasto_farmacia4', 'gasto_farmacia5', 'gasto_farmacia6',
-                                            'month', 'year', 'affiliate_id']):
+        if any(field in vals for field in ['month', 'year', 'affiliate_id', 'linea_gastos_ids']):
             for record in self:
                 record._recalculate_future_months()
         return res
+
+    def _generate_pharmacy_lines(self):
+        """Genera automáticamente líneas para todas las farmacias activas"""
+        self.ensure_one()
+        
+        # Obtener farmacias activas
+        farmacias = self.env['sindicato.proveedor'].search([
+            ('tipo', '=', 'farmacia'),
+            ('activo', '=', True)
+        ])
+        
+        # Farmacias que ya tienen línea
+        farmacias_existentes = self.linea_gastos_ids.mapped('farmacia_id')
+        
+        # Crear líneas para farmacias faltantes
+        for farmacia in farmacias:
+            if farmacia not in farmacias_existentes:
+                self.env['affiliate.pharmacy.expense.line'].create({
+                    'expense_id': self.id,
+                    'farmacia_id': farmacia.id,
+                    'gasto_plan': 0.0,
+                    'gasto_venta_libre': 0.0,
+                })
+
+    def action_refresh_pharmacy_lines(self):
+        """Acción manual para actualizar las líneas de farmacias"""
+        for record in self:
+            record._generate_pharmacy_lines()
+        return True
 
     def _recalculate_future_months(self):
         """Recalcula el saldo acumulado de todos los meses posteriores al actual"""
@@ -242,3 +250,116 @@ class AffiliatePharmacyExpenses(models.Model):
             # Avanzamos al siguiente mes
             current_month = next_month
             current_year = next_year
+
+    _sql_constraints = [
+        ('unique_affiliate_month_year',
+         'UNIQUE(affiliate_id, month, year)',
+         'Ya existe un registro para este afiliado en este mes y año')
+    ]
+
+class AffiliatePharmacyExpenseLine(models.Model):
+    _name = 'affiliate.pharmacy.expense.line'
+    _description = 'Línea de Gasto por Farmacia'
+    _rec_name = 'farmacia_id'
+
+    expense_id = fields.Many2one(
+        'affiliate.pharmacy.expenses',
+        string='Gasto Mensual',
+        required=True,
+        ondelete='cascade',
+        index=True
+    )
+    
+    affiliate_id = fields.Many2one(
+        'affiliation.affiliate',
+        related='expense_id.affiliate_id',
+        string='Afiliado',
+        store=True,
+        readonly=True
+    )
+    
+    month = fields.Selection(
+        related='expense_id.month',
+        string='Mes',
+        store=True,
+        readonly=True
+    )
+    
+    year = fields.Integer(
+        related='expense_id.year',
+        string='Año',
+        store=True,
+        readonly=True
+    )
+    
+    farmacia_id = fields.Many2one(
+        'sindicato.proveedor',
+        string='Farmacia',
+        required=True,
+        domain=[('tipo', '=', 'farmacia'), ('activo', '=', True)],
+        ondelete='restrict'
+    )
+    
+    gasto_plan = fields.Float(
+        string='Gasto Plan',
+        default=0.0,
+        help='Consumo con cobertura del plan'
+    )
+    
+    gasto_venta_libre = fields.Float(
+        string='Venta Libre',
+        default=0.0,
+        help='Consumo sin cobertura (venta libre)'
+    )
+    
+    gasto_total = fields.Float(
+        string='Total',
+        compute='_compute_gasto_total',
+        store=True
+    )
+    
+    @api.depends('gasto_plan', 'gasto_venta_libre')
+    def _compute_gasto_total(self):
+        for line in self:
+            line.gasto_total = line.gasto_plan + line.gasto_venta_libre
+    
+    ticket_ids = fields.One2many('pharmacy.ticket', 'expense_line_id', string='Tickets')
+
+    _sql_constraints = [
+        ('unique_expense_farmacia',
+         'UNIQUE(expense_id, farmacia_id)',
+         'Ya existe una línea para esta farmacia en este registro de gastos')
+    ]
+
+
+class PharmacyTicket(models.Model):
+    _name = 'pharmacy.ticket'
+    _description = 'Ticket de farmacia'
+    _order = 'fecha desc'
+
+    expense_line_id = fields.Many2one(
+        'affiliate.pharmacy.expense.line',
+        string='Línea de Gasto',
+        required=True,
+        ondelete='cascade'
+    )
+    affiliate_id = fields.Many2one(
+        related='expense_line_id.affiliate_id',
+        store=True
+    )
+    farmacia_id = fields.Many2one(
+        related='expense_line_id.farmacia_id',
+        store=True
+    )
+
+    numero_orden = fields.Integer(string='N° Orden')
+    nombre_archivo = fields.Char(string='Apellido y Nombre (archivo)')
+    fecha = fields.Date(string='Fecha Ticket')
+    monto_receta = fields.Float(string='Bajo Receta', default=0.0)
+    monto_venta_libre = fields.Float(string='Venta Libre', default=0.0)
+    monto_total = fields.Float(string='Total', compute='_compute_total', store=True)
+
+    @api.depends('monto_receta', 'monto_venta_libre')
+    def _compute_total(self):
+        for rec in self:
+            rec.monto_total = rec.monto_receta + rec.monto_venta_libre

@@ -1,170 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record id="view_affiliate_pharmacy_expenses_form" model="ir.ui.view">
-            <field name="name">affiliate.pharmacy.expenses.form</field>
-            <field name="model">affiliate.pharmacy.expenses</field>
-            <field name="arch" type="xml">
-                <form string="Gastos Mensuales Farmacia">
-                    <sheet>
+    
+    <!-- ==================== VISTA FORM CON MATRIX WIDGET ==================== -->
+    
+    <record id="view_affiliate_pharmacy_expenses_form" model="ir.ui.view">
+        <field name="name">affiliate.pharmacy.expenses.form</field>
+        <field name="model">affiliate.pharmacy.expenses</field>
+        <field name="arch" type="xml">
+            <form string="Gastos Mensuales Farmacia">
+                <header>
+                    <button name="action_refresh_pharmacy_lines" 
+                            string="Actualizar Farmacias" 
+                            type="object" 
+                            class="btn-secondary"
+                            help="Agregar farmacias nuevas que se hayan creado"/>
+                </header>
+                <sheet>
+                    <group>
                         <group>
-                            <group>
-                                <field name="affiliate_id" options="{'no_create': True, 'no_create_edit': True}"/>
-                                <field name="year"/>
-                                <field name="month"/>
-                            </group>
-                            <group>
-                                <field name="suma_mes" readonly="1"/>
-                                <field name="saldo_acumulado" readonly="1"/>
-                                <field name="vta_libre" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="descuento_realizado" readonly="1"/>
-                                <field name="desc_afil" readonly="1"/>
-                                <field name="disponible_40" readonly="1"/>
-                            </group>
+                            <field name="affiliate_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="year"/>
+                            <field name="month"/>
                         </group>
-                        
-                        <notebook>
-                            <page string="Gastos por Farmacia">
-                                <group col="4">
-                                    <field name="gasto_farmacia1"/>
-                                    <field name="gasto_farmacia1_vl"/>
-                                    
-                                    <field name="gasto_farmacia2"/>
-                                    <field name="gasto_farmacia2_vl"/>
-                                    
-                                    <field name="gasto_farmacia3"/>
-                                    <field name="gasto_farmacia3_vl"/>
-                                    
-                                    <field name="gasto_farmacia4"/>
-                                    <field name="gasto_farmacia4_vl"/>
-                                    
-                                    <field name="gasto_farmacia5"/>
-                                    <field name="gasto_farmacia5_vl"/>
-                                    
-                                    <field name="gasto_farmacia6"/>
-                                    <field name="gasto_farmacia6_vl"/>
-                                </group>
-                            </page>
-                        </notebook>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_affiliate_pharmacy_expenses_tree" model="ir.ui.view">
-            <field name="name">affiliate.pharmacy.expenses.tree</field>
-            <field name="model">affiliate.pharmacy.expenses</field>
-            <field name="arch" type="xml">
-                <tree string="Gastos Mensuales Farmacia" 
-                    editable="bottom" 
-                    create="0" 
-                    default_order="year desc, month desc">
-                    <field name="affiliate_id" options="{'no_create': True, 'no_create_edit': True}"/>
-                    <field name="year" readonly="1"/>
-                    <field name="month" readonly="1"/>
+                        <group>
+                            <field name="suma_mes" readonly="1"/>
+                            <field name="saldo_acumulado" readonly="1"/>
+                            <field name="vta_libre" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="descuento_realizado" readonly="1"/>
+                            <field name="desc_afil" readonly="1"/>
+                            <field name="disponible_40" readonly="1"/>
+                        </group>
+                    </group>
                     
-                    <field name="gasto_farmacia1" sum="Total"/>
-                    <field name="gasto_farmacia1_vl" sum="Total"/>
-                    <field name="gasto_farmacia2" sum="Total"/>
-                    <field name="gasto_farmacia2_vl" sum="Total"/>
-                    <field name="gasto_farmacia3" sum="Total"/>
-                    <field name="gasto_farmacia3_vl" sum="Total"/>
-                    <field name="gasto_farmacia4" sum="Total"/>
-                    <field name="gasto_farmacia4_vl" sum="Total"/>
-                    <field name="gasto_farmacia5" sum="Total"/>
-                    <field name="gasto_farmacia5_vl" sum="Total"/>
-                    <field name="gasto_farmacia6" sum="Total"/>
-                    <field name="gasto_farmacia6_vl" sum="Total"/>
-                    <field name="suma_mes" sum="Total" readonly="1"/>
-                    <field name="vta_libre" sum="Total" readonly="1"/>
-                    <field name="saldo_acumulado" sum="Total" readonly="1"/>
-                    <field name="descuento_realizado" sum="Total" readonly="1"/>
-                    <field name="desc_afil" sum="Total" readonly="1"/>
-                    <field name="disponible_40" sum="Total" readonly="1"/>
-                </tree>
-            </field>
-        </record>
+                    <notebook>
+                        <page string="Gastos por Farmacia">
+                            <field name="linea_gastos_ids">
+                                <tree editable="bottom" create="false" delete="false">
+                                    <field name="farmacia_id" readonly="1"/>
+                                    <field name="gasto_plan" sum="Total"/>
+                                    <field name="gasto_venta_libre" sum="Total"/>
+                                    <field name="gasto_total" sum="Total" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <record id="view_affiliate_pharmacy_expenses_search" model="ir.ui.view">
-            <field name="name">affiliate.pharmacy.expenses.search</field>
-            <field name="model">affiliate.pharmacy.expenses</field>
-            <field name="arch" type="xml">
-                <search string="Buscar Gastos Farmacia">
-                    <field name="affiliate_id"/>
-                    <field name="year"/>
-                    <field name="month"/>
-                    
-                    <filter string="Mes Actual" name="month_current" 
-                        domain="[('month','=',context_today().month)]"/>
-                    <filter string="Año Actual" name="year_current" 
-                        domain="[('year','=',context_today().year)]"/>
-                    
-                    <separator/>
-                    
-                    <filter string="Año" name="group_year" 
-                        context="{'group_by':'year'}"/>
-                    <filter string="Mes" name="group_month" 
-                        context="{'group_by':'month'}"/>
-                    <filter string="Afiliado" name="group_affiliate" 
-                        context="{'group_by':'affiliate_id'}"/>
-                </search>
-            </field>
-        </record>
+    <!-- ==================== VISTA TREE ==================== -->
+    
+    <record id="view_affiliate_pharmacy_expenses_tree" model="ir.ui.view">
+        <field name="name">affiliate.pharmacy.expenses.tree</field>
+        <field name="model">affiliate.pharmacy.expenses</field>
+        <field name="arch" type="xml">
+            <tree string="Gastos Mensuales Farmacia" 
+                  default_order="year desc, month desc">
+                <field name="affiliate_id"/>
+                <field name="year"/>
+                <field name="month"/>
+                <field name="suma_mes" sum="Total"/>
+                <field name="vta_libre" sum="Total"/>
+                <field name="saldo_acumulado" sum="Total"/>
+                <field name="descuento_realizado" sum="Total"/>
+                <field name="desc_afil" sum="Total"/>
+                <field name="disponible_40" sum="Total"/>
+            </tree>
+        </field>
+    </record>
 
-        <record id="action_affiliate_pharmacy_expenses_form_only" model="ir.actions.act_window">
-            <field name="name">Crear Gasto Mensual</field>
-            <field name="res_model">affiliate.pharmacy.expenses</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
+    <!-- ==================== VISTA SEARCH ==================== -->
+    
+    <record id="view_affiliate_pharmacy_expenses_search" model="ir.ui.view">
+        <field name="name">affiliate.pharmacy.expenses.search</field>
+        <field name="model">affiliate.pharmacy.expenses</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Gastos Farmacia">
+                <field name="affiliate_id"/>
+                <field name="year"/>
+                <field name="month"/>
+                
+                <filter string="Mes Actual" name="month_current" 
+                    domain="[('month','=',context_today().month)]"/>
+                <filter string="Año Actual" name="year_current" 
+                    domain="[('year','=',context_today().year)]"/>
+                
+                <separator/>
+                
+                <filter string="Año" name="group_year" 
+                    context="{'group_by':'year'}"/>
+                <filter string="Mes" name="group_month" 
+                    context="{'group_by':'month'}"/>
+                <filter string="Afiliado" name="group_affiliate" 
+                    context="{'group_by':'affiliate_id'}"/>
+            </search>
+        </field>
+    </record>
 
-        <record id="action_affiliate_pharmacy_expenses" model="ir.actions.act_window">
-            <field name="name">Gastos Mensuales Farmacia</field>
-            <field name="res_model">affiliate.pharmacy.expenses</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="view_affiliate_pharmacy_expenses_search"/>
-            <field name="context">{'search_default_month_current': 1, 'search_default_year_current': 1}</field>
-        </record>
+    <!-- ==================== VISTA TREE DE LÍNEAS (auxiliar) ==================== -->
+    
+    <record id="view_affiliate_pharmacy_expense_line_tree" model="ir.ui.view">
+        <field name="name">affiliate.pharmacy.expense.line.tree</field>
+        <field name="model">affiliate.pharmacy.expense.line</field>
+        <field name="arch" type="xml">
+            <tree string="Líneas de Gastos" editable="bottom">
+                <field name="farmacia_id"/>
+                <field name="gasto_plan" sum="Total"/>
+                <field name="gasto_venta_libre" sum="Total"/>
+                <field name="gasto_total" sum="Total" readonly="1"/>
+            </tree>
+        </field>
+    </record>
 
-        <record id="action_edit_pharmacy_expense" model="ir.actions.server">
-            <field name="name">Editar</field>
-            <field name="model_id" ref="model_affiliate_pharmacy_expenses"/>
-            <field name="binding_model_id" ref="model_affiliate_pharmacy_expenses"/>
-            <field name="binding_view_types">list</field>
-            <field name="state">code</field>
-            <field name="code">
-if records:
-    action = {
-        'type': 'ir.actions.act_window',
-        'name': 'Editar Gasto Mensual',
-        'res_model': 'affiliate.pharmacy.expenses',
-        'res_id': records[0].id,
-        'view_mode': 'form',
-        'target': 'current',
-        'views': [(False, 'form')],
-    }
-            </field>
-        </record>
+    <!-- ==================== VISTA FORM DE LÍNEA (con tickets) ==================== -->
 
-        <menuitem 
-            id="menu_affiliate_root" 
-            name="Farmacias, afiliados y Gastos" 
-            parent="union_affiliation.union"
-            sequence="10"/>
+    <record id="view_affiliate_pharmacy_expense_line_form" model="ir.ui.view">
+        <field name="name">affiliate.pharmacy.expense.line.form</field>
+        <field name="model">affiliate.pharmacy.expense.line</field>
+        <field name="arch" type="xml">
+            <form string="Detalle Gasto Farmacia">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="farmacia_id" readonly="1"/>
+                            <field name="affiliate_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="gasto_plan"/>
+                            <field name="gasto_venta_libre"/>
+                            <field name="gasto_total" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tickets">
+                            <field name="ticket_ids" readonly="1">
+                                <tree>
+                                    <field name="numero_orden"/>
+                                    <field name="nombre_archivo"/>
+                                    <field name="fecha"/>
+                                    <field name="monto_receta" sum="Total"/>
+                                    <field name="monto_venta_libre" sum="Total"/>
+                                    <field name="monto_total" sum="Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <menuitem 
-            id="menu_affiliate_pharmacy_expenses_create" 
-            name="Crear Gasto Mensual en Farmacias" 
-            parent="menu_affiliate_root" 
-            action="action_affiliate_pharmacy_expenses_form_only" 
-            sequence="10"/>
+    <!-- ==================== VISTA TREE DE TICKETS ==================== -->
 
-        <menuitem 
-            id="menu_affiliate_pharmacy_expenses_list" 
-            name="Gastos Farmacia Mensuales" 
-            parent="menu_affiliate_root" 
-            action="action_affiliate_pharmacy_expenses" 
-            sequence="5"/>
-    </data>
+    <record id="view_pharmacy_ticket_tree" model="ir.ui.view">
+        <field name="name">pharmacy.ticket.tree</field>
+        <field name="model">pharmacy.ticket</field>
+        <field name="arch" type="xml">
+            <tree string="Tickets de Farmacia">
+                <field name="numero_orden"/>
+                <field name="farmacia_id"/>
+                <field name="affiliate_id"/>
+                <field name="nombre_archivo"/>
+                <field name="fecha"/>
+                <field name="monto_receta" sum="Total"/>
+                <field name="monto_venta_libre" sum="Total"/>
+                <field name="monto_total" sum="Total"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== ACCIONES ==================== -->
+    
+    <record id="action_affiliate_pharmacy_expenses_form_only" model="ir.actions.act_window">
+        <field name="name">Crear Gasto Mensual</field>
+        <field name="res_model">affiliate.pharmacy.expenses</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_affiliate_pharmacy_expenses" model="ir.actions.act_window">
+        <field name="name">Gastos Mensuales Farmacia</field>
+        <field name="res_model">affiliate.pharmacy.expenses</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_affiliate_pharmacy_expenses_search"/>
+        <field name="context">{'search_default_month_current': 1, 'search_default_year_current': 1}</field>
+    </record>
+
+    <!-- ==================== MENÚS ==================== -->
+    
+    <menuitem 
+        id="menu_affiliate_root" 
+        name="Farmacias, afiliados y Gastos" 
+        parent="union_affiliation.union"
+        sequence="10"/>
+
+    <menuitem 
+        id="menu_affiliate_pharmacy_expenses_create" 
+        name="Crear Gasto Mensual en Farmacias" 
+        parent="menu_affiliate_root" 
+        action="action_affiliate_pharmacy_expenses_form_only" 
+        sequence="10"/>
+
+    <menuitem 
+        id="menu_affiliate_pharmacy_expenses_list" 
+        name="Gastos Farmacia Mensuales" 
+        parent="menu_affiliate_root" 
+        action="action_affiliate_pharmacy_expenses" 
+        sequence="5"/>
+
 </odoo>
