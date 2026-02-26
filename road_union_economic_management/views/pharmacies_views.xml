@@ -19,6 +19,8 @@
                     <group>
                         <group>
                             <field name="affiliate_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="affiliate_last_name" readonly="1"/>
+                            <field name="affiliate_first_name" readonly="1"/>
                             <field name="year"/>
                             <field name="month"/>
                         </group>
@@ -57,9 +59,10 @@
         <field name="name">affiliate.pharmacy.expenses.tree</field>
         <field name="model">affiliate.pharmacy.expenses</field>
         <field name="arch" type="xml">
-            <tree string="Gastos Mensuales Farmacia" 
+            <tree string="Gastos Mensuales Farmacia"
                   default_order="year desc, month desc">
-                <field name="affiliate_id"/>
+                <field name="affiliate_last_name"/>
+                <field name="affiliate_first_name"/>
                 <field name="year"/>
                 <field name="month"/>
                 <field name="suma_mes" sum="Total"/>
