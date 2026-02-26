@@ -45,6 +45,8 @@ class AffiliatePharmacyExpenses(models.Model):
     _description = "Gastos mensuales por farmacia"
 
     affiliate_id = fields.Many2one("affiliation.affiliate", string="Afiliado", required=True)
+    affiliate_last_name = fields.Char(related='affiliate_id.last_name', string='Apellido', store=True, readonly=True)
+    affiliate_first_name = fields.Char(related='affiliate_id.first_name', string='Nombre', store=True, readonly=True)
     month = fields.Selection([
         ('01', 'Enero'),
         ('02', 'Febrero'),
