@@ -29,6 +29,8 @@
         'views/pharmacies_views.xml',
         'wizards/pharmacy_expense_import.xml',
         'views/automate_payment_creation_views.xml',
+        'views/installment_plan_views.xml',
+        'wizards/installment_plan_wizard.xml',
         'data/affiliate_class_basic_data.xml',
         'data/pharmacies_data.xml',
     ],

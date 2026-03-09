@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Tree View -->
+    <record id="view_installment_plan_tree" model="ir.ui.view">
+      <field name="name">affiliate.installment.plan.tree</field>
+      <field name="model">affiliate.installment.plan</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="affiliate_id"/>
+          <field name="provider_field"/>
+          <field name="total_amount"/>
+          <field name="installment_amount"/>
+          <field name="installments_applied"/>
+          <field name="total_installments"/>
+          <field name="remaining_installments"/>
+          <field name="start_month"/>
+          <field name="start_year"/>
+          <field name="state" widget="badge"
+                 decoration-success="state == 'done'"
+                 decoration-info="state == 'active'"
+                 decoration-muted="state == 'cancelled'"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_installment_plan_form" model="ir.ui.view">
+      <field name="name">affiliate.installment.plan.form</field>
+      <field name="model">affiliate.installment.plan</field>
+      <field name="arch" type="xml">
+        <form string="Plan de Cuotas">
+          <header>
+            <button name="action_cancel" string="Cancelar Plan" type="object"
+                    class="btn-secondary"
+                    attrs="{'invisible': [('state', '!=', 'active')]}"/>
+            <button name="action_reactivate" string="Reactivar" type="object"
+                    class="btn-primary"
+                    attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+            <field name="state" widget="statusbar" statusbar_visible="active,done"/>
+          </header>
+          <sheet>
+            <group>
+              <group string="Datos del Plan">
+                <field name="affiliate_id" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+                <field name="provider_field" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+                <field name="total_amount" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+                <field name="total_installments" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+              </group>
+              <group string="Estado del Plan">
+                <field name="installment_amount"/>
+                <field name="installments_applied"/>
+                <field name="remaining_installments"/>
+              </group>
+            </group>
+            <group>
+              <group string="Inicio">
+                <field name="start_month" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+                <field name="start_year" attrs="{'readonly': [('state', '!=', 'active')]}"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_installment_plan_search" model="ir.ui.view">
+      <field name="name">affiliate.installment.plan.search</field>
+      <field name="model">affiliate.installment.plan</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Plan de Cuotas">
+          <field name="affiliate_id"/>
+          <field name="provider_field"/>
+          <field name="state"/>
+          <filter string="Activos" name="filter_active" domain="[('state', '=', 'active')]"/>
+          <filter string="Completados" name="filter_done" domain="[('state', '=', 'done')]"/>
+          <filter string="Cancelados" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
+          <group expand="0" string="Agrupar por">
+            <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+            <filter string="Proveedor" name="group_provider" context="{'group_by': 'provider_field'}"/>
+            <filter string="Afiliado" name="group_affiliate" context="{'group_by': 'affiliate_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_installment_plan" model="ir.actions.act_window">
+      <field name="name">Planes de Cuotas</field>
+      <field name="res_model">affiliate.installment.plan</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_installment_plan_search"/>
+      <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+
+  </data>
+</odoo>

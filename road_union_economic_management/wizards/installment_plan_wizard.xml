@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="view_installment_plan_wizard_form" model="ir.ui.view">
+      <field name="name">installment.plan.wizard.form</field>
+      <field name="model">installment.plan.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Crear Plan de Cuotas">
+          <group>
+            <field name="affiliate_id" options="{'no_create': True}"/>
+            <field name="provider_field"/>
+            <field name="total_amount"/>
+            <field name="total_installments"/>
+            <field name="start_month"/>
+            <field name="start_year"/>
+          </group>
+          <footer>
+            <button name="action_create_plan" string="Crear Plan" type="object" class="btn-primary"/>
+            <button string="Cancelar" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- Server action para abrir el wizard desde la lista -->
+    <record id="action_open_installment_plan_wizard" model="ir.actions.act_window">
+      <field name="name">Crear Plan de Cuotas</field>
+      <field name="res_model">installment.plan.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="binding_model_id" ref="model_affiliate_payment_account"/>
+      <field name="binding_view_types">list,form</field>
+    </record>
+
+  </data>
+</odoo>

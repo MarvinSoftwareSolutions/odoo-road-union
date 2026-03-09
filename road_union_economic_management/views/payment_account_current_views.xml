@@ -30,42 +30,55 @@
                        decoration-info="has_previous_month == True"/>
                 
                 <!-- Servicios con sus cuotas -->
-                <field name="pharmacy_installment"/>
+                <field name="pharmacy_installment" readonly="1"/>
                 <field name="pharmacy_total" sum="False"/>
-                
+
+                <field name="optical_installment" readonly="1"/>
                 <field name="optical_total" sum="False"/>
-                
+
+                <field name="punilla_installment" readonly="1"/>
                 <field name="punilla_total" sum="False"/>
-                
+
+                <field name="solar_installment" readonly="1"/>
                 <field name="solar" sum="False"/>
+                <field name="caruso_installment" readonly="1"/>
                 <field name="caruso" sum="False"/>
-                
+
+                <field name="parque_del_sol_installment" readonly="1"/>
                 <field name="parque_del_sol" sum="False"/>
+                <field name="salguero_installment" readonly="1"/>
                 <field name="salguero" sum="False"/>
+                <field name="tres_provincias_installment" readonly="1"/>
                 <field name="tres_provincias" sum="False"/>
-                
-                <field name="tourism_installment"/>
+
+                <field name="tourism_installment" readonly="1"/>
                 <field name="tourism_total" sum="False"/>
-                
-                <field name="aid_installment"/>
+
+                <field name="aid_installment" readonly="1"/>
                 <field name="aid_total" sum="False"/>
-                
-                <field name="party_installment"/>
+
+                <field name="party_installment" readonly="1"/>
                 <field name="party_total" sum="False"/>
-                
-                <field name="hall_installment"/>
+
+                <field name="hall_installment" readonly="1"/>
                 <field name="hall_total" sum="False"/>
-                
-                <field name="odontology_installment"/>
+
+                <field name="odontology_installment" readonly="1"/>
                 <field name="odontology_total" sum="False"/>
-                
+
+                <field name="otros_1_installment" readonly="1"/>
                 <field name="otros_1" sum="False"/>
+                <field name="otros_2_installment" readonly="1"/>
                 <field name="otros_2" sum="False"/>
 
                 <!-- Préstamos -->
+                <field name="ecco_installment" readonly="1"/>
                 <field name="ecco_loan" sum="False"/>
+                <field name="emi_installment" readonly="1"/>
                 <field name="emi_loan" sum="False"/>
+                <field name="emergency_installment" readonly="1"/>
                 <field name="emergency_loan" sum="False"/>
+                <field name="suoem_installment" readonly="1"/>
                 <field name="suoem_loan" sum="False"/>
 
                 <!-- Resumen económico - Columna de totales -->
@@ -198,42 +211,55 @@
                        decoration-info="has_previous_month == True"/>
                 
                 <!-- SECCIÓN: Servicios (Cuota + Monto) -->
-                <field name="pharmacy_installment" string="Cuota Farm."/>
+                <field name="pharmacy_installment" string="Cuota Farm." readonly="1"/>
                 <field name="pharmacy_total" sum="Total Farmacias"/>
-                
+
+                <field name="optical_installment" string="Cuota Ópt." readonly="1"/>
                 <field name="optical_total" sum="Total Óptica"/>
-                
+
+                <field name="punilla_installment" string="Cuota Pun." readonly="1"/>
                 <field name="punilla_total" sum="Total Punilla"/>
-                
+
+                <field name="solar_installment" string="Cuota Solar" readonly="1"/>
                 <field name="solar" sum="Total Solar"/>
+                <field name="caruso_installment" string="Cuota Caruso" readonly="1"/>
                 <field name="caruso" sum="Total Caruso"/>
-                
+
+                <field name="parque_del_sol_installment" string="Cuota P.Sol" readonly="1"/>
                 <field name="parque_del_sol" sum="Total Parque del Sol"/>
+                <field name="salguero_installment" string="Cuota Salg." readonly="1"/>
                 <field name="salguero" sum="Total Salguero"/>
+                <field name="tres_provincias_installment" string="Cuota 3Prov." readonly="1"/>
                 <field name="tres_provincias" sum="Total Tres Provincias"/>
-                
-                <field name="tourism_installment" string="Cuota Tur."/>
+
+                <field name="tourism_installment" string="Cuota Tur." readonly="1"/>
                 <field name="tourism_total" sum="Total Turismo"/>
-                
-                <field name="aid_installment" string="Cuota Ayuda"/>
+
+                <field name="aid_installment" string="Cuota Ayuda" readonly="1"/>
                 <field name="aid_total" sum="Total Ayuda Solidaria"/>
-                
-                <field name="party_installment" string="Cuota Fiesta"/>
+
+                <field name="party_installment" string="Cuota Fiesta" readonly="1"/>
                 <field name="party_total" sum="Total Fiestas"/>
-                
-                <field name="hall_installment" string="Cuota Salón"/>
+
+                <field name="hall_installment" string="Cuota Salón" readonly="1"/>
                 <field name="hall_total" sum="Total Salón"/>
-                
-                <field name="odontology_installment" string="Cuota Odont."/>
+
+                <field name="odontology_installment" string="Cuota Odont." readonly="1"/>
                 <field name="odontology_total" sum="Total Odontología"/>
-                
+
+                <field name="otros_1_installment" string="Cuota Otros1" readonly="1"/>
                 <field name="otros_1" sum="Total Otros 1"/>
+                <field name="otros_2_installment" string="Cuota Otros2" readonly="1"/>
                 <field name="otros_2" sum="Total Otros 2"/>
 
                 <!-- SECCIÓN: Préstamos -->
+                <field name="ecco_installment" string="Cuota ECCO" readonly="1"/>
                 <field name="ecco_loan" sum="Total ECCO"/>
+                <field name="emi_installment" string="Cuota EMI" readonly="1"/>
                 <field name="emi_loan" sum="Total EMI"/>
+                <field name="emergency_installment" string="Cuota Urg." readonly="1"/>
                 <field name="emergency_loan" sum="Total Urgencias"/>
+                <field name="suoem_installment" string="Cuota SUOEM" readonly="1"/>
                 <field name="suoem_loan" sum="Total SUOEM"/>
 
                 <!-- SECCIÓN: Cuota Sindical -->
@@ -315,44 +341,57 @@
 
                     <group string="Servicios">
                         <group string="Farmacias y Óptica">
-                            <field name="pharmacy_installment"/>
+                            <field name="pharmacy_installment" readonly="1"/>
                             <field name="pharmacy_total" widget="monetary"/>
+                            <field name="optical_installment" readonly="1"/>
                             <field name="optical_total" widget="monetary"/>
                         </group>
                         <group string="Turismo y Recreación">
-                            <field name="tourism_installment"/>
+                            <field name="tourism_installment" readonly="1"/>
                             <field name="tourism_total" widget="monetary"/>
+                            <field name="punilla_installment" readonly="1"/>
                             <field name="punilla_total" widget="monetary"/>
-                            <field name="party_installment"/>
+                            <field name="party_installment" readonly="1"/>
                             <field name="party_total" widget="monetary"/>
-                            <field name="hall_installment"/>
+                            <field name="hall_installment" readonly="1"/>
                             <field name="hall_total" widget="monetary"/>
                         </group>
                     </group>
                     
                     <group string="Proveedores y Otros Servicios">
                         <group string="Proveedores Específicos">
+                            <field name="solar_installment" readonly="1"/>
                             <field name="solar" widget="monetary"/>
+                            <field name="caruso_installment" readonly="1"/>
                             <field name="caruso" widget="monetary"/>
+                            <field name="parque_del_sol_installment" readonly="1"/>
                             <field name="parque_del_sol" widget="monetary"/>
+                            <field name="salguero_installment" readonly="1"/>
                             <field name="salguero" widget="monetary"/>
+                            <field name="tres_provincias_installment" readonly="1"/>
                             <field name="tres_provincias" widget="monetary"/>
                         </group>
                         <group string="Otros Servicios">
-                            <field name="aid_installment"/>
+                            <field name="aid_installment" readonly="1"/>
                             <field name="aid_total" widget="monetary"/>
-                            <field name="odontology_installment"/>
+                            <field name="odontology_installment" readonly="1"/>
                             <field name="odontology_total" widget="monetary" string="Odontología"/>
+                            <field name="otros_1_installment" readonly="1"/>
                             <field name="otros_1" widget="monetary"/>
+                            <field name="otros_2_installment" readonly="1"/>
                             <field name="otros_2" widget="monetary"/>
                         </group>
                     </group>
 
                     <group string="Préstamos">
                         <group string="Préstamos Activos">
+                            <field name="ecco_installment" readonly="1"/>
                             <field name="ecco_loan" widget="monetary"/>
+                            <field name="emi_installment" readonly="1"/>
                             <field name="emi_loan" widget="monetary"/>
+                            <field name="emergency_installment" readonly="1"/>
                             <field name="emergency_loan" widget="monetary"/>
+                            <field name="suoem_installment" readonly="1"/>
                             <field name="suoem_loan" widget="monetary"/>
                         </group>
                         <group></group>

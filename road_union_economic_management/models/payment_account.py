@@ -198,41 +198,54 @@ class AffiliatePaymentAccount(models.Model):
                 record._compute_initial_balance()
 
     # Service Totals
-    pharmacy_total = fields.Float(string="Todas las farmacias", group_operator='sum')
     pharmacy_installment = fields.Char(string="N° Cuota Farmacias")
+    pharmacy_total = fields.Float(string="Todas las farmacias", group_operator='sum')
 
+    optical_installment = fields.Char(string="N° Cuota Óptica")
     optical_total = fields.Float(string="Optica", group_operator='sum')
-    odontology_installment = fields.Char(string="N° Cuota Odontología")
-    
+
+    punilla_installment = fields.Char(string="N° Cuota Punilla")
     punilla_total = fields.Float(string="Punilla", group_operator='sum')
 
+    solar_installment = fields.Char(string="N° Cuota Solar")
     solar = fields.Float(string="Solar", group_operator='sum')
+    caruso_installment = fields.Char(string="N° Cuota Caruso")
     caruso = fields.Float(string="Caruso", group_operator='sum')
 
+    parque_del_sol_installment = fields.Char(string="N° Cuota Parque del Sol")
     parque_del_sol = fields.Float(string="Parque del Sol", group_operator='sum')
+    salguero_installment = fields.Char(string="N° Cuota Salguero")
     salguero = fields.Float(string="Salguero", group_operator='sum')
+    tres_provincias_installment = fields.Char(string="N° Cuota Tres Provincias")
     tres_provincias = fields.Float(string="Tres Provincias", group_operator='sum')
 
+    ecco_installment = fields.Char(string="N° Cuota ECCO")
     ecco_loan = fields.Float(string="ECCO", group_operator='sum')
+    emi_installment = fields.Char(string="N° Cuota EMI")
     emi_loan = fields.Float(string="EMI", group_operator='sum')
+    emergency_installment = fields.Char(string="N° Cuota Urgencias")
     emergency_loan = fields.Float(string="URGENCIAS", group_operator='sum')
+    suoem_installment = fields.Char(string="N° Cuota SUOEM")
     suoem_loan = fields.Float(string="SUOEM", group_operator='sum')
 
-    tourism_total = fields.Float(string="Turismo", group_operator='sum')
     tourism_installment = fields.Char(string="N° Cuota Turismo")
+    tourism_total = fields.Float(string="Turismo", group_operator='sum')
 
-    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator='sum')
     aid_installment = fields.Char(string="N° Cuota Ayudas")
+    aid_total = fields.Float(string="AYUDA SOLIDARIA", group_operator='sum')
 
-    party_total = fields.Float(string="FIESTA", group_operator='sum')
     party_installment = fields.Char(string="N° Cuota Fiesta")
+    party_total = fields.Float(string="FIESTA", group_operator='sum')
 
-    hall_total = fields.Float(string="Salon", group_operator='sum')
     hall_installment = fields.Char(string="N° Cuota Salón")
+    hall_total = fields.Float(string="Salon", group_operator='sum')
 
+    odontology_installment = fields.Char(string="N° Cuota Odontología")
     odontology_total = fields.Float(string="Odontología", group_operator='sum')
 
+    otros_1_installment = fields.Char(string="N° Cuota Otros 1")
     otros_1 = fields.Float(string="OTROS 1", group_operator='sum')
+    otros_2_installment = fields.Char(string="N° Cuota Otros 2")
     otros_2 = fields.Float(string="OTROS 2", group_operator='sum')
 
     union_fee = fields.Float(
@@ -381,9 +394,16 @@ class AffiliatePaymentAccount(models.Model):
 
     @api.model
     def create(self, vals):
-        """Override create para recalcular saldos posteriores"""
+        """Override create para recalcular saldos posteriores y aplicar planes de cuotas"""
         record = super(AffiliatePaymentAccount, self).create(vals)
         record._update_subsequent_months_initial_balance()
+        # Aplicar planes de cuotas activos del afiliado
+        active_plans = self.env['affiliate.installment.plan'].search([
+            ('affiliate_id', '=', record.affiliate_id.id),
+            ('state', '=', 'active'),
+        ])
+        for plan in active_plans:
+            plan.apply_to_record(record)
         return record
     
     def _update_subsequent_months_initial_balance(self):
@@ -471,14 +491,22 @@ class AffiliatePaymentAccount(models.Model):
                     skipped_count += 1
                     continue
                 
-                self.create({
+                new_record = self.create({
                     'affiliate_id': affiliate.id,
                     'date_month': month,
                     'date_year': year,
                     'state': 'draft',
                 })
                 created_count += 1
-                
+
+                # Aplicar planes de cuotas activos
+                active_plans = self.env['affiliate.installment.plan'].search([
+                    ('affiliate_id', '=', affiliate.id),
+                    ('state', '=', 'active'),
+                ])
+                for plan in active_plans:
+                    plan.apply_to_record(new_record)
+
             except Exception as e:
                 errors.append(f"Error con afiliado {affiliate.name}: {str(e)}")
                 _logger.error(f"Error creating payment account for {affiliate.name}: {e}")
