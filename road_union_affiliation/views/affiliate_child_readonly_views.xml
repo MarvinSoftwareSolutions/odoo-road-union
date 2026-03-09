@@ -16,6 +16,8 @@
                 <field name="observation"/>
                 <field name="affiliate_uids"/>
                 <field name="affiliate_names"/>
+                <field name="affiliate_department_1"/>
+                <field name="affiliate_department_2"/>
             </tree>
         </field>
     </record>
@@ -37,6 +39,8 @@
                         <field name="educational_level"/>
                         <field name="affiliate_uids"/>
                         <field name="affiliate_names"/>
+                        <field name="affiliate_department_1"/>
+                        <field name="affiliate_department_2"/>
                         <field name="observation"/>
                     </group>
                 </sheet>
