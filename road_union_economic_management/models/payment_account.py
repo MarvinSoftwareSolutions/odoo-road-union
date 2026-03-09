@@ -262,43 +262,28 @@ class AffiliatePaymentAccount(models.Model):
         Calcula la cuota sindical según las reglas:
         - Activos: 1.5% del básico de su clase + 1.5% del básico de clase 15
         - Jubilados: 75% de lo que pagaría un activo (0.75 * cuota activo)
+        Usa el historial mensual de básicos para obtener el valor correcto del mes.
         """
+        History = self.env['affiliate.class.basic.history']
         for record in self:
             if not record.affiliate_id or not record.affiliate_id.category:
                 record.union_fee = 0.0
                 continue
-                
+
             affiliate_class = record.affiliate_id.category
             affiliate_type = record.affiliate_id.affiliate_type_id.name if record.affiliate_id.affiliate_type_id else ''
-            
-            class_basic = self.env['affiliate.class.basic'].search([
-                ('class_number', '=', affiliate_class),
-                ('active', '=', True)
-            ], limit=1)
-            
-            if not class_basic:
-                record.union_fee = 0.0
-                continue
-                
-            is_retired = any(keyword in affiliate_type.lower() for keyword in ['jubilado', 'pensionado', 'retirado'])
-            
-            # Calcular cuota como activo
-            own_class_fee = class_basic.basic_amount * 0.015
-            
-            class_15_basic = self.env['affiliate.class.basic'].search([
-                ('class_number', '=', 15),
-                ('active', '=', True)
-            ], limit=1)
-            
-            if class_15_basic:
-                class_15_fee = class_15_basic.basic_amount * 0.015
-                record.union_fee = own_class_fee + class_15_fee
-            else:
-                record.union_fee = own_class_fee
-            
-            # Si es jubilado, aplicar el 75%
+
+            own_basic = History.get_basic_for_month(
+                affiliate_class, record.date_month, record.date_year)
+            class_15_basic = History.get_basic_for_month(
+                15, record.date_month, record.date_year)
+
+            is_retired = any(keyword in affiliate_type.lower()
+                            for keyword in ['jubilado', 'pensionado', 'retirado'])
+
+            record.union_fee = own_basic * 0.015 + class_15_basic * 0.015
             if is_retired:
-                record.union_fee = record.union_fee * 0.75
+                record.union_fee *= 0.75
 
     total_services = fields.Float(
         string="TOTAL SERVICIOS",
@@ -396,6 +381,10 @@ class AffiliatePaymentAccount(models.Model):
     def create(self, vals):
         """Override create para recalcular saldos posteriores y aplicar planes de cuotas"""
         record = super(AffiliatePaymentAccount, self).create(vals)
+        # Asegurar que existan registros de historial para este mes
+        if record.date_month and record.date_year:
+            self.env['affiliate.class.basic.history'].ensure_month_exists(
+                record.date_month, record.date_year)
         record._update_subsequent_months_initial_balance()
         # Aplicar planes de cuotas activos del afiliado
         active_plans = self.env['affiliate.installment.plan'].search([
@@ -511,6 +500,9 @@ class AffiliatePaymentAccount(models.Model):
                 errors.append(f"Error con afiliado {affiliate.name}: {str(e)}")
                 _logger.error(f"Error creating payment account for {affiliate.name}: {e}")
         
+        # Asegurar que existan registros de historial de básicos para este mes
+        self.env['affiliate.class.basic.history'].ensure_month_exists(month, year)
+
         result = {
             'created': created_count,
             'skipped': skipped_count,
@@ -519,7 +511,7 @@ class AffiliatePaymentAccount(models.Model):
             'month': month,
             'year': year,
         }
-        
+
         _logger.info(f"Monthly records creation: {result}")
         return result
 
@@ -651,11 +643,11 @@ class AffiliateClassBasic(models.Model):
         """
         Override write para:
         1. Actualizar basic_amount_class1 si se modifica basic_amount en clase 1
-        2. Recalcular union_fee cuando se modifica el básico
+        2. Recalcular union_fee cuando se modifica el básico (via historial)
         3. Propagar cambios a todas las clases cuando se modifica clase 1
         """
         result = super(AffiliateClassBasic, self).write(vals)
-        
+
         # Si se modificó basic_amount en la clase 1, actualizar todas las demás clases
         if 'basic_amount' in vals:
             for record in self:
@@ -665,20 +657,30 @@ class AffiliateClassBasic(models.Model):
                         super(AffiliateClassBasic, record).write({
                             'basic_amount_class1': vals['basic_amount']
                         })
-                    
+
                     # Recalcular todas las demás clases
                     other_classes = self.search([('class_number', '!=', 1)])
                     other_classes._compute_basic_amount()
-            
-            # Actualizar las cuotas sindicales
-            self._update_union_fees_from_current_month()
-        
+
+                    # Crear historial del mes actual y recalcular cuotas
+                    if not self.env.context.get('_skip_history_creation'):
+                        today = datetime.now()
+                        History = self.env['affiliate.class.basic.history']
+                        History.set_class1_basic_for_month(
+                            today.strftime('%m'), str(today.year), vals['basic_amount'])
+
         # Si se modificó basic_amount_class1, recalcular todas las clases
         if 'basic_amount_class1' in vals:
             all_classes = self.search([])
             all_classes._compute_basic_amount()
-            self._update_union_fees_from_current_month()
-        
+            if not self.env.context.get('_skip_history_creation'):
+                today = datetime.now()
+                class1 = self.search([('class_number', '=', 1)], limit=1)
+                if class1:
+                    History = self.env['affiliate.class.basic.history']
+                    History.set_class1_basic_for_month(
+                        today.strftime('%m'), str(today.year), class1.basic_amount)
+
         return result
     
     @api.model_create_multi
@@ -705,8 +707,11 @@ class AffiliateClassBasic(models.Model):
             # Recalcular todas las clases
             all_classes = self.search([])
             all_classes._compute_basic_amount()
-            # Actualizar cuotas sindicales
-            self._update_union_fees_from_current_month()
+            # Crear historial del mes actual y recalcular cuotas
+            today = datetime.now()
+            History = self.env['affiliate.class.basic.history']
+            History.set_class1_basic_for_month(
+                today.strftime('%m'), str(today.year), self.basic_amount)
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
@@ -717,43 +722,3 @@ class AffiliateClassBasic(models.Model):
                     'sticky': False,
                 }
             }
-    
-    def _update_union_fees_from_current_month(self):
-        """
-        Recalcula union_fee para todos los payment_account del mes actual
-        y meses futuros que usen esta clase o clase 15.
-        """
-        for class_basic in self:
-            today = datetime.now()
-            current_month = today.strftime('%m')
-            current_year = str(today.year)
-            
-            PaymentAccount = self.env['affiliate.payment_account']
-            
-            affected_affiliates = self.env['affiliation.affiliate'].search([
-                ('category', '=', class_basic.class_number)
-            ])
-            
-            if class_basic.class_number == 15:
-                all_affiliates = self.env['affiliation.affiliate'].search([])
-                active_affiliates = all_affiliates.filtered(
-                    lambda a: a.affiliate_type_id and 
-                    not any(keyword in a.affiliate_type_id.name.lower() 
-                            for keyword in ['jubilado', 'pensionado', 'retirado'])
-                )
-                affected_affiliates |= active_affiliates
-            
-            all_records = PaymentAccount.search([
-                ('affiliate_id', 'in', affected_affiliates.ids),
-            ])
-            
-            current_date = datetime(int(current_year), int(current_month), 1)
-            records_to_update = all_records.filtered(
-                lambda r: datetime(int(r.date_year), int(r.date_month), 1) >= current_date
-            )
-            
-            for record in records_to_update:
-                record._compute_union_fee()
-                record._compute_total()
-                record._compute_final_balance()
-                record._update_subsequent_months_initial_balance()
