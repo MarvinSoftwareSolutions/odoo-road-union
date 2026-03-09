@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de lista editable (filtrada a clase 1) -->
+    <record id="view_affiliate_class_basic_history_tree" model="ir.ui.view">
+        <field name="name">affiliate.class.basic.history.tree</field>
+        <field name="model">affiliate.class.basic.history</field>
+        <field name="arch" type="xml">
+            <tree string="Historial de Básicos" editable="bottom"
+                  decoration-info="manually_modified == True">
+                <field name="class_basic_id" invisible="1"/>
+                <field name="class_number" readonly="1"/>
+                <field name="date_month"/>
+                <field name="date_year"/>
+                <field name="basic_amount" widget="monetary"/>
+                <field name="manually_modified" widget="boolean"
+                       readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de búsqueda -->
+    <record id="view_affiliate_class_basic_history_search" model="ir.ui.view">
+        <field name="name">affiliate.class.basic.history.search</field>
+        <field name="model">affiliate.class.basic.history</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Historial de Básicos">
+                <field name="class_number"/>
+                <field name="date_month"/>
+                <field name="date_year"/>
+                <filter string="Clase 1" name="class_1"
+                        domain="[('class_number', '=', 1)]"/>
+                <filter string="Modificado manualmente" name="manually_modified"
+                        domain="[('manually_modified', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Año" name="group_year"
+                            context="{'group_by': 'date_year'}"/>
+                    <filter string="Mes" name="group_month"
+                            context="{'group_by': 'date_month'}"/>
+                    <filter string="Clase" name="group_class"
+                            context="{'group_by': 'class_number'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acción de ventana (filtro clase 1 por defecto, removible) -->
+    <record id="action_affiliate_class_basic_history" model="ir.actions.act_window">
+        <field name="name">Historial de Básicos</field>
+        <field name="res_model">affiliate.class.basic.history</field>
+        <field name="view_mode">tree</field>
+        <field name="domain" eval="[]"/>
+        <field name="context">{'search_default_class_1': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay registros de historial de básicos
+            </p>
+            <p>
+                El historial se crea automáticamente al generar registros mensuales
+                o al modificar el básico de clase 1.
+            </p>
+            <p>
+                <strong>Nota:</strong> Solo se puede editar el básico de la Clase 1.
+                Al modificar un mes, los cambios se propagan automáticamente hacia adelante
+                hasta el próximo mes marcado como "modificado manualmente".
+            </p>
+        </field>
+    </record>
+
+    <!-- Menú -->
+    <menuitem id="menu_affiliate_class_basic_history"
+              name="Historial de Básicos"
+              parent="union_affiliation.affiliates_section"
+              action="action_affiliate_class_basic_history"
+              sequence="11"/>
+</odoo>

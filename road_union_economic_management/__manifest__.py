@@ -17,8 +17,10 @@
             'road_union_economic_management/static/src/js/list_server_aggregates.js',
         ],
     },
+    'post_init_hook': '_post_init_hook',
     'data': [
         'views/affiliate_class_basic_views.xml',
+        'views/affiliate_class_basic_history_views.xml',
         'views/payment_account_current_views.xml',
         'security/ir.model.access.csv',
         'views/affiliate_views.xml',

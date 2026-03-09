@@ -1,1 +1,1 @@
-from . import affiliate, payment_account, provider_payments, pharmacies, installment_plan
+from . import affiliate, payment_account, provider_payments, pharmacies, installment_plan, class_basic_history
