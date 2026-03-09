@@ -14,12 +14,32 @@ class AffiliateChild(models.Model):
         help="Age calculated from birth date"
     )
     
-    # Campo helper para importación
+    # Campo computado para mostrar UIDs de los padres
+    affiliate_uids = fields.Char(
+        string='N° Afiliado (Padres)',
+        compute='_compute_affiliate_uids',
+        store=True,
+    )
+
+    # Campo helper para importación por nombre
     affiliate_parent_name = fields.Char(
         string='Nombre del Padre/Madre (para importación)',
         help='Campo auxiliar para facilitar la importación. Ingrese el nombre exacto del afiliado.'
     )
+
+    # Campo helper para importación por UID
+    affiliate_parent_uid = fields.Integer(
+        string='N° Afiliado del Padre/Madre (para importación)',
+        help='Campo auxiliar para facilitar la importación. Ingrese el número de afiliado.'
+    )
     
+    @api.depends('affiliate_ids.uid')
+    def _compute_affiliate_uids(self):
+        for record in self:
+            record.affiliate_uids = ', '.join(
+                str(uid) for uid in record.affiliate_ids.mapped('uid') if uid
+            )
+
     @api.depends('birth_date')
     def _compute_age(self):
         """Calcula la edad en años basada en la fecha de nacimiento"""
@@ -41,7 +61,18 @@ class AffiliateChild(models.Model):
     
     @api.model
     def create(self, vals):
-        """Override para procesar affiliate_parent_name en importación"""
+        """Override para procesar affiliate_parent_name y affiliate_parent_uid en importación"""
+        if 'affiliate_parent_uid' in vals and vals['affiliate_parent_uid']:
+            parent_uid = vals.pop('affiliate_parent_uid')
+            affiliate = self.env['affiliation.affiliate'].search([
+                ('uid', '=', int(parent_uid))
+            ], limit=1)
+            if affiliate:
+                if 'affiliate_ids' not in vals:
+                    vals['affiliate_ids'] = []
+                vals['affiliate_ids'] = [(4, affiliate.id)]
+                self._update_parent_role(affiliate)
+
         if 'affiliate_parent_name' in vals and vals['affiliate_parent_name']:
             parent_name = vals.pop('affiliate_parent_name')
             affiliate = self.env['affiliation.affiliate'].search([
@@ -51,8 +82,6 @@ class AffiliateChild(models.Model):
                 if 'affiliate_ids' not in vals:
                     vals['affiliate_ids'] = []
                 vals['affiliate_ids'] = [(4, affiliate.id)]
-                
-                # Actualizar parent_role según el género del afiliado
                 self._update_parent_role(affiliate)
         
         # Crear el registro del hijo
