@@ -14,6 +14,7 @@
                 <field name="verified"/>
                 <field name="educational_level"/>
                 <field name="observation"/>
+                <field name="affiliate_uids"/>
                 <field name="affiliate_names"/>
             </tree>
         </field>
@@ -34,6 +35,7 @@
                         <field name="handicapped"/>
                         <field name="verified"/>
                         <field name="educational_level"/>
+                        <field name="affiliate_uids"/>
                         <field name="affiliate_names"/>
                         <field name="observation"/>
                     </group>
