@@ -21,6 +21,18 @@ class AffiliateChild(models.Model):
         store=True,
     )
 
+    # Departamentos de los padres (1 y 2)
+    affiliate_department_1 = fields.Char(
+        string='Departamento 1',
+        compute='_compute_affiliate_departments',
+        store=True,
+    )
+    affiliate_department_2 = fields.Char(
+        string='Departamento 2',
+        compute='_compute_affiliate_departments',
+        store=True,
+    )
+
     # Campo helper para importación por nombre
     affiliate_parent_name = fields.Char(
         string='Nombre del Padre/Madre (para importación)',
@@ -33,6 +45,13 @@ class AffiliateChild(models.Model):
         help='Campo auxiliar para facilitar la importación. Ingrese el número de afiliado.'
     )
     
+    @api.depends('affiliate_ids.department_id')
+    def _compute_affiliate_departments(self):
+        for record in self:
+            parents = record.affiliate_ids
+            record.affiliate_department_1 = parents[0].department_id.name if len(parents) > 0 and parents[0].department_id else ''
+            record.affiliate_department_2 = parents[1].department_id.name if len(parents) > 1 and parents[1].department_id else ''
+
     @api.depends('affiliate_ids.uid')
     def _compute_affiliate_uids(self):
         for record in self:
