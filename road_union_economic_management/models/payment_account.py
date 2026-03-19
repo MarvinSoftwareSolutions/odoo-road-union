@@ -40,6 +40,7 @@ class AffiliatePaymentAccount(models.Model):
     affiliate_number = fields.Integer(
         string="N° Afiliado",
         compute="_compute_affiliate_uid",
+        inverse="_inverse_affiliate_uid",
         store=True,
     )
 
@@ -47,6 +48,15 @@ class AffiliatePaymentAccount(models.Model):
     def _compute_affiliate_uid(self):
         for record in self:
             record.affiliate_number = record.affiliate_id.uid if record.affiliate_id else 0
+
+    def _inverse_affiliate_uid(self):
+        for record in self:
+            if record.affiliate_number:
+                affiliate = self.env['affiliation.affiliate'].search([
+                    ('uid', '=', record.affiliate_number)
+                ], limit=1)
+                if affiliate:
+                    record.affiliate_id = affiliate
 
     cuil = fields.Char(
         string="CUIL",
@@ -380,6 +390,13 @@ class AffiliatePaymentAccount(models.Model):
     @api.model
     def create(self, vals):
         """Override create para recalcular saldos posteriores y aplicar planes de cuotas"""
+        # Resolver affiliate_id desde affiliate_number si no viene affiliate_id
+        if 'affiliate_number' in vals and not vals.get('affiliate_id'):
+            affiliate = self.env['affiliation.affiliate'].search([
+                ('uid', '=', vals['affiliate_number'])
+            ], limit=1)
+            if affiliate:
+                vals['affiliate_id'] = affiliate.id
         record = super(AffiliatePaymentAccount, self).create(vals)
         # Asegurar que existan registros de historial para este mes
         if record.date_month and record.date_year:
