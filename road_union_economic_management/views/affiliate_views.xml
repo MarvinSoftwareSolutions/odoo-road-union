@@ -5,7 +5,7 @@
       <field name="model">affiliation.affiliate</field>
       <field name="inherit_id" ref="road_union_affiliation.odoo_road_union_affiliate_form_inherit"/>
       <field name="arch" type="xml">
-        
+
         <xpath expr="//group[@name='personal_information']/field[@name='seniority']" position="after">
           <field name="id_benefit"/>
         </xpath>
@@ -16,6 +16,19 @@
           </page>
         </xpath>
 
+      </field>
+    </record>
+
+    <!-- Agregar id_benefit al tree view de afiliados (definido en road_union_affiliation
+         pero el campo se define acá, por eso necesitamos este inherit) -->
+    <record id="view_affiliate_tree_inherit_id_benefit" model="ir.ui.view">
+      <field name="name">affiliation.affiliate.tree.inherit.id_benefit</field>
+      <field name="model">affiliation.affiliate</field>
+      <field name="inherit_id" ref="road_union_affiliation.view_affiliate_tree"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='first_name']" position="after">
+          <field name="id_benefit"/>
+        </xpath>
       </field>
     </record>
   </data>

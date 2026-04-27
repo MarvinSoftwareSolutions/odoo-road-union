@@ -4,7 +4,13 @@
         <field name="model">affiliation.affiliate</field>
         <field name="arch" type="xml">
             <tree class="o_sticky_list">
-                <field name="name" string="Apellido y Nombre"/>
+                <!-- WORKAROUND: usamos display_full_name en vez de name porque
+                     el quick export usa el `string` del field del modelo, y
+                     `name` y `first_name` ambos tienen string="Nombre",
+                     duplicando el header. Ver comentario en el modelo. -->
+                <field name="display_full_name"/>
+                <field name="last_name" optional="hide"/>
+                <field name="first_name" optional="hide"/>
                 <field name="gender"/>
                 <field name="department_id"/>
                 <field name="affiliate_type_id"/>
@@ -39,6 +45,11 @@
       <field name="model">affiliation.affiliate</field>
       <field name="arch" type="xml">
           <search>
+              <field name="display_full_name" string="Apellido y Nombre"/>
+              <field name="last_name"/>
+              <field name="first_name"/>
+              <field name="uid" string="Legajo"/>
+              <field name="personal_id" string="DNI"/>
               <field name="affiliate_type_id"/>
 
               <filter string="Activos"
