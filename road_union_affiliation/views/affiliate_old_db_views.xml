@@ -45,6 +45,11 @@
       <field name="model">affiliation.affiliate</field>
       <field name="arch" type="xml">
           <search>
+              <field name="display_full_name" string="Apellido y Nombre"/>
+              <field name="last_name"/>
+              <field name="first_name"/>
+              <field name="uid" string="Legajo"/>
+              <field name="personal_id" string="DNI"/>
               <field name="affiliate_type_id"/>
 
               <filter string="Activos"
