@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import datetime
 import logging
 
@@ -67,6 +67,140 @@ class AffiliateClassBasicHistory(models.Model):
          'unique(class_basic_id, date_month, date_year)',
          'Ya existe un registro de historial para esta clase, mes y año.')
     ]
+
+    @api.model
+    def load(self, fields, data):
+        """Override para hacer upsert por la clave natural
+        ``(class_basic_id, date_month, date_year)``.
+
+        Si una fila importada matchea un registro existente por la clave
+        natural, se inyecta el External ID del existente para que Odoo
+        actualice (en vez de fallar contra el constraint UNIQUE).
+        Las filas se reportan como warnings en el preview de "Probar".
+        """
+        natural_key = ['class_basic_id', 'date_month', 'date_year']
+        if not all(k in fields for k in natural_key) or 'id' in fields:
+            return super().load(fields, data)
+
+        idx = {k: fields.index(k) for k in natural_key}
+        IMD = self.env['ir.model.data']
+        ClassBasic = self.env['affiliate.class.basic']
+        # Cambiamos `class_basic_id` por `class_basic_id/.id` para que Odoo
+        # resuelva el Many2one por database id en vez de hacer name_search
+        # con ilike (ambiguo: "Clase 1" matchea con Clase 1, 10, 11, ..., 19)
+        new_fields = ['id'] + list(fields)
+        new_fields[1 + idx['class_basic_id']] = 'class_basic_id/.id'
+        new_data = []
+        warnings_msgs = []
+
+        # Mapeo label → value para los campos Selection (date_month, date_year)
+        # ya que el archivo trae "Abril" pero la DB almacena "04"
+        month_label_to_value = {
+            label: value
+            for value, label in self._fields['date_month'].selection
+        }
+        year_label_to_value = {
+            label: value
+            for value, label in self._fields['date_year'].selection(self)
+        }
+
+        for row_idx, row in enumerate(data, start=2):
+            class_basic_val = row[idx['class_basic_id']]
+            date_month_raw = row[idx['date_month']]
+            date_year_raw = row[idx['date_year']]
+
+            if class_basic_val in (None, '', False) or not date_month_raw or not date_year_raw:
+                new_data.append(['', *row])
+                continue
+
+            # Normalizar: el archivo puede traer "Abril" (label) o "04" (value)
+            date_month = month_label_to_value.get(date_month_raw, date_month_raw)
+            date_year = year_label_to_value.get(date_year_raw, date_year_raw)
+
+            # Resolver el class_basic_id. Estrategia:
+            # 1) entero pequeño (1-20) → buscar por class_number (el caso típico)
+            # 2) string con punto → external id (module.name)
+            # 3) entero grande → id de la base
+            # 4) string libre → display_name
+            class_basic = ClassBasic.browse()
+            try:
+                as_int = int(class_basic_val)
+                if 1 <= as_int <= 20:
+                    class_basic = ClassBasic.search(
+                        [('class_number', '=', as_int)], limit=1)
+                elif not class_basic:
+                    class_basic = ClassBasic.browse(as_int)
+                    if not class_basic.exists():
+                        class_basic = ClassBasic.browse()
+            except (TypeError, ValueError):
+                pass
+            if not class_basic and isinstance(class_basic_val, str):
+                if '.' in class_basic_val:
+                    class_basic = self.env.ref(
+                        class_basic_val, raise_if_not_found=False) or ClassBasic.browse()
+                if not class_basic:
+                    class_basic = ClassBasic.search(
+                        [('display_name', '=', class_basic_val)], limit=1)
+
+            if not class_basic:
+                # No pudimos resolver la clase - reportar como error y skip
+                warnings_msgs.append({
+                    'type': 'error',
+                    'message': _("Fila %(row)s: no se pudo resolver la clase '%(val)s'") % {
+                        'row': row_idx,
+                        'val': class_basic_val,
+                    },
+                    'rows': {'from': row_idx - 1, 'to': row_idx - 1},
+                })
+                continue
+
+            # Reemplazar el valor de class_basic_id por su database id (string)
+            # ya que cambiamos el field name a `class_basic_id/.id`
+            modified_row = list(row)
+            modified_row[idx['class_basic_id']] = str(class_basic.id)
+
+            existing = self.search([
+                ('class_basic_id', '=', class_basic.id),
+                ('date_month', '=', date_month),
+                ('date_year', '=', date_year),
+            ], limit=1)
+
+            if not existing:
+                new_data.append(['', *modified_row])
+                continue
+
+            imd = IMD.search([
+                ('model', '=', self._name),
+                ('res_id', '=', existing.id),
+            ], limit=1)
+            if imd:
+                xml_id = f"{imd.module}.{imd.name}"
+            else:
+                ext_name = f'class_basic_history_{existing.id}'
+                IMD.create({
+                    'module': '__import__',
+                    'name': ext_name,
+                    'model': self._name,
+                    'res_id': existing.id,
+                })
+                xml_id = f"__import__.{ext_name}"
+
+            new_data.append([xml_id, *modified_row])
+            warnings_msgs.append({
+                'type': 'warning',
+                'message': _('Fila %(row)s: ya existe historial para Clase %(cls)s %(month)s/%(year)s — se actualizará.') % {
+                    'row': row_idx,
+                    'cls': class_basic.class_number,
+                    'month': date_month,
+                    'year': date_year,
+                },
+                'rows': {'from': row_idx - 1, 'to': row_idx - 1},
+            })
+
+        result = super().load(new_fields, new_data)
+        if warnings_msgs:
+            result.setdefault('messages', []).extend(warnings_msgs)
+        return result
 
     @api.model_create_multi
     def create(self, vals_list):
