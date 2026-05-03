@@ -87,6 +87,18 @@ class PaymentExportWizard(models.TransientModel):
         """Formatea el día removiendo el 0 inicial si existe"""
         day = date_field.strftime('%d')
         return str(int(day))
+
+    def _format_amount(self, amount):
+        """Formatea un monto con coma decimal y sin ceros decimales innecesarios.
+
+        Ejemplos:
+            122.56 -> "122,56"
+            122.50 -> "122,5"
+            122.00 -> "122"
+        """
+        # Redondear a 2 decimales y quitar ceros sobrantes y el punto si queda al final
+        s = f"{amount:.2f}".rstrip('0').rstrip('.')
+        return s.replace('.', ',')
     
     def _generate_payments_file(self, affiliate_type='Activo', concept_code='7281'):
         """Genera el archivo de pagos (7281 para activos, otro código para jubilados)"""
@@ -106,13 +118,17 @@ class PaymentExportWizard(models.TransientModel):
                 continue
                 
             amount = payment.total_services - payment.payments
-            
-            if amount == int(amount):
-                amount_str = str(int(amount))
-            else:
-                amount_str = f"{amount:.2f}".replace('.', ',')
-            
-            line = f"{payment.affiliate_id.id_benefit}    {concept_code}  {amount_str}                                             {date_str}\n"
+
+            # Saltar registros con monto 0
+            if amount == 0:
+                continue
+
+            amount_str = self._format_amount(amount)
+
+            # Formato de ancho fijo (76 chars total):
+            # id_benefit(9) + "    "(4) + concept(4) + "  "(2) + amount.ljust(49) + date(8)
+            id_benefit = str(payment.affiliate_id.id_benefit).ljust(9)[:9]
+            line = f"{id_benefit}    {concept_code}  {amount_str.ljust(49)[:49]}{date_str}\n"
             file_content += line
             processed_records += 1
         
