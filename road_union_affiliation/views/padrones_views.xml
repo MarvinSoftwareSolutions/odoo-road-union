@@ -1,0 +1,163 @@
+<odoo>
+    <!-- ==================== FILTROS Y AGRUPACIONES PARA PADRONES ==================== -->
+
+    <!-- Extiende la búsqueda de la vista de base de datos de afiliados -->
+    <record id="affiliate_padrones_search" model="ir.ui.view">
+        <field name="name">affiliation.affiliate.padrones.search</field>
+        <field name="model">affiliation.affiliate</field>
+        <field name="inherit_id" ref="affiliate_active_search"/>
+        <field name="arch" type="xml">
+            <filter name="activos" position="after">
+                <filter string="Jubilados"
+                        name="jubilados"
+                        domain="[('affiliate_type_id.name', '=', 'Jubilado')]"/>
+                <separator/>
+                <filter string="Padres"
+                        name="padres"
+                        domain="[('parent_role', '=', 'father')]"/>
+                <filter string="Madres"
+                        name="madres"
+                        domain="[('parent_role', '=', 'mother')]"/>
+                <separator/>
+                <filter string="Afiliados vigentes"
+                        name="vigentes"
+                        domain="[('state', '=', 'affiliated')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Departamento"
+                            name="groupby_departamento"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Clase"
+                            name="groupby_clase"
+                            context="{'group_by': 'category'}"/>
+                    <filter string="Tipo de afiliado"
+                            name="groupby_tipo"
+                            context="{'group_by': 'affiliate_type_id'}"/>
+                    <filter string="Rol parental"
+                            name="groupby_rol"
+                            context="{'group_by': 'parent_role'}"/>
+                </group>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Búsqueda de hijos: hasta ahora los listados de hijos no tenían search view propia -->
+    <record id="affiliate_child_padrones_search" model="ir.ui.view">
+        <field name="name">affiliation.affiliate_child.padrones.search</field>
+        <field name="model">affiliation.affiliate_child</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="personal_id" string="DNI"/>
+                <field name="affiliate_uids" string="Legajo del padre/madre"/>
+                <field name="affiliate_department_1" string="Departamento"/>
+
+                <!-- Edad calculada por fecha de nacimiento para no depender del
+                     computed store (que puede quedar desactualizado con el tiempo) -->
+                <filter string="Menores de 13"
+                        name="menores_13"
+                        domain="[('birth_date', '&gt;', (context_today() - relativedelta(years=13)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Jardín"
+                        name="nivel_jardin"
+                        domain="[('educational_level', '=', 'jardin')]"/>
+                <filter string="Primaria 1° a 3°"
+                        name="nivel_primaria_1_3"
+                        domain="[('educational_level', '=', 'primaria_1_3')]"/>
+                <filter string="Primaria 4° a 6°"
+                        name="nivel_primaria_4_6"
+                        domain="[('educational_level', '=', 'primaria_4_6')]"/>
+                <filter string="Secundaria"
+                        name="nivel_secundaria"
+                        domain="[('educational_level', '=', 'secundaria')]"/>
+                <filter string="En edad escolar"
+                        name="en_edad_escolar"
+                        domain="[('educational_level', 'in', ['jardin', 'primaria_1_3', 'primaria_4_6', 'secundaria'])]"/>
+                <separator/>
+                <filter string="De padres activos"
+                        name="padres_activos"
+                        domain="[('affiliate_ids.affiliate_type_id.name', '=', 'Activo')]"/>
+                <filter string="Discapacitados"
+                        name="discapacitados"
+                        domain="[('handicapped', '=', True)]"/>
+                <filter string="Verificados"
+                        name="verificados"
+                        domain="[('verified', '=', True)]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Nivel educativo"
+                            name="groupby_nivel"
+                            context="{'group_by': 'educational_level'}"/>
+                    <filter string="Departamento"
+                            name="groupby_departamento"
+                            context="{'group_by': 'affiliate_department_1'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==================== PADRONES PREDEFINIDOS ==================== -->
+
+    <record id="action_padron_dia_del_padre" model="ir.actions.act_window">
+        <field name="name">Padrón Día del Padre</field>
+        <field name="res_model">affiliation.affiliate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_affiliate_tree"/>
+        <field name="search_view_id" ref="affiliate_active_search"/>
+        <field name="domain">[('parent_role', '=', 'father')]</field>
+        <field name="context">{'search_default_vigentes': 1}</field>
+    </record>
+
+    <record id="action_padron_dia_de_la_madre" model="ir.actions.act_window">
+        <field name="name">Padrón Día de la Madre</field>
+        <field name="res_model">affiliation.affiliate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_affiliate_tree"/>
+        <field name="search_view_id" ref="affiliate_active_search"/>
+        <field name="domain">[('parent_role', '=', 'mother')]</field>
+        <field name="context">{'search_default_vigentes': 1}</field>
+    </record>
+
+    <record id="action_padron_dia_del_nino" model="ir.actions.act_window">
+        <field name="name">Padrón Día del Niño</field>
+        <field name="res_model">affiliation.affiliate_child</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_affiliate_child_tree_readonly"/>
+        <field name="search_view_id" ref="affiliate_child_padrones_search"/>
+        <field name="context">{'search_default_menores_13': 1, 'search_default_padres_activos': 1}</field>
+    </record>
+
+    <record id="action_padron_escolar" model="ir.actions.act_window">
+        <field name="name">Padrón Escolar</field>
+        <field name="res_model">affiliation.affiliate_child</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_affiliate_child_tree_readonly"/>
+        <field name="search_view_id" ref="affiliate_child_padrones_search"/>
+        <field name="context">{'search_default_en_edad_escolar': 1, 'search_default_groupby_nivel': 1}</field>
+    </record>
+
+    <record id="action_padron_por_clases" model="ir.actions.act_window">
+        <field name="name">Padrón por Clases</field>
+        <field name="res_model">affiliation.affiliate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_affiliate_tree"/>
+        <field name="search_view_id" ref="affiliate_active_search"/>
+        <field name="context">{'search_default_vigentes': 1, 'search_default_groupby_clase': 1}</field>
+    </record>
+
+    <!-- ==================== MENÚ ==================== -->
+
+    <menuitem id="menu_padrones" name="Padrones"
+              parent="union_affiliation.union"
+              sequence="15"
+              groups="union_affiliation.group_affiliation_read"/>
+
+    <menuitem id="menu_padron_dia_del_padre" name="Día del Padre"
+              parent="menu_padrones" action="action_padron_dia_del_padre" sequence="10"/>
+    <menuitem id="menu_padron_dia_de_la_madre" name="Día de la Madre"
+              parent="menu_padrones" action="action_padron_dia_de_la_madre" sequence="20"/>
+    <menuitem id="menu_padron_dia_del_nino" name="Día del Niño"
+              parent="menu_padrones" action="action_padron_dia_del_nino" sequence="30"/>
+    <menuitem id="menu_padron_escolar" name="Escolar"
+              parent="menu_padrones" action="action_padron_escolar" sequence="40"/>
+    <menuitem id="menu_padron_por_clases" name="Por Clases"
+              parent="menu_padrones" action="action_padron_por_clases" sequence="50"/>
+</odoo>
