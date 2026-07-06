@@ -74,10 +74,14 @@
         <field name="arch" type="xml">
             <form string="Liquidación Mensual">
                 <header>
-                    <button name="action_generar_lineas" 
-                            string="Generar Líneas de Proveedores" 
-                            type="object" 
+                    <button name="action_generar_lineas"
+                            string="Generar Líneas de Proveedores"
+                            type="object"
                             class="btn-primary"/>
+                    <button name="action_calcular_farmacias_desde_gastos"
+                            string="Calcular Farmacias desde Gastos"
+                            type="object"
+                            help="Completa importe y 40% de cada farmacia desde los gastos cargados del mes. Los valores quedan editables."/>
                 </header>
                 <sheet>
                     <div class="oe_title">

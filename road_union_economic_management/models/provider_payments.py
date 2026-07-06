@@ -181,6 +181,40 @@ class LiquidacionMensual(models.Model):
         
         return True
     
+    def action_calcular_farmacias_desde_gastos(self):
+        """Completa las líneas de farmacia desde los gastos cargados del mes.
+
+        Para cada farmacia de la liquidación:
+        - importe_total_plan = todo lo presentado ese mes (plan + venta libre)
+        - 40% farmacias = parte del descuento absorbido por el sindicato
+          atribuible a esa farmacia (proporcional al gasto de plan de cada
+          afiliado, ya que el descuento se calcula por afiliado sobre el
+          total de sus farmacias).
+
+        Los valores quedan editables: el cálculo es un punto de partida.
+        """
+        self.ensure_one()
+        month = '%02d' % self.mes
+        lines = self.env['affiliate.pharmacy.expense.line'].search([
+            ('month', '=', month),
+            ('year', '=', self.anio),
+        ])
+        for importe in self.importe_ids.filtered('es_farmacia'):
+            flines = lines.filtered(
+                lambda l, prov=importe.proveedor_id: l.farmacia_id == prov)
+            total = sum(flines.mapped('gasto_total'))
+            subsidio = 0.0
+            for line in flines:
+                expense = line.expense_id
+                if expense.suma_mes:
+                    subsidio += expense.descuento_realizado * (
+                        line.gasto_plan / expense.suma_mes)
+            importe.write({
+                'importe_total_plan': total,
+                'cuarenta_porciento_farmacias': subsidio,
+            })
+        return True
+
     @api.model
     def get_or_create_current_month(self):
         """Obtiene o crea la liquidación del mes actual"""
