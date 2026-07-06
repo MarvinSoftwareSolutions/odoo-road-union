@@ -492,17 +492,26 @@ class AffiliatePaymentAccount(models.Model):
                     ('date_month', '=', month),
                     ('date_year', '=', year)
                 ], limit=1)
-                
+
                 if existing:
                     skipped_count += 1
                     continue
-                
-                new_record = self.create({
+
+                vals = {
                     'affiliate_id': affiliate.id,
                     'date_month': month,
                     'date_year': year,
                     'state': 'draft',
-                })
+                }
+                # Arrancar con los montos del mes anterior: la mayoría de
+                # los servicios se repite igual durante 2-3 meses y tipearlos
+                # de nuevo era el reclamo principal. Farmacia queda afuera
+                # (viene del módulo de farmacia o de un plan de cuotas), y
+                # los planes activos pisan sus campos al aplicarse abajo.
+                vals.update(self._previous_month_service_amounts(
+                    affiliate.id, month, year))
+
+                new_record = self.create(vals)
                 created_count += 1
 
                 # Aplicar planes de cuotas activos
@@ -531,6 +540,33 @@ class AffiliatePaymentAccount(models.Model):
 
         _logger.info(f"Monthly records creation: {result}")
         return result
+
+    # Servicios que se precargan desde el mes anterior al crear el mes nuevo.
+    # Farmacia no se copia (la trae el módulo de farmacia o un plan de cuotas)
+    # y pagos/META4/Caja son propios de cada mes.
+    COPYABLE_SERVICE_FIELDS = [
+        'optical_total', 'punilla_total', 'solar', 'caruso',
+        'parque_del_sol', 'salguero', 'tres_provincias',
+        'ecco_loan', 'emi_loan', 'emergency_loan', 'suoem_loan',
+        'tourism_total', 'aid_total', 'party_total', 'hall_total',
+        'odontology_total', 'otros_1', 'otros_2',
+    ]
+
+    @api.model
+    def _previous_month_service_amounts(self, affiliate_id, month, year):
+        """Montos de servicios del mes anterior, para precargar el nuevo mes."""
+        prev_month = int(month) - 1
+        prev_year = int(year)
+        if prev_month == 0:
+            prev_month, prev_year = 12, prev_year - 1
+        previous = self.search([
+            ('affiliate_id', '=', affiliate_id),
+            ('date_month', '=', '%02d' % prev_month),
+            ('date_year', '=', str(prev_year)),
+        ], limit=1)
+        if not previous:
+            return {}
+        return {f: previous[f] for f in self.COPYABLE_SERVICE_FIELDS if previous[f]}
 
     @api.model
     def create_record_for_new_affiliate(self, affiliate_id):
