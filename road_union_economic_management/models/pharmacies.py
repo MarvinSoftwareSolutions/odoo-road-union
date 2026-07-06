@@ -324,8 +324,38 @@ class AffiliatePharmacyExpenseLine(models.Model):
     def _compute_gasto_total(self):
         for line in self:
             line.gasto_total = line.gasto_plan + line.gasto_venta_libre
-    
+
     ticket_ids = fields.One2many('pharmacy.ticket', 'expense_line_id', string='Tickets')
+
+    # ========== Propagación a meses futuros ==========
+    # El saldo acumulado de los meses posteriores depende del de este mes,
+    # pero esa relación se resuelve con un search (no hay dependencia ORM
+    # entre registros). El padre solo recalcula hacia adelante en su propio
+    # create/write, por lo que editar una línea (inline o desde el wizard de
+    # importación) dejaba los saldos futuros desactualizados.
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        # Las líneas generadas automáticamente nacen en 0 y no afectan saldos
+        with_amounts = lines.filtered(lambda l: l.gasto_plan or l.gasto_venta_libre)
+        for expense in with_amounts.mapped('expense_id'):
+            expense._recalculate_future_months()
+        return lines
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'gasto_plan' in vals or 'gasto_venta_libre' in vals:
+            for expense in self.mapped('expense_id'):
+                expense._recalculate_future_months()
+        return res
+
+    def unlink(self):
+        expenses = self.mapped('expense_id')
+        res = super().unlink()
+        for expense in expenses.exists():
+            expense._recalculate_future_months()
+        return res
 
     _sql_constraints = [
         ('unique_expense_farmacia',
