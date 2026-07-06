@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_affiliate_summary_report_wizard_form" model="ir.ui.view">
+        <field name="name">affiliate.summary.report.wizard.form</field>
+        <field name="model">affiliate.summary.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Detalle Económico Multi-Mes">
+                <group>
+                    <group>
+                        <field name="affiliate_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="include_pharmacy_detail"/>
+                    </group>
+                    <group>
+                        <label for="from_month" string="Desde"/>
+                        <div class="o_row">
+                            <field name="from_month"/>
+                            <field name="from_year"/>
+                        </div>
+                        <label for="to_month" string="Hasta"/>
+                        <div class="o_row">
+                            <field name="to_month"/>
+                            <field name="to_year"/>
+                        </div>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print" string="Imprimir PDF" type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_affiliate_summary_report_wizard" model="ir.actions.act_window">
+        <field name="name">Detalle Multi-Mes de Afiliado</field>
+        <field name="res_model">affiliate.summary.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_affiliate_summary_report"
+              name="Detalle Multi-Mes de Afiliado"
+              parent="menu_payment_account_root"
+              action="action_affiliate_summary_report_wizard"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="20"/>
+</odoo>

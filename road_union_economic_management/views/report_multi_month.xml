@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_affiliate_multi_month" model="ir.actions.report">
+        <field name="name">Detalle Económico Multi-Mes</field>
+        <field name="model">affiliation.affiliate</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">road_union_economic_management.report_multi_month</field>
+        <field name="report_file">road_union_economic_management.report_multi_month</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <template id="report_multi_month">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- Encabezado: afiliado -->
+                    <div style="border-bottom: 2px solid #875A7B; margin-bottom: 16px; padding-bottom: 8px;">
+                        <h2 style="margin-bottom: 2px;">
+                            <span t-esc="doc.last_name"/>, <span t-esc="doc.first_name"/>
+                        </h2>
+                        <div style="color: #666;">
+                            N° Afiliado: <strong t-esc="doc.uid"/>
+                            <t t-if="doc.affiliate_type_id"> — <span t-esc="doc.affiliate_type_id.name"/></t>
+                            <t t-if="doc.department_id"> — <span t-esc="doc.department_id.name"/></t>
+                        </div>
+                    </div>
+
+                    <!-- Matriz conceptos x meses -->
+                    <table class="table table-sm" style="font-size: 12px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #875A7B;">
+                                <th style="text-align:left;">Concepto</th>
+                                <th t-foreach="month_labels" t-as="ml"
+                                    style="text-align:right;" t-esc="ml"/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="service_rows" t-as="r">
+                                <td t-esc="r['label']"/>
+                                <td t-foreach="r['vals']" t-as="v"
+                                    style="text-align:right;" t-esc="fmt(v)"/>
+                            </tr>
+                            <tr t-foreach="summary_rows" t-as="r"
+                                t-att-style="'border-top: 1px solid #ccc;' + ('font-weight:bold;' if r['bold'] else '')">
+                                <td t-esc="r['label']"/>
+                                <td t-foreach="r['vals']" t-as="v"
+                                    style="text-align:right;" t-esc="fmt(v)"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Detalle de farmacia por mes -->
+                    <t t-if="pharmacy_sections">
+                        <div t-foreach="pharmacy_sections" t-as="sec" style="margin-top: 18px;">
+                            <h4 style="background: #f5e9df; padding: 4px 8px; font-size: 13px;"
+                                t-esc="sec['label']"/>
+                            <table class="table table-sm" style="font-size: 11px;">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Tiquet</th>
+                                        <th style="text-align:right;">Bajo Receta</th>
+                                        <th style="text-align:right;">Venta Libre</th>
+                                        <th style="text-align:right;">Total Compra</th>
+                                        <th>Farmacia</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="sec['tickets']" t-as="tk">
+                                        <td><span t-esc="tk['fecha']" t-options="{'widget': 'date'}"/></td>
+                                        <td style="text-align:right;" t-esc="fmt(tk['receta'])"/>
+                                        <td style="text-align:right;" t-esc="fmt(tk['venta_libre'])"/>
+                                        <td style="text-align:right;" t-esc="fmt(tk['total'])"/>
+                                        <td t-esc="tk['farmacia']"/>
+                                    </tr>
+                                    <tr style="font-weight:bold; border-top: 1px solid #875A7B;">
+                                        <td>Descuento SiViALCo</td>
+                                        <td colspan="3" style="text-align:right;"
+                                            t-esc="fmt(sec['descuento'])"/>
+                                        <td/>
+                                    </tr>
+                                    <tr style="font-weight:bold;">
+                                        <td>TOTAL A DESCONTAR</td>
+                                        <td colspan="3" style="text-align:right;"
+                                            t-esc="fmt(sec['total_descontar'])"/>
+                                        <td/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
