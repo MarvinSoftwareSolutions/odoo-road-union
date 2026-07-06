@@ -22,6 +22,10 @@
                 <filter string="Afiliados vigentes"
                         name="vigentes"
                         domain="[('state', '=', 'affiliated')]"/>
+                <filter string="Dados de baja"
+                        name="dados_de_baja"
+                        domain="[('state', 'in', ['disaffiliated', 'historical'])]"
+                        help="Bajas por renuncia o fallecimiento: ver columnas Fecha de baja y Motivo"/>
                 <group expand="0" string="Agrupar por">
                     <filter string="Departamento"
                             name="groupby_departamento"
