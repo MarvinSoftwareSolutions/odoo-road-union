@@ -37,6 +37,7 @@
         'data/affiliate_class_basic_data.xml',
         'data/pharmacies_data.xml',
         'data/pharmacy_discount_config_data.xml',
+        'views/menus_economia.xml',
     ],
     "installable": True,
 }
