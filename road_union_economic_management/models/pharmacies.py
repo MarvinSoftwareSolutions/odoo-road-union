@@ -119,19 +119,23 @@ class AffiliatePharmacyExpenses(models.Model):
     @api.depends('suma_mes', 'saldo_acumulado')
     def _compute_descuento_realizado(self):
         """
-        Fórmula Excel: =SI((Q+R)<125000;Q*0,4;SI(R>125000;0;(125000-R)*0,4))
-        Donde Q = suma_mes, R = saldo_acumulado
+        Fórmula Excel: =SI((Q+R)<TOPE;Q*PCT;SI(R>TOPE;0;(TOPE-R)*PCT))
+        Donde Q = suma_mes, R = saldo_acumulado.
+        Tope y porcentaje salen de la configuración vigente para el mes
+        (pharmacy.discount.config); histórico: 125000 y 40%.
         """
+        Config = self.env['pharmacy.discount.config']
         for rec in self:
             q = rec.suma_mes
             r = rec.saldo_acumulado
-            
-            if (q + r) < 125000:
-                rec.descuento_realizado = q * 0.4
-            elif r > 125000:
+            tope, pct = Config.get_for_month(rec.month, rec.year)
+
+            if (q + r) < tope:
+                rec.descuento_realizado = q * pct
+            elif r > tope:
                 rec.descuento_realizado = 0
             else:
-                rec.descuento_realizado = (125000 - r) * 0.4
+                rec.descuento_realizado = (tope - r) * pct
 
     @api.depends('suma_mes', 'descuento_realizado', 'vta_libre')
     def _compute_desc_afil(self):
@@ -141,9 +145,11 @@ class AffiliatePharmacyExpenses(models.Model):
 
     @api.depends('suma_mes', 'saldo_acumulado')
     def _compute_disponible_40(self):
-        """Disponible al 40% = 125000 - (suma_mes + saldo_acumulado)"""
+        """Disponible al descuento = tope vigente - (suma_mes + saldo_acumulado)"""
+        Config = self.env['pharmacy.discount.config']
         for rec in self:
-            rec.disponible_40 = 125000 - (rec.suma_mes + rec.saldo_acumulado)
+            tope, _pct = Config.get_for_month(rec.month, rec.year)
+            rec.disponible_40 = tope - (rec.suma_mes + rec.saldo_acumulado)
 
     @api.depends('affiliate_id', 'year', 'month', 'suma_mes')
     def _compute_saldo_acumulado(self):
