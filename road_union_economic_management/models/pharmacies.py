@@ -177,7 +177,7 @@ class AffiliatePharmacyExpenses(models.Model):
         records = super().create(vals_list)
         for record in records:
             record._generate_pharmacy_lines()
-            record._recalculate_future_months()
+            record._propagate_amount_changes()
         return records
 
     def write(self, vals):
@@ -185,8 +185,43 @@ class AffiliatePharmacyExpenses(models.Model):
         # Solo recalculamos si cambiaron campos que afectan los totales
         if any(field in vals for field in ['month', 'year', 'affiliate_id', 'linea_gastos_ids']):
             for record in self:
-                record._recalculate_future_months()
+                record._propagate_amount_changes()
         return res
+
+    def _propagate_amount_changes(self):
+        """Sincroniza la cuenta mensual de este mes y recalcula los futuros."""
+        for record in self:
+            record._sync_payment_account()
+            record._recalculate_future_months()
+
+    def _sync_payment_account(self):
+        """Vuelca desc_afil en pharmacy_total de la cuenta del mismo mes/año.
+
+        El mes del lote de farmacia es el mes en que se descuenta (así lo
+        maneja la administración al elegir el mes al importar). No se pisan
+        cuentas confirmadas, y un plan de cuotas activo de farmacia tiene
+        precedencia sobre el cálculo.
+        """
+        PaymentAccount = self.env['affiliate.payment_account']
+        Plan = self.env['affiliate.installment.plan']
+        for rec in self:
+            account = PaymentAccount.search([
+                ('affiliate_id', '=', rec.affiliate_id.id),
+                ('date_month', '=', rec.month),
+                ('date_year', '=', str(rec.year)),
+                ('state', '=', 'draft'),
+            ], limit=1)
+            if not account:
+                continue
+            has_plan = Plan.search_count([
+                ('affiliate_id', '=', rec.affiliate_id.id),
+                ('provider_field', '=', 'pharmacy_total'),
+                ('state', '=', 'active'),
+            ])
+            if has_plan:
+                continue
+            if account.pharmacy_total != rec.desc_afil:
+                account.pharmacy_total = rec.desc_afil
 
     def _generate_pharmacy_lines(self):
         """Genera automáticamente líneas para todas las farmacias activas"""
@@ -245,10 +280,12 @@ class AffiliatePharmacyExpenses(models.Model):
             if not next_record:
                 # No hay más meses registrados hacia adelante
                 break
-            
+
             # Forzamos el recálculo del saldo acumulado
             next_record._compute_saldo_acumulado()
-            
+            # El saldo acumulado cambia el descuento de ese mes: sincronizar
+            next_record._sync_payment_account()
+
             # Avanzamos al siguiente mes
             current_month = next_month
             current_year = next_year
@@ -339,22 +376,19 @@ class AffiliatePharmacyExpenseLine(models.Model):
         lines = super().create(vals_list)
         # Las líneas generadas automáticamente nacen en 0 y no afectan saldos
         with_amounts = lines.filtered(lambda l: l.gasto_plan or l.gasto_venta_libre)
-        for expense in with_amounts.mapped('expense_id'):
-            expense._recalculate_future_months()
+        with_amounts.mapped('expense_id')._propagate_amount_changes()
         return lines
 
     def write(self, vals):
         res = super().write(vals)
         if 'gasto_plan' in vals or 'gasto_venta_libre' in vals:
-            for expense in self.mapped('expense_id'):
-                expense._recalculate_future_months()
+            self.mapped('expense_id')._propagate_amount_changes()
         return res
 
     def unlink(self):
         expenses = self.mapped('expense_id')
         res = super().unlink()
-        for expense in expenses.exists():
-            expense._recalculate_future_months()
+        expenses.exists()._propagate_amount_changes()
         return res
 
     _sql_constraints = [

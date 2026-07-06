@@ -403,7 +403,18 @@ class AffiliatePaymentAccount(models.Model):
             self.env['affiliate.class.basic.history'].ensure_month_exists(
                 record.date_month, record.date_year)
         record._update_subsequent_months_initial_balance()
+        # Traer el descuento de farmacia ya calculado para este mes, salvo
+        # que el valor venga explícito (p. ej. importación)
+        if not vals.get('pharmacy_total'):
+            expense = self.env['affiliate.pharmacy.expenses'].search([
+                ('affiliate_id', '=', record.affiliate_id.id),
+                ('month', '=', record.date_month),
+                ('year', '=', int(record.date_year)),
+            ], limit=1)
+            if expense and expense.desc_afil:
+                record.pharmacy_total = expense.desc_afil
         # Aplicar planes de cuotas activos del afiliado
+        # (después de farmacia: un plan activo pisa el cálculo)
         active_plans = self.env['affiliate.installment.plan'].search([
             ('affiliate_id', '=', record.affiliate_id.id),
             ('state', '=', 'active'),
