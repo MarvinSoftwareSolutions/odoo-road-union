@@ -29,6 +29,7 @@
         'wizards/affiliate_summary_report.xml',
         'views/reports.xml',
         'views/report_multi_month.xml',
+        'views/report_treasurer.xml',
         'views/provider_payments_views.xml',
         'views/pharmacies_views.xml',
         'wizards/pharmacy_expense_import.xml',
