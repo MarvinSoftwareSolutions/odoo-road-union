@@ -253,6 +253,9 @@ class AffiliatePaymentAccount(models.Model):
     odontology_installment = fields.Char(string="N° Cuota Odontología")
     odontology_total = fields.Float(string="Odontología", group_operator='sum')
 
+    collections_installment = fields.Char(string="N° Cuota Colectas")
+    collections_total = fields.Float(string="COLECTAS", group_operator='sum')
+
     otros_1_installment = fields.Char(string="N° Cuota Otros 1")
     otros_1 = fields.Float(string="OTROS 1", group_operator='sum')
     otros_2_installment = fields.Char(string="N° Cuota Otros 2")
@@ -330,23 +333,25 @@ class AffiliatePaymentAccount(models.Model):
         for record in self:
             record.affiliate_name = record.affiliate_id.name if record.affiliate_id else ''
 
-    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso', 
-                 'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 'emi_loan', 
-                 'emergency_loan', 'suoem_loan', 'tourism_total', 'aid_total', 
-                 'party_total', 'hall_total', 'odontology_total', 'otros_1', 'otros_2')
+    @api.depends('initial_balance', 'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso',
+                 'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 'emi_loan',
+                 'emergency_loan', 'suoem_loan', 'tourism_total', 'aid_total',
+                 'party_total', 'hall_total', 'odontology_total',
+                 'collections_total', 'otros_1', 'otros_2')
     def _compute_total_services(self):
         """Calcula el total de servicios incluyendo el saldo inicial."""
         for record in self:
             record.total_services = (
                 record.initial_balance +
                 record.pharmacy_total + record.optical_total + record.punilla_total +
-                record.solar + record.caruso + record.parque_del_sol + 
+                record.solar + record.caruso + record.parque_del_sol +
                 record.salguero + record.tres_provincias +
-                record.ecco_loan + record.emi_loan + 
+                record.ecco_loan + record.emi_loan +
                 record.emergency_loan + record.suoem_loan +
-                record.tourism_total + record.aid_total + 
-                record.party_total + record.hall_total + 
-                record.odontology_total + record.otros_1 + record.otros_2
+                record.tourism_total + record.aid_total +
+                record.party_total + record.hall_total +
+                record.odontology_total + record.collections_total +
+                record.otros_1 + record.otros_2
             )
 
     @api.depends('total_services', 'union_fee')
@@ -446,8 +451,9 @@ class AffiliatePaymentAccount(models.Model):
             'pharmacy_total', 'optical_total', 'punilla_total', 'solar', 'caruso',
             'parque_del_sol', 'salguero', 'tres_provincias', 'ecco_loan', 
             'emi_loan', 'emergency_loan', 'suoem_loan', 'tourism_total', 
-            'aid_total', 'party_total', 'hall_total', 'odontology_total', 
-            'otros_1', 'otros_2', 'union_fee', 'payments', 'pension_fund', 'meta4'
+            'aid_total', 'party_total', 'hall_total', 'odontology_total',
+            'collections_total', 'otros_1', 'otros_2',
+            'union_fee', 'payments', 'pension_fund', 'meta4'
         ]
         
         result = super(AffiliatePaymentAccount, self).write(vals)
@@ -549,7 +555,7 @@ class AffiliatePaymentAccount(models.Model):
         'parque_del_sol', 'salguero', 'tres_provincias',
         'ecco_loan', 'emi_loan', 'emergency_loan', 'suoem_loan',
         'tourism_total', 'aid_total', 'party_total', 'hall_total',
-        'odontology_total', 'otros_1', 'otros_2',
+        'odontology_total', 'collections_total', 'otros_1', 'otros_2',
     ]
 
     @api.model

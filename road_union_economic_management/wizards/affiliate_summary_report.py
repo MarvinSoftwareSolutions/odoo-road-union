@@ -35,6 +35,7 @@ SERVICE_CONCEPTS = [
     ('party_total', 'Fiesta'),
     ('hall_total', 'Salón'),
     ('odontology_total', 'Odontología'),
+    ('collections_total', 'Colectas'),
     ('otros_1', 'Otros 1'),
     ('otros_2', 'Otros 2'),
 ]
