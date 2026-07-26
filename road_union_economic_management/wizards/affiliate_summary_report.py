@@ -59,18 +59,15 @@ class AffiliateSummaryReportWizard(models.TransientModel):
     @api.model
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        today = datetime.today()
-        # Por defecto: los últimos 6 meses incluyendo el actual
-        to_month, to_year = today.month, today.year
-        from_month, from_year = to_month - 5, to_year
-        if from_month <= 0:
-            from_month += 12
-            from_year -= 1
+        # Por defecto: el año calendario completo (así entrega la
+        # administración el detalle al afiliado; los meses sin datos
+        # se muestran vacíos)
+        year = datetime.today().year
         res.update({
-            'from_month': '%02d' % from_month,
-            'from_year': from_year,
-            'to_month': '%02d' % to_month,
-            'to_year': to_year,
+            'from_month': '01',
+            'from_year': year,
+            'to_month': '12',
+            'to_year': year,
         })
         return res
 
