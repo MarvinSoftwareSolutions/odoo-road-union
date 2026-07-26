@@ -1,0 +1,70 @@
+<odoo>
+    <!-- Libro de Afiliaciones: registro histórico de altas y bajas,
+         independiente del padrón vigente. Una fila por período de
+         afiliación (las reafiliaciones aparecen como filas nuevas). -->
+
+    <record id="view_libro_afiliaciones_tree" model="ir.ui.view">
+        <field name="name">affiliation.affiliation_period.libro.tree</field>
+        <field name="model">affiliation.affiliation_period</field>
+        <field name="priority" eval="50"/>
+        <field name="arch" type="xml">
+            <tree class="o_sticky_list" create="false">
+                <field name="affiliate_full_name"/>
+                <field name="affiliation_number" string="N° Afiliación"/>
+                <field name="affiliate_dni"/>
+                <field name="affiliate_birth_date" optional="hide"/>
+                <field name="from_date" string="Fecha de Afiliación"/>
+                <field name="to_date" string="Fecha de Baja"/>
+                <field name="disaffiliation_reason" string="Motivo de Baja"/>
+                <field name="closed" optional="hide"/>
+                <field name="affiliate_state" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_libro_afiliaciones_search" model="ir.ui.view">
+        <field name="name">affiliation.affiliation_period.libro.search</field>
+        <field name="model">affiliation.affiliation_period</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="affiliate_full_name" string="Apellido y Nombre"/>
+                <field name="affiliate_dni" string="DNI"/>
+                <field name="affiliation_number" string="N° Afiliación"/>
+                <filter string="Con baja"
+                        name="con_baja"
+                        domain="[('to_date', '!=', False)]"/>
+                <filter string="Vigentes"
+                        name="vigentes"
+                        domain="[('to_date', '=', False)]"/>
+                <separator/>
+                <filter string="Fecha de Afiliación" name="filter_alta" date="from_date"/>
+                <filter string="Fecha de Baja" name="filter_baja" date="to_date"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Motivo de Baja"
+                            name="groupby_motivo"
+                            context="{'group_by': 'disaffiliation_reason'}"/>
+                    <filter string="Año de Afiliación"
+                            name="groupby_anio_alta"
+                            context="{'group_by': 'from_date:year'}"/>
+                    <filter string="Año de Baja"
+                            name="groupby_anio_baja"
+                            context="{'group_by': 'to_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_libro_afiliaciones" model="ir.actions.act_window">
+        <field name="name">Libro de Afiliaciones</field>
+        <field name="res_model">affiliation.affiliation_period</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_libro_afiliaciones_tree"/>
+        <field name="search_view_id" ref="view_libro_afiliaciones_search"/>
+    </record>
+
+    <menuitem id="menu_libro_afiliaciones" name="Libro de Afiliaciones"
+              parent="union_affiliation.affiliates_section"
+              action="action_libro_afiliaciones"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="18"/>
+</odoo>

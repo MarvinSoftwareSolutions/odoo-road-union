@@ -31,6 +31,10 @@
                 <field name="mobile"/>
                 <field name="affiliation_date"/>
                 <field name="seniority"/>
+                <!-- Visibles al consultar históricos/bajas -->
+                <field name="state" optional="hide"/>
+                <field name="disaffiliation_date" optional="hide"/>
+                <field name="current_disaffiliation_reason" optional="hide" string="Motivo de baja"/>
                 <field name="affiliate_child_ids" invisible="1"/>
                 <button name="action_view_children"
                         type="object"
