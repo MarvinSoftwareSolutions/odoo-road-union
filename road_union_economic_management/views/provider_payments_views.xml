@@ -82,6 +82,10 @@
                             string="Calcular Farmacias desde Gastos"
                             type="object"
                             help="Completa importe y 40% de cada farmacia desde los gastos cargados del mes. Los valores quedan editables."/>
+                    <button name="action_exportar_excel"
+                            string="Exportar Excel"
+                            type="object"
+                            help="Descarga la planilla de pagos en Excel con el formato que usa administración."/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -110,10 +114,11 @@
                                     <field name="importe_total_plan" sum="Total"/>
                                     <field name="comision" sum="Total" readonly="1" force_save="1"/>
                                     <field name="importe_a_pagar" sum="Total" readonly="1" force_save="1"/>
-                                    <field name="cuarenta_porciento_farmacias" 
-                                           sum="Total" 
+                                    <field name="cuarenta_porciento_farmacias"
+                                           sum="Total"
                                            optional="show"
                                            attrs="{'readonly': [('es_farmacia', '=', False)]}"/>
+                                    <field name="nro_transferencia" optional="show"/>
                                     <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
@@ -128,6 +133,10 @@
                                     <field name="total_farmacias" readonly="1"/>
                                 </group>
                             </group>
+                        </page>
+                        <page string="Observaciones">
+                            <field name="observaciones"
+                                   placeholder="Aclaraciones internas (van al pie de la planilla)..."/>
                         </page>
                     </notebook>
                 </sheet>

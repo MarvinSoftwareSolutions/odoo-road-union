@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import base64
+import io
+
+import xlsxwriter
+
 from odoo import models, fields, api
 
 class ProveedorSindicato(models.Model):
@@ -139,7 +144,13 @@ class LiquidacionMensual(models.Model):
         string='Moneda',
         default=lambda self: self.env.company.currency_id
     )
-    
+
+    observaciones = fields.Text(
+        string='Observaciones',
+        help='Aclaraciones internas de administración (van al pie de la '
+             'planilla impresa y del Excel).'
+    )
+
     @api.depends('mes', 'anio')
     def _compute_descripcion(self):
         meses = {
@@ -214,6 +225,68 @@ class LiquidacionMensual(models.Model):
                 'cuarenta_porciento_farmacias': subsidio,
             })
         return True
+
+    def action_exportar_excel(self):
+        """Genera la planilla de pagos en Excel (formato del modelo de
+        administración: proveedor, %, comisión, importe, a pagar,
+        40% farmacias, Nº transferencia + totales + observaciones)."""
+        self.ensure_one()
+        buf = io.BytesIO()
+        workbook = xlsxwriter.Workbook(buf, {'in_memory': True})
+        sheet = workbook.add_worksheet((self.descripcion or 'Planilla')[:31])
+        bold = workbook.add_format({'bold': True})
+        header = workbook.add_format({'bold': True, 'bottom': 2})
+        money = workbook.add_format({'num_format': '#,##0.00'})
+        money_bold = workbook.add_format({'num_format': '#,##0.00', 'bold': True})
+
+        sheet.set_column(0, 0, 38)
+        sheet.set_column(1, 6, 16)
+        sheet.write(0, 0, 'PLANILLA DE PAGOS A PROVEEDORES', bold)
+        sheet.write(1, 0, 'Período: %s' % (self.descripcion or ''))
+
+        headers = ['Proveedor', '% Comisión', 'Comisión', 'Importe Total del Plan',
+                   'Importe a Pagar', '40% Farmacias', 'Nº Transferencia']
+        row = 3
+        for col, title in enumerate(headers):
+            sheet.write(row, col, title, header)
+
+        for line in self.importe_ids:
+            if not line.importe_total_plan and not line.cuarenta_porciento_farmacias:
+                continue
+            row += 1
+            sheet.write(row, 0, line.proveedor_id.nombre or '')
+            sheet.write_number(row, 1, line.porcentaje_comision or 0)
+            sheet.write_number(row, 2, line.comision or 0, money)
+            sheet.write_number(row, 3, line.importe_total_plan or 0, money)
+            sheet.write_number(row, 4, line.importe_a_pagar or 0, money)
+            sheet.write_number(row, 5, line.cuarenta_porciento_farmacias or 0, money)
+            sheet.write(row, 6, line.nro_transferencia or '')
+
+        row += 1
+        sheet.write(row, 0, 'TOTALES', bold)
+        sheet.write_number(row, 2, self.total_comision or 0, money_bold)
+        sheet.write_number(row, 3, self.total_importe_plan or 0, money_bold)
+        sheet.write_number(row, 4, self.total_importe_pagar or 0, money_bold)
+        sheet.write_number(row, 5, self.total_farmacias or 0, money_bold)
+
+        if self.observaciones:
+            sheet.write(row + 2, 0, 'Observaciones:', bold)
+            sheet.write(row + 3, 0, self.observaciones)
+
+        workbook.close()
+        filename = 'Planilla de Pagos %s.xlsx' % (self.descripcion or '')
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'datas': base64.b64encode(buf.getvalue()),
+            'res_model': self._name,
+            'res_id': self.id,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%d?download=true' % attachment.id,
+            'target': 'self',
+        }
 
     @api.model
     def get_or_create_current_month(self):
@@ -316,7 +389,12 @@ class ImporteMensualProveedor(models.Model):
         default=0.0,
         help='Campo manual para farmacias'
     )
-    
+
+    nro_transferencia = fields.Char(
+        string='Nº Transferencia',
+        help='Número de la transferencia bancaria con la que se pagó'
+    )
+
     currency_id = fields.Many2one(
         'res.currency',
         string='Moneda',
