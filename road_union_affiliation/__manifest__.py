@@ -23,6 +23,7 @@
         'views/affiliate_child_readonly_views.xml',
         'views/padrones_views.xml',
         'views/event_views.xml',
+        'views/libro_afiliaciones_views.xml',
         'data/insurance_data.xml',
         'security/ir.model.access.csv',
     ],

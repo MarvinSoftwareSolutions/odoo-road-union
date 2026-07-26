@@ -1,1 +1,1 @@
-from . import affiliate, insurance, department, affiliate_child, event
+from . import affiliate, insurance, department, affiliate_child, event, affiliation_period
