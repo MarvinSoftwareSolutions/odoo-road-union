@@ -34,6 +34,7 @@
                                     <th style="text-align:right;">Comisión</th>
                                     <th style="text-align:right;">Importe a Transferir</th>
                                     <th style="text-align:right;">40% Farmacias</th>
+                                    <th>Nº Transferencia</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,6 +46,7 @@
                                         <td style="text-align:right;" t-esc="fmt(line.comision)"/>
                                         <td style="text-align:right; font-weight:bold;" t-esc="fmt(line.importe_a_pagar)"/>
                                         <td style="text-align:right;" t-esc="fmt(line.cuarenta_porciento_farmacias)"/>
+                                        <td t-esc="line.nro_transferencia or ''"/>
                                     </tr>
                                 </t>
                             </tbody>
@@ -56,9 +58,15 @@
                                     <td style="text-align:right;" t-esc="fmt(doc.total_comision)"/>
                                     <td style="text-align:right;" t-esc="fmt(doc.total_importe_pagar)"/>
                                     <td style="text-align:right;" t-esc="fmt(doc.total_farmacias)"/>
+                                    <td/>
                                 </tr>
                             </tfoot>
                         </table>
+
+                        <div t-if="doc.observaciones" style="margin-top: 16px; font-size: 12px;">
+                            <strong>Observaciones:</strong>
+                            <div t-esc="doc.observaciones" style="white-space: pre-wrap;"/>
+                        </div>
 
                         <div class="row" style="margin-top: 60px;">
                             <div class="col-6" style="text-align:center;">
