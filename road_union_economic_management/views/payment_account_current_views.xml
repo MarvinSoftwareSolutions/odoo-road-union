@@ -59,6 +59,8 @@
 
                 <field name="party_installment" readonly="1"/>
                 <field name="party_total" sum="False"/>
+                <field name="collections_installment" readonly="1"/>
+                <field name="collections_total" sum="False"/>
 
                 <field name="hall_installment" readonly="1"/>
                 <field name="hall_total" sum="False"/>
@@ -240,6 +242,8 @@
 
                 <field name="party_installment" string="Cuota Fiesta" readonly="1"/>
                 <field name="party_total" sum="Total Fiestas"/>
+                <field name="collections_installment" string="Cuota Colectas" readonly="1"/>
+                <field name="collections_total" sum="Total Colectas"/>
 
                 <field name="hall_installment" string="Cuota Salón" readonly="1"/>
                 <field name="hall_total" sum="Total Salón"/>
@@ -353,6 +357,8 @@
                             <field name="punilla_total" widget="monetary"/>
                             <field name="party_installment" readonly="1"/>
                             <field name="party_total" widget="monetary"/>
+                            <field name="collections_installment" readonly="1"/>
+                            <field name="collections_total" widget="monetary"/>
                             <field name="hall_installment" readonly="1"/>
                             <field name="hall_total" widget="monetary"/>
                         </group>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_liquidacion_planilla" model="ir.actions.report">
+        <field name="name">Planilla de Pagos a Proveedores</field>
+        <field name="model">sindicato.liquidacion.mensual</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">road_union_economic_management.report_planilla_pagos</field>
+        <field name="report_file">road_union_economic_management.report_planilla_pagos</field>
+        <field name="binding_model_id" ref="model_sindicato_liquidacion_mensual"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <template id="report_planilla_pagos">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <t t-set="fmt" t-value="lambda v: ('{:,.2f}'.format(v).replace(',', '@').replace('.', ',').replace('@', '.')) if v else '-'"/>
+
+                        <div style="border-bottom: 2px solid #875A7B; margin-bottom: 16px; padding-bottom: 8px;">
+                            <h2 style="margin-bottom: 2px;">Planilla de Pagos a Proveedores</h2>
+                            <div style="color: #666; font-size: 14px;">
+                                Período: <strong t-esc="doc.descripcion"/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm" style="font-size: 12px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #875A7B;">
+                                    <th>Proveedor</th>
+                                    <th style="text-align:right;">% Comisión</th>
+                                    <th style="text-align:right;">Importe Plan</th>
+                                    <th style="text-align:right;">Comisión</th>
+                                    <th style="text-align:right;">Importe a Transferir</th>
+                                    <th style="text-align:right;">40% Farmacias</th>
+                                    <th>Nº Transferencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="doc.importe_ids" t-as="line">
+                                    <tr t-if="line.importe_total_plan or line.cuarenta_porciento_farmacias">
+                                        <td t-esc="line.proveedor_id.nombre"/>
+                                        <td style="text-align:right;" t-esc="'%.2f' % line.porcentaje_comision"/>
+                                        <td style="text-align:right;" t-esc="fmt(line.importe_total_plan)"/>
+                                        <td style="text-align:right;" t-esc="fmt(line.comision)"/>
+                                        <td style="text-align:right; font-weight:bold;" t-esc="fmt(line.importe_a_pagar)"/>
+                                        <td style="text-align:right;" t-esc="fmt(line.cuarenta_porciento_farmacias)"/>
+                                        <td t-esc="line.nro_transferencia or ''"/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                            <tfoot>
+                                <tr style="border-top: 2px solid #875A7B; font-weight: bold;">
+                                    <td>TOTALES</td>
+                                    <td/>
+                                    <td style="text-align:right;" t-esc="fmt(doc.total_importe_plan)"/>
+                                    <td style="text-align:right;" t-esc="fmt(doc.total_comision)"/>
+                                    <td style="text-align:right;" t-esc="fmt(doc.total_importe_pagar)"/>
+                                    <td style="text-align:right;" t-esc="fmt(doc.total_farmacias)"/>
+                                    <td/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div t-if="doc.observaciones" style="margin-top: 16px; font-size: 12px;">
+                            <strong>Observaciones:</strong>
+                            <div t-esc="doc.observaciones" style="white-space: pre-wrap;"/>
+                        </div>
+
+                        <div class="row" style="margin-top: 60px;">
+                            <div class="col-6" style="text-align:center;">
+                                <div style="border-top: 1px solid #333; margin: 0 40px; padding-top: 4px;">
+                                    Administración
+                                </div>
+                            </div>
+                            <div class="col-6" style="text-align:center;">
+                                <div style="border-top: 1px solid #333; margin: 0 40px; padding-top: 4px;">
+                                    Tesorero
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

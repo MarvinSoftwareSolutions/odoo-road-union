@@ -24,6 +24,7 @@ PROVIDER_INSTALLMENT_MAP = {
     'party_total': 'party_installment',
     'hall_total': 'hall_installment',
     'odontology_total': 'odontology_installment',
+    'collections_total': 'collections_installment',
     'otros_1': 'otros_1_installment',
     'otros_2': 'otros_2_installment',
 }
@@ -46,6 +47,7 @@ PROVIDER_SELECTION = [
     ('party_total', 'Fiesta'),
     ('hall_total', 'Salón'),
     ('odontology_total', 'Odontología'),
+    ('collections_total', 'Colectas'),
     ('otros_1', 'Otros 1'),
     ('otros_2', 'Otros 2'),
 ]
