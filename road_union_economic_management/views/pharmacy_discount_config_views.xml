@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pharmacy_discount_config_tree" model="ir.ui.view">
+        <field name="name">pharmacy.discount.config.tree</field>
+        <field name="model">pharmacy.discount.config</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="date_year"/>
+                <field name="date_month"/>
+                <field name="tope"/>
+                <field name="porcentaje"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_discount_config" model="ir.actions.act_window">
+        <field name="name">Configuración de Descuento Farmacia</field>
+        <field name="res_model">pharmacy.discount.config</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure el tope y el porcentaje de descuento de farmacia
+            </p>
+            <p>
+                Cada fila indica desde qué mes/año rige un tope y porcentaje.
+                Los meses anteriores a la primera fila usan los valores
+                históricos (tope 125.000, 40%).
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_pharmacy_discount_config"
+              name="Configuración Descuento Farmacia"
+              parent="menu_affiliate_root"
+              action="action_pharmacy_discount_config"
+              groups="union_affiliation.group_affiliation_admin"
+              sequence="90"/>
+</odoo>

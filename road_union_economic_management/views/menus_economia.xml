@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Raíz única para toda la gestión económica.
+
+         Hasta ahora las secciones colgaban sueltas de Administración
+         ("Cuentas de Pago", "Liquidaciones", "Farmacias, afiliados y
+         Gastos", más wizards como ítems de primer nivel), dispersando el
+         flujo mensual. Este archivo se carga último y re-parenta los
+         menús existentes bajo una sola raíz. -->
+
+    <menuitem id="menu_gestion_economica"
+              name="Gestión Económica"
+              parent="union_affiliation.union"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="6"/>
+
+    <menuitem id="menu_ge_basicos"
+              name="Básicos y Clases"
+              parent="menu_gestion_economica"
+              groups="union_affiliation.group_affiliation_read"
+              sequence="40"/>
+
+    <!-- Cuentas de Pago: sección + su wizard de filtro -->
+    <record id="menu_payment_account_root" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_gestion_economica"/>
+        <field name="sequence">10</field>
+    </record>
+    <record id="menu_payment_account_filter" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_payment_account_root"/>
+        <field name="sequence">15</field>
+    </record>
+
+    <!-- Farmacias (antes "Farmacias, afiliados y Gastos") -->
+    <record id="menu_affiliate_root" model="ir.ui.menu">
+        <field name="name">Farmacias</field>
+        <field name="parent_id" ref="menu_gestion_economica"/>
+        <field name="sequence">20</field>
+    </record>
+
+    <!-- Liquidaciones y proveedores -->
+    <record id="menu_sindicato_root" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_gestion_economica"/>
+        <field name="sequence">30</field>
+    </record>
+
+    <!-- Básicos por clase e historial (estaban en la sección de afiliados) -->
+    <record id="menu_affiliate_class_basic" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_ge_basicos"/>
+    </record>
+    <record id="menu_affiliate_class_basic_history" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_ge_basicos"/>
+    </record>
+
+    <!-- Exportaciones META4 / Caja -->
+    <record id="menu_payment_export_wizard" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_gestion_economica"/>
+        <field name="sequence">50</field>
+    </record>
+</odoo>
