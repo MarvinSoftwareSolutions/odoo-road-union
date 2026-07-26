@@ -145,6 +145,11 @@ class ReportAffiliateMultiMonth(models.AbstractModel):
             vals = row(field)
             if any(vals):
                 summary_rows.append({'label': label, 'vals': vals, 'bold': False})
+        # Lo efectivamente retenido en el mes (pagos + Caja + META4), como
+        # en la planilla que arma la administración
+        descontado = [p + c + m for p, c, m in zip(
+            row('payments'), row('pension_fund'), row('meta4'))]
+        summary_rows.append({'label': 'DESCONTADO', 'vals': descontado, 'bold': True})
         summary_rows.append(
             {'label': 'SALDO FINAL', 'vals': row('final_balance'), 'bold': True})
 
