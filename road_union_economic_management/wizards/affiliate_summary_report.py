@@ -48,10 +48,17 @@ class AffiliateSummaryReportWizard(models.TransientModel):
     affiliate_id = fields.Many2one(
         'affiliation.affiliate', string='Afiliado', required=True)
 
+    @api.model
+    def _get_year_selection(self):
+        # Selection en vez de Integer para que el año no se muestre con
+        # separador de miles ("2,026")
+        current = datetime.today().year
+        return [(str(y), str(y)) for y in reversed(range(current - 10, current + 2))]
+
     from_month = fields.Selection(MONTH_SELECTION, string='Desde (mes)', required=True)
-    from_year = fields.Integer(string='Desde (año)', required=True)
+    from_year = fields.Selection(selection=_get_year_selection, string='Desde (año)', required=True)
     to_month = fields.Selection(MONTH_SELECTION, string='Hasta (mes)', required=True)
-    to_year = fields.Integer(string='Hasta (año)', required=True)
+    to_year = fields.Selection(selection=_get_year_selection, string='Hasta (año)', required=True)
     include_pharmacy_detail = fields.Boolean(
         string='Incluir detalle de farmacia', default=True,
         help='Agrega al pie el detalle de tickets de farmacia de cada mes.')
@@ -62,7 +69,7 @@ class AffiliateSummaryReportWizard(models.TransientModel):
         # Por defecto: el año calendario completo (así entrega la
         # administración el detalle al afiliado; los meses sin datos
         # se muestran vacíos)
-        year = datetime.today().year
+        year = str(datetime.today().year)
         res.update({
             'from_month': '01',
             'from_year': year,
